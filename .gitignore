@@ -1,0 +1,8 @@
+node_modules
+public
+db.json
+blog.ai
+.DS_Store
+*.log
+.deploy_git
+
