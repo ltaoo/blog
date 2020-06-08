@@ -1,0 +1,752 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="目前绝大部分单页应用都由前端控制路由，如react可以使用react-router、vue可以使用vue-router。路由库的使用已经有非常多的文章来介绍，所以本文的重点在于「基于路由配置自动生成导航菜单」，所用技术栈为react + react-router-dom + antd。 为什么是菜单呢？它绝大部分内容和">
+<meta name="keywords" content="JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端路由与菜单">
+<meta property="og:url" content="http://yoursite.com/2018/08/26/路由与菜单/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="目前绝大部分单页应用都由前端控制路由，如react可以使用react-router、vue可以使用vue-router。路由库的使用已经有非常多的文章来介绍，所以本文的重点在于「基于路由配置自动生成导航菜单」，所用技术栈为react + react-router-dom + antd。 为什么是菜单呢？它绝大部分内容和路由是相同的，但又有部分不同，如果维护两份带来的是巨大的维护成本，只需要修改一处">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/blog/2018/08/26/路由与菜单/15352809220087.jpg">
+<meta property="og:image" content="http://yoursite.com/blog/2018/08/26/路由与菜单/15352810699468.jpg">
+<meta property="og:image" content="http://yoursite.com/blog/2018/08/26/路由与菜单/15352829629298.jpg">
+<meta property="og:image" content="http://yoursite.com/blog/2018/08/26/路由与菜单/15352839804328.jpg">
+<meta property="og:image" content="http://yoursite.com/blog/2018/08/26/路由与菜单/15352849728129.jpg">
+<meta property="og:updated_time" content="2018-08-28T12:58:33.210Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端路由与菜单">
+<meta name="twitter:description" content="目前绝大部分单页应用都由前端控制路由，如react可以使用react-router、vue可以使用vue-router。路由库的使用已经有非常多的文章来介绍，所以本文的重点在于「基于路由配置自动生成导航菜单」，所用技术栈为react + react-router-dom + antd。 为什么是菜单呢？它绝大部分内容和路由是相同的，但又有部分不同，如果维护两份带来的是巨大的维护成本，只需要修改一处">
+<meta name="twitter:image" content="http://yoursite.com/blog/2018/08/26/路由与菜单/15352809220087.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/08/26/路由与菜单/"/>
+
+
+
+
+
+  <title> 前端路由与菜单 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2018/08/26/路由与菜单/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                前端路由与菜单
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-08-26T08:00:00+08:00">
+              2018-08-26
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2018-08-28T20:58:33+08:00">
+              2018-08-28
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>目前绝大部分单页应用都由前端控制路由，如<code>react</code>可以使用<code>react-router</code>、<code>vue</code>可以使用<code>vue-router</code>。路由库的使用已经有非常多的文章来介绍，所以本文的重点在于「基于路由配置自动生成导航菜单」，所用技术栈为<code>react</code> + <code>react-router-dom</code> + <code>antd</code>。</p>
+<p>为什么是菜单呢？<br>它绝大部分内容和路由是相同的，但又有部分不同，如果维护两份带来的是巨大的维护成本，只需要修改一处即可同步路由与菜单的变化。</p>
+<p>本文目标读者为了解基本的<code>react-router</code>使用，想要在项目中通过路由配置自动生成导航菜单，并正确处理菜单的高亮。</p>
+<a id="more"></a>
+<h2 id="贯穿全文的需求"><a href="#贯穿全文的需求" class="headerlink" title="贯穿全文的需求"></a>贯穿全文的需求</h2><p>本文会以如下页面作为示例，逐步优化，实现我们预期的效果。</p>
+<p><img src="/blog/2018/08/26/路由与菜单/15352809220087.jpg" alt="商品列表"></p>
+<p>应用有四个页面，分别为「商品列表」、「商品详情」、「购物车」和「个人中心」；当访问<code>/goods</code>时，菜单「商品列表」高亮，同时右侧展示商品列表；</p>
+<p><img src="/blog/2018/08/26/路由与菜单/15352810699468.jpg" alt="商品详情"></p>
+<p>点击商品列表中任意一条「查看详情」，则跳转至<code>/goods/0</code>，同时「商品列表」仍保持高亮状态，右侧展示商品详情。</p>
+<h2 id="配置方式的转变"><a href="#配置方式的转变" class="headerlink" title="配置方式的转变"></a>配置方式的转变</h2><h3 id="最简单的配置"><a href="#最简单的配置" class="headerlink" title="最简单的配置"></a>最简单的配置</h3><p>在了解需求后，我们可以很快得到如下配置（<a href="https://codesandbox.io/s/8k21xvq232" target="_blank" rel="noopener">线上实例</a>）：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="function"><span class="keyword">function</span> <span class="title">RouterConfig</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        &lt;Router&gt;</span><br><span class="line">            &lt;div&gt;</span><br><span class="line">                &lt;Link to=<span class="string">"/"</span>&gt;首页&lt;<span class="regexp">/Link&gt;|</span></span><br><span class="line"><span class="regexp">                &lt;Link to="/g</span>oods<span class="string">"&gt;商品列表&lt;/Link&gt;|</span></span><br><span class="line"><span class="string">                &lt;Link to="</span>/cart<span class="string">"&gt;购物车&lt;/Link&gt;|</span></span><br><span class="line"><span class="string">                &lt;Link to="</span>/info<span class="string">"&gt;个人中心&lt;/Link&gt;</span></span><br><span class="line"><span class="string">                &lt;Switch&gt;</span></span><br><span class="line"><span class="string">                    &lt;Route path="</span>/<span class="string">" exact component=&#123;Home&#125; /&gt;</span></span><br><span class="line"><span class="string">                    &lt;Route path="</span>/goods<span class="string">" exact component=&#123;Goods&#125; /&gt;</span></span><br><span class="line"><span class="string">                    &lt;Route path="</span>/goods/:id<span class="string">" component=&#123;GoodsDetail&#125; /&gt;</span></span><br><span class="line"><span class="string">                    &lt;Route path="</span>/cart<span class="string">" component=&#123;Cart&#125; /&gt;</span></span><br><span class="line"><span class="string">                    &lt;Route path="</span>/info<span class="string">" component=&#123;Info&#125; /&gt;</span></span><br><span class="line"><span class="string">                &lt;/Switch&gt;</span></span><br><span class="line"><span class="string">            &lt;/div&gt;</span></span><br><span class="line"><span class="string">        &lt;/Router&gt;</span></span><br><span class="line"><span class="string">    );</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">const rootElement = document.getElementById('root');</span></span><br><span class="line"><span class="string">ReactDOM.render(&lt;RouterConfig /&gt;, rootElement);</span></span><br></pre></td></tr></table></figure>
+<p>相比之前，<code>react-router</code>更加灵活，也更易于理解了，但如果出现嵌套路由，则路由配置将分散在多处，不利于管理，以及无法自动生成菜单。</p>
+<h3 id="集中维护路由配置"><a href="#集中维护路由配置" class="headerlink" title="集中维护路由配置"></a>集中维护路由配置</h3><p>所以还是需要以集中管理的形式来对路由进行配置，对应上面的例子，我们可以得出如下的配置：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> routes = [</span><br><span class="line">    &#123;</span><br><span class="line">        path: <span class="string">'/'</span>,</span><br><span class="line">        name: <span class="string">'首页'</span>,</span><br><span class="line">        component: Home,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        path: <span class="string">'/goods'</span>,</span><br><span class="line">        name: <span class="string">'商品列表'</span>,</span><br><span class="line">        component: Goods,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        path: <span class="string">'/goods/:id'</span>,</span><br><span class="line">        name: <span class="string">'商品详情'</span>,</span><br><span class="line">        component: GoodsDetail,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        path: <span class="string">'/cart'</span>,</span><br><span class="line">        name: <span class="string">'购物车'</span>,</span><br><span class="line">        component: Cart,</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        path: <span class="string">'/info'</span>,</span><br><span class="line">        name: <span class="string">'个人中心'</span>,</span><br><span class="line">        component: Info,</span><br><span class="line">    &#125;,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>那么与之对应的路由组件为：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;Router&gt;</span><br><span class="line">    &lt;Route</span><br><span class="line">      path=<span class="string">"/"</span></span><br><span class="line">      render=&#123;props =&gt; &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">BasicLayout</span> &#123;<span class="attr">...props</span>&#125; <span class="attr">routes</span>=<span class="string">&#123;routes&#125;</span> /&gt;</span>;</span></span><br><span class="line"><span class="xml">      &#125;&#125;</span></span><br><span class="line"><span class="xml">    /&gt;</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">Router</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h3 id="新增的布局概念"><a href="#新增的布局概念" class="headerlink" title="新增的布局概念"></a>新增的布局概念</h3><p>这里出现了<code>BasicLayout</code>，就是前面提到的嵌套路由，引入的目的是为了解决部分页面布局不同的问题，如登录页不会显示菜单，而开始的配置方式，无论如何都会显示出<code>&lt;Link to=&quot;/&quot;&gt;首页&lt;/Link&gt;|</code>这部分组件。<br>将<code>routes</code>传入，并在<code>BasicLayout</code>组件内再做路由配置。<code>BasicLayout</code>大概长这样（<a href="https://codesandbox.io/s/y7z220jvj" target="_blank" rel="noopener">线上示例</a>）：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BasicLayout</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;Layout&gt;</span><br><span class="line">                &lt;Sider&gt;</span><br><span class="line">                    &lt;Menu /&gt;</span><br><span class="line">                &lt;<span class="regexp">/Sider&gt;</span></span><br><span class="line"><span class="regexp">                &lt;Header /</span>&gt;</span><br><span class="line">                &lt;Content&gt;</span><br><span class="line">                    &lt;Switch&gt;</span><br><span class="line">                    &#123;routes.map(<span class="function"><span class="params">route</span> =&gt;</span> &#123;</span><br><span class="line">                        <span class="keyword">return</span> (</span><br><span class="line">                            &lt;Route</span><br><span class="line">                                key=&#123;route.path&#125;</span><br><span class="line">                                path=&#123;route.path&#125;</span><br><span class="line">                                exact</span><br><span class="line">                                component=&#123;route.component&#125;</span><br><span class="line">                            /&gt;</span><br><span class="line">                        );</span><br><span class="line">                    &#125;)&#125; </span><br><span class="line">                    &lt;<span class="regexp">/Switch&gt;</span></span><br><span class="line"><span class="regexp">                &lt;/</span>Content&gt;</span><br><span class="line">            &lt;<span class="regexp">/Layout&gt;</span></span><br><span class="line"><span class="regexp">        );</span></span><br><span class="line"><span class="regexp">    &#125;</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+<p><img src="/blog/2018/08/26/路由与菜单/15352829629298.jpg" alt="BasicLayout"></p>
+<p>虽然有一些理解成本，但之后只需要关心<code>BasicLayout</code>组件内的<code>&lt;Switch&gt;</code>即可。布局与面包屑导航会在另一篇博客中介绍。</p>
+<h2 id="生成菜单"><a href="#生成菜单" class="headerlink" title="生成菜单"></a>生成菜单</h2><p><code>Menu</code>组件位于<code>BasicLayout</code>组件内，所以也可以拿到<code>routes</code>，并生成对应组件即可（<a href="https://codesandbox.io/s/y7z220jvj" target="_blank" rel="noopener">示例同上</a>）。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">NavMenu</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    renderMenus = <span class="function">(<span class="params">routes = [], parentPath = <span class="string">''</span></span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> routes.map(<span class="function"><span class="params">route</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="comment">// replace 用来去除多余的 / 符号</span></span><br><span class="line">            <span class="keyword">const</span> path = <span class="string">`<span class="subst">$&#123;parentPath&#125;</span>/<span class="subst">$&#123;route.path&#125;</span>`</span>.replace(<span class="regexp">/\/+/g</span>, <span class="string">'/'</span>);</span><br><span class="line">            <span class="keyword">return</span> (</span><br><span class="line">                &lt;Menu.Item key=&#123;route.path&#125;&gt;</span><br><span class="line">                    &lt;Link to=&#123;path&#125;&gt;</span><br><span class="line">                        &lt;span&gt;&#123;route.name&#125;&lt;<span class="regexp">/span&gt;</span></span><br><span class="line"><span class="regexp">                    &lt;/</span>Link&gt;</span><br><span class="line">                &lt;<span class="regexp">/Menu.Item&gt;</span></span><br><span class="line"><span class="regexp">            );</span></span><br><span class="line"><span class="regexp">        &#125;);</span></span><br><span class="line"><span class="regexp">    &#125;;</span></span><br><span class="line"><span class="regexp">    render() &#123;</span></span><br><span class="line"><span class="regexp">        const &#123; routes &#125; = this.props;</span></span><br><span class="line"><span class="regexp">        return (</span></span><br><span class="line"><span class="regexp">            &lt;Menu theme="dark" mode="inline"&gt;</span></span><br><span class="line"><span class="regexp">                &#123;this.renderMenus(routes)&#125;</span></span><br><span class="line"><span class="regexp">            &lt;/</span>Menu&gt;</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以得到这样的菜单：</p>
+<p><img src="/blog/2018/08/26/路由与菜单/15352839804328.jpg" alt="初始状态的菜单"></p>
+<p>可以发现，虽然按照我们预期，生成了菜单，但存在一些问题</p>
+<ul>
+<li>商品详情不应该展示</li>
+<li>没有高亮</li>
+</ul>
+<h3 id="商品详情不应该展示"><a href="#商品详情不应该展示" class="headerlink" title="商品详情不应该展示"></a>商品详情不应该展示</h3><p>自动生成的「商品详情」菜单，点击后跳转到<code>/goods/:id</code>这个地址，对我们来说没有任何作用，所以需要隐藏掉。<br>解决方法也非常简单，不渲染这条配置即可，可以判断<code>route.path</code>是否包含<code>:</code>符号，如果包含，就返回<code>null</code>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (route.path.indexOf(<span class="string">':'</span>) &gt; <span class="number">-1</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也可以在<code>routes</code>配置中，添加<code>hide</code>属性，然后在渲染时判断<code>hide === true</code>，并决定是否渲染。如果我们不希望在菜单中展示「首页」，就可以通过这种方式：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> routes = [</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    </span><br><span class="line">    &#123;</span><br><span class="line">        path: <span class="string">'/'</span>,</span><br><span class="line">        name: <span class="string">'首页'</span>,</span><br><span class="line">        component: Home,</span><br><span class="line">        hide: <span class="literal">true</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<h3 id="菜单高亮"><a href="#菜单高亮" class="headerlink" title="菜单高亮"></a>菜单高亮</h3><p>高亮的原理很简单，获取当前<code>url</code>，判断和哪个菜单项匹配。由于使用<code>HashRouter</code>，<code>location.pathname</code>不能正确返回我们预期的值。当然这个问题<code>react-router</code>帮我们解决了，可以通过两种方式，第一种是<code>props</code>；第二种是<code>withRouter</code>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;Route</span><br><span class="line">  path=<span class="string">"/"</span></span><br><span class="line">  render=&#123;props =&gt; &#123;</span><br><span class="line">    <span class="comment">// props 上有 match 和 location 属性，传给 BasicLayout 后 BasicLayout 也有了</span></span><br><span class="line">    <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">BasicLayout</span> &#123;<span class="attr">...props</span>&#125; <span class="attr">routes</span>=<span class="string">&#123;routes&#125;</span> /&gt;</span>;</span></span><br><span class="line"><span class="xml">  &#125;&#125;</span></span><br><span class="line"><span class="xml">/&gt;</span></span><br></pre></td></tr></table></figure>
+<p>那么先在<code>BasicLayout</code>组件内打印看看这两个属性到底是什么吧</p>
+<p><img src="/blog/2018/08/26/路由与菜单/15352849728129.jpg" alt="BasicLayout this.props"></p>
+<p><code>match</code>表示的是当前匹配到的<code>Route</code>的属性，<code>location</code>是当前<code>url</code>的信息。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">computeSelectedMenuItem = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="comment">// 由于使用了 hashRouter，所以必须借助 this.props.match 属性</span></span><br><span class="line">    <span class="keyword">const</span> &#123; match &#125; = <span class="keyword">this</span>.props;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但无论怎么切换页面，<code>match.path</code>都是<code>/</code>，而不是我们预期的<code>/goods</code>或者<code>/goods/:id</code>。</p>
+<p>答案也很简单，因为<code>BasicLayout</code>对应的<code>Route</code>的<code>path</code>就是<code>/</code>。<br>实际上，<code>react-router</code>的原理就是，<code>Route</code>组件获取当前<code>url</code>，与自身<code>path</code>对比，如果匹配，就显示自身，否则就不显示。</p>
+<p>对应到我们的应用中，就是<code>&lt;Route path=&quot;/&quot;</code>这个组件，计算当前<code>/goods</code>匹配自身成功，所以显示出<code>BasicLayout</code>组件。而组件内的<code>&lt;Route path=&quot;/goods&quot;</code>组件，也认为当前<code>url</code>匹配自身，所以展示<code>Goods</code>组件。</p>
+<p>所以我们暂时先通过<code>props.location.pathname</code>实现高亮。将<code>location</code>传给<code>NavMenu</code>组件，并在组件内维护<code>selectedKeys</code>变量，保存当前选中的菜单项的<code>key</code>，传给<code>Menu</code>就 OK 啦（<a href="https://codesandbox.io/s/r5yylm66rq" target="_blank" rel="noopener">示例</a>）！</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">constructor</span>(props) &#123;</span><br><span class="line">    <span class="keyword">super</span>(props);</span><br><span class="line">    <span class="keyword">const</span> &#123; location &#125; = props;</span><br><span class="line">    <span class="keyword">this</span>.state = &#123;</span><br><span class="line">        selectedKeys: <span class="keyword">this</span>.computeSelectedMenuItem(location)</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br><span class="line">componentWillReceiveProps(nextProps) &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; <span class="attr">location</span>: nextLocation &#125; = nextProps;</span><br><span class="line">    <span class="keyword">const</span> &#123; location &#125; = <span class="keyword">this</span>.props;</span><br><span class="line">    <span class="keyword">if</span> (nextLocation.pathname !== location.pathname) &#123;</span><br><span class="line">        <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">            selectedKeys: <span class="keyword">this</span>.computeSelectedMenuItem(nextLocation)</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">computeSelectedMenuItem = <span class="function"><span class="params">location</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> [location.pathname];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>至此，高亮完成了第一步，我们能发现访问「商品详情」时无法正确高亮「商品列表」，所以接下来解决这个问题。</p>
+<h3 id="高亮父菜单"><a href="#高亮父菜单" class="headerlink" title="高亮父菜单"></a>高亮父菜单</h3><p>当访问<code>/goods/0</code>时，<code>selectedKeys</code>中保存的是<code>&#39;/goods/0</code>，没有任何菜单的<code>path</code>能正确匹配到，所以没有任何菜单高亮。</p>
+<p>所以，我们将该路径分割，得到<code>/goods</code>和<code>/0</code>两部分，返回第一部分就能正确高亮了。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">computeSelectedMenuItem = <span class="function"><span class="params">location</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; pathname &#125; = location;</span><br><span class="line">    <span class="keyword">const</span> paths = pathname</span><br><span class="line">        .split(<span class="string">'/'</span>)</span><br><span class="line">        .filter(<span class="function"><span class="params">item</span> =&gt;</span> item !== <span class="string">''</span>)</span><br><span class="line">        .map(<span class="function"><span class="params">path</span> =&gt;</span> <span class="string">`/<span class="subst">$&#123;path&#125;</span>`</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(paths);</span><br><span class="line">    <span class="keyword">return</span> [paths[<span class="number">0</span>]];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>虽然满足了我们当前的用例，访问「商品详情」时高亮「商品列表」，但如果出现「子菜单」的情况呢？<br>将「个人中心」与「购物车」页面，放到一起作为「我的」子菜单，访问「购物车」的路径变成了<code>/my/cart</code>，这种情况必然无法高亮。</p>
+<p>修改<code>routes</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> routes = [</span><br><span class="line">    &#123;</span><br><span class="line">        path: <span class="string">'/'</span>,</span><br><span class="line">        name: <span class="string">'首页'</span>,</span><br><span class="line">        component: Home</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        path: <span class="string">'/goods'</span>,</span><br><span class="line">        name: <span class="string">'商品列表'</span>,</span><br><span class="line">        component: Goods</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        path: <span class="string">'/goods/:id'</span>,</span><br><span class="line">        name: <span class="string">'商品详情'</span>,</span><br><span class="line">        component: GoodsDetail</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">        path: <span class="string">'/my'</span>,</span><br><span class="line">        name: <span class="string">'我的'</span>,</span><br><span class="line">        children: [</span><br><span class="line">            &#123;</span><br><span class="line">                path: <span class="string">'/cart'</span>,</span><br><span class="line">                name: <span class="string">'购物车'</span>,</span><br><span class="line">                component: Cart</span><br><span class="line">            &#125;,</span><br><span class="line">            &#123;</span><br><span class="line">                path: <span class="string">'/info'</span>,</span><br><span class="line">                name: <span class="string">'个人中心'</span>,</span><br><span class="line">                component: Info</span><br><span class="line">            &#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>但修改完成后，菜单只展示「我的」，而没有子菜单，因为还没有在<code>NavMenu</code>组件中没有对子菜单进行渲染。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">renderMenus = <span class="function">(<span class="params">routes = [], parentPath = <span class="string">''</span></span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> routes.map(<span class="function"><span class="params">route</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (route.path.indexOf(<span class="string">':'</span>) &gt; <span class="number">-1</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 处理子菜单</span></span><br><span class="line">        <span class="keyword">const</span> hasChildMenu = route.children;</span><br><span class="line">        <span class="keyword">if</span> (hasChildMenu) &#123;</span><br><span class="line">            <span class="comment">// 如果存在子菜单，就递归渲染</span></span><br><span class="line">            <span class="keyword">return</span> (</span><br><span class="line">                &lt;SubMenu title=&#123;route.name&#125; key=&#123;route.path&#125;&gt;</span><br><span class="line">                    &#123;<span class="keyword">this</span>.renderMenus(route.children, route.path)&#125;</span><br><span class="line">                &lt;<span class="regexp">/SubMenu&gt;</span></span><br><span class="line"><span class="regexp">            );</span></span><br><span class="line"><span class="regexp">        &#125;</span></span><br><span class="line"><span class="regexp">        let path = `$&#123;parentPath&#125;/</span>$&#123;route.path&#125;<span class="string">`.replace(/\/+/g, '/');</span></span><br><span class="line"><span class="string">        return (</span></span><br><span class="line"><span class="string">            &lt;Menu.Item key=&#123;route.path&#125;&gt;</span></span><br><span class="line"><span class="string">                &lt;Link to=&#123;path&#125;&gt;</span></span><br><span class="line"><span class="string">                    &lt;span&gt;&#123;route.name&#125;&lt;/span&gt;</span></span><br><span class="line"><span class="string">                &lt;/Link&gt;</span></span><br><span class="line"><span class="string">            &lt;/Menu.Item&gt;</span></span><br><span class="line"><span class="string">        );</span></span><br><span class="line"><span class="string">    &#125;);</span></span><br><span class="line"><span class="string">&#125;;</span></span><br></pre></td></tr></table></figure>
+<p>虽然菜单正常显示了，但当访问<code>/my/cart</code>时，并不能正确展示<code>Cart</code>组件。同样是因为在路由渲染时，没有处理「子页面」的情况。</p>
+<blockquote>
+<p>这里特意使用了「子页面」，而不是「子路由」。因为<code>/my</code>页面与<code>/my/cart</code>页面不是嵌套路由的关系，并且<code>/my</code>并没有实际的页面。</p>
+</blockquote>
+<p>所以需要修改<code>BasicLayout</code>组件内渲染路由的方式，本质上类似如下配置（<a href="https://codesandbox.io/s/13p279ny3l" target="_blank" rel="noopener">嵌套路由的配置</a>）：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> ChildRouter = (</span><br><span class="line">    &lt;Switch&gt;</span><br><span class="line">        &lt;Route path=<span class="string">"/"</span> exact component=&#123;Home&#125; /&gt;</span><br><span class="line">        &lt;Route path=<span class="string">"/goods"</span> exact component=&#123;Goods&#125; /&gt;</span><br><span class="line">        &lt;Route path=<span class="string">"/goods/:id"</span> component=&#123;GoodsDetail&#125; /&gt;</span><br><span class="line">        &lt;Route</span><br><span class="line">            path=<span class="string">"/my"</span></span><br><span class="line">            render=&#123;() =&gt; &#123;</span><br><span class="line">                <span class="keyword">return</span> (</span><br><span class="line">                    &lt;Switch&gt;</span><br><span class="line">                        &#123;<span class="comment">/* 不能用 /cart 而必须用 /my/cart */</span>&#125;</span><br><span class="line">                        &lt;Route path=<span class="string">"/my/cart"</span> component=&#123;Cart&#125; /&gt;</span><br><span class="line">                        &lt;Route path=<span class="string">"/my/login"</span> component=&#123;Login&#125; /&gt;</span><br><span class="line">                    &lt;<span class="regexp">/Switch&gt;</span></span><br><span class="line"><span class="regexp">                );</span></span><br><span class="line"><span class="regexp">            &#125;&#125;</span></span><br><span class="line"><span class="regexp">        /</span>&gt;</span><br><span class="line">    &lt;<span class="regexp">/Switch&gt;</span></span><br><span class="line"><span class="regexp">);</span></span><br><span class="line"><span class="regexp"></span></span><br><span class="line"><span class="regexp">export default function RouterConfig() &#123;</span></span><br><span class="line"><span class="regexp">    return (</span></span><br><span class="line"><span class="regexp">        &lt;Router&gt;</span></span><br><span class="line"><span class="regexp">            &lt;Route path="/</span><span class="string">" children=&#123;ChildRouter&#125; /&gt;</span></span><br><span class="line"><span class="string">        &lt;/Router&gt;</span></span><br><span class="line"><span class="string">    );</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>所以我们最终的<code>BasicLayout</code>是这样的（<a href="https://codesandbox.io/s/kk4x78l19r" target="_blank" rel="noopener">最终的代码</a>）：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">renderRouterConfig = <span class="function">(<span class="params">routes, parentPath = <span class="string">''</span></span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">        &lt;Switch&gt;</span><br><span class="line">            &#123;routes.map(<span class="function"><span class="params">route</span> =&gt;</span> &#123;</span><br><span class="line">                <span class="keyword">let</span> path = <span class="string">`<span class="subst">$&#123;parentPath&#125;</span>/<span class="subst">$&#123;route.path&#125;</span>`</span>.replace(</span><br><span class="line">                    /\/+<span class="regexp">/g,</span></span><br><span class="line"><span class="regexp">                    '/</span><span class="string">'</span></span><br><span class="line"><span class="string">                );</span></span><br><span class="line"><span class="string">                if (route.children) &#123;</span></span><br><span class="line"><span class="string">                    return (</span></span><br><span class="line"><span class="string">                        &lt;Route</span></span><br><span class="line"><span class="string">                            key=&#123;path&#125;</span></span><br><span class="line"><span class="string">                            path=&#123;path&#125;</span></span><br><span class="line"><span class="string">                            render=&#123;() =&gt; &#123;</span></span><br><span class="line"><span class="string">                                return this.renderRouterConfig(</span></span><br><span class="line"><span class="string">                                    route.children,</span></span><br><span class="line"><span class="string">                                    path</span></span><br><span class="line"><span class="string">                                );</span></span><br><span class="line"><span class="string">                            &#125;&#125;</span></span><br><span class="line"><span class="string">                        /&gt;</span></span><br><span class="line"><span class="string">                    );</span></span><br><span class="line"><span class="string">                &#125;</span></span><br><span class="line"><span class="string">                return (</span></span><br><span class="line"><span class="string">                    &lt;Route</span></span><br><span class="line"><span class="string">                        key=&#123;path&#125;</span></span><br><span class="line"><span class="string">                        path=&#123;path&#125;</span></span><br><span class="line"><span class="string">                        exact</span></span><br><span class="line"><span class="string">                        component=&#123;route.component&#125;</span></span><br><span class="line"><span class="string">                    /&gt;</span></span><br><span class="line"><span class="string">                );</span></span><br><span class="line"><span class="string">            &#125;)&#125;</span></span><br><span class="line"><span class="string">        &lt;/Switch&gt;</span></span><br><span class="line"><span class="string">    );</span></span><br><span class="line"><span class="string">&#125;;</span></span><br></pre></td></tr></table></figure>
+<p>确实发现路径<code>/my/cart</code>时，「购物车」菜单项并没有高亮，所以需要修改返回的<code>selectedKeys</code>，能够满足两种情况。</p>
+<p>维护一个全局变量，保存所有的路由，即</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在生成菜单项时新增</span></span><br><span class="line"><span class="keyword">this</span>.paths = &#123;</span><br><span class="line">    <span class="string">'/goods'</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="string">'/goods/:id'</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="string">'/my/cart'</span>: <span class="literal">true</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如果当前<code>props.location.pathname</code>能够在<code>this.paths</code>中找到，表示不包含动态参数，返回<code>pathname</code>。如果是<code>/goods/0</code>，无法匹配到，所以返回经过处理的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">computeSelectedMenuItem = <span class="function"><span class="params">location</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; pathname &#125; = location;</span><br><span class="line">    <span class="keyword">const</span> paths = pathname</span><br><span class="line">        .split(<span class="string">'/'</span>)</span><br><span class="line">        .filter(<span class="function"><span class="params">item</span> =&gt;</span> item !== <span class="string">''</span>)</span><br><span class="line">        .map(<span class="function"><span class="params">path</span> =&gt;</span> <span class="string">`/<span class="subst">$&#123;path&#125;</span>`</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.paths[pathname] ? [pathname] : [paths[<span class="number">0</span>]];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>即使是<a href="https://codesandbox.io/s/z3436l5oom" target="_blank" rel="noopener">更复杂的例子</a>，如三层菜单也能正确处理。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2018/07/09/前端如何缓存请求/" rel="next" title="前端如何缓存请求">
+                <i class="fa fa-chevron-left"></i> 前端如何缓存请求
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2018/10/22/antd自定义表单的问题-1/" rel="prev" title="antd 自定义表单的问题 - 1">
+                antd 自定义表单的问题 - 1 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#贯穿全文的需求"><span class="nav-number">1.</span> <span class="nav-text">贯穿全文的需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置方式的转变"><span class="nav-number">2.</span> <span class="nav-text">配置方式的转变</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#最简单的配置"><span class="nav-number">2.1.</span> <span class="nav-text">最简单的配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集中维护路由配置"><span class="nav-number">2.2.</span> <span class="nav-text">集中维护路由配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新增的布局概念"><span class="nav-number">2.3.</span> <span class="nav-text">新增的布局概念</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生成菜单"><span class="nav-number">3.</span> <span class="nav-text">生成菜单</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#商品详情不应该展示"><span class="nav-number">3.1.</span> <span class="nav-text">商品详情不应该展示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#菜单高亮"><span class="nav-number">3.2.</span> <span class="nav-text">菜单高亮</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高亮父菜单"><span class="nav-number">3.3.</span> <span class="nav-text">高亮父菜单</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

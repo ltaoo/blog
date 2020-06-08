@@ -1,0 +1,713 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="canvas," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="手上接到一个需求，将多种图片经过放大、旋转后绘制在一张 canvas 上，放大都还好理解，但旋转真的是废头发。">
+<meta name="keywords" content="canvas">
+<meta property="og:type" content="article">
+<meta property="og:title" content="怎么简单地在 canvas 中完成旋转">
+<meta property="og:url" content="http://yoursite.com/2019/12/04/easy-rotate-in-canvas/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="手上接到一个需求，将多种图片经过放大、旋转后绘制在一张 canvas 上，放大都还好理解，但旋转真的是废头发。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/blog/2019/12/04/easy-rotate-in-canvas/image-20191203222637361.png">
+<meta property="og:image" content="http://yoursite.com/blog/2019/12/04/easy-rotate-in-canvas/image-20191203223228300.png">
+<meta property="og:image" content="http://yoursite.com/blog/2019/12/04/easy-rotate-in-canvas/image-20191203222213334.png">
+<meta property="og:image" content="http://yoursite.com/blog/2019/12/04/easy-rotate-in-canvas/image-2019-12-04_23-46-02.png">
+<meta property="og:updated_time" content="2019-12-04T15:47:19.762Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="怎么简单地在 canvas 中完成旋转">
+<meta name="twitter:description" content="手上接到一个需求，将多种图片经过放大、旋转后绘制在一张 canvas 上，放大都还好理解，但旋转真的是废头发。">
+<meta name="twitter:image" content="http://yoursite.com/blog/2019/12/04/easy-rotate-in-canvas/image-20191203222637361.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/12/04/easy-rotate-in-canvas/"/>
+
+
+
+
+
+  <title> 怎么简单地在 canvas 中完成旋转 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2019/12/04/easy-rotate-in-canvas/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                怎么简单地在 canvas 中完成旋转
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-12-04T08:00:00+08:00">
+              2019-12-04
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2019-12-04T23:47:19+08:00">
+              2019-12-04
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>手上接到一个需求，将多种图片经过放大、旋转后绘制在一张 <code>canvas</code> 上，放大都还好理解，但旋转真的是废头发。</p>
+<a id="more"></a>
+<p>举个最简单的例子吧，现在有 8x4 的图片，需要将图片旋转 90° 后放在左上角</p>
+<p><img src="/blog/2019/12/04/easy-rotate-in-canvas/image-20191203222637361.png" alt="image-20191203222637361"></p>
+<p>怎么实现呢？这样吗？</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将画布旋转 90°</span></span><br><span class="line">ctx.rotate(<span class="number">90</span>);</span><br><span class="line"><span class="comment">// 在 0, 0 绘制图片</span></span><br><span class="line">ctx.drawImage(img, <span class="number">0</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<p><code>canvas</code> 没有提供「旋转图片」的方法，只能旋转画布，结果实际上变成了这样</p>
+<p><img src="/blog/2019/12/04/easy-rotate-in-canvas/image-20191203223228300.png" alt="image-20191203223228300"></p>
+<p><code>ctx</code> 与 <code>canvas</code> 可以看作两个东西，一个是画布(ctx)，另一个是桌子(canvas)。我们是在画布上绘制图形，但是画布最终要放到桌子上，平展开来才能看清楚。</p>
+<p><img src="/blog/2019/12/04/easy-rotate-in-canvas/image-20191203222213334.png" alt="image-20191203222213334"></p>
+<p>这就导致了我们如果想实现旋转，需要通过计算才能得出「实际的」x 和 y 值。<br>比如上面旋转 90° 的例子，在画布旋转 90° 后，默认位于 0, 0，然后 x 轴不变，往「上」移动 4px，</p>
+<p><img src="/blog/2019/12/04/easy-rotate-in-canvas/image-2019-12-04_23-46-02.png" alt="image-20191203222213339"></p>
+<p>所以最终代码是</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ctx.rotate(<span class="number">90</span>);</span><br><span class="line"><span class="comment">// 4 是图片的高度</span></span><br><span class="line">ctx.drawImage(img, <span class="number">0</span>, <span class="number">-4</span>);</span><br></pre></td></tr></table></figure>
+<p>90° 可以通过「直接看」计算出位置，但是其他角度呢？</p>
+<p>为什么没有一个简单的旋转方法呢？</p>
+<h2 id="easy-rotate-in-canvas"><a href="#easy-rotate-in-canvas" class="headerlink" title="easy-rotate-in-canvas"></a>easy-rotate-in-canvas</h2><p>为了解决这个头疼的问题，我们可以把计算封装好，暴露友好的操作接口。还是上面旋转 90° 的例子，可以写成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ctx.drawImage(img, &#123;</span><br><span class="line">    x: <span class="number">4</span>,</span><br><span class="line">    y: <span class="number">0</span>,</span><br><span class="line">    rotate: <span class="number">90</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>或者更语义化的</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctx.drawImage(img).move(<span class="number">4</span>, <span class="number">0</span>).rotate(<span class="number">90</span>);</span><br></pre></td></tr></table></figure>
+<p>或者更多，都是可以实现的，尽量将操作简化。不过目前只实现了第一种方式。</p>
+<h3 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add easy-rotate-in-canvas</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> enhance <span class="keyword">from</span> <span class="string">'easy-rotate-in-canvas'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> canvas = <span class="built_in">document</span>.getElementById(<span class="string">'canvas'</span>);</span><br><span class="line"><span class="keyword">const</span> ctx = enhance(canvas.getContext(<span class="string">'2d'</span>));</span><br><span class="line"></span><br><span class="line">ctx.drawImage(img, &#123;</span><br><span class="line">    <span class="comment">// options</span></span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>或者直接引用 <code>&lt;script src=&quot;https://unpkg.com/easy-rotate-in-canvas@1.0.2&quot;&gt;&lt;/script&gt;</code>，<code>enhance</code> 方法会挂载到全局，直接使用即可。</p>
+<p>更多内容可以访问</p>
+<ul>
+<li><a href="https://github.com/ltaoo/easy-rotate-in-canvas" target="_blank" rel="noopener">easy-rotate-in-canvas</a></li>
+<li><a href="https://ltaoo.github.io/easy-rotate-in-canvas/" target="_blank" rel="noopener">online example</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/canvas/" rel="tag"># canvas</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/07/11/babel-preset-es2015/" rel="next" title="babel-preset-es2015 详解">
+                <i class="fa fa-chevron-left"></i> babel-preset-es2015 详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2020/01/02/three.js 渲染自定义模型/" rel="prev" title="Three.js 渲染自定义模型">
+                Three.js 渲染自定义模型 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#easy-rotate-in-canvas"><span class="nav-number">1.</span> <span class="nav-text">easy-rotate-in-canvas</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Usage"><span class="nav-number">1.1.</span> <span class="nav-text">Usage</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,772 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="react,antd,form," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="antd 自定义表单的问题 - 1   前面提到，「基本信息」包含姓名、出生年月、性别、城市以及邮箱共 5 个输入项。而其中性别、省市与邮箱封装为了单独的组件，因为这类组件包含特有的数据或者逻辑。  性别选择，因为有性别对应的 value。当然也可以将性别数据作为常量引入。 省市选择，包含了省市信息。 邮箱，有补全邮箱">
+<meta name="keywords" content="react,antd,form">
+<meta property="og:type" content="article">
+<meta property="og:title" content="antd 自定义表单的问题 - 2">
+<meta property="og:url" content="http://yoursite.com/2018/10/23/antd自定义表单的问题-2/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="antd 自定义表单的问题 - 1   前面提到，「基本信息」包含姓名、出生年月、性别、城市以及邮箱共 5 个输入项。而其中性别、省市与邮箱封装为了单独的组件，因为这类组件包含特有的数据或者逻辑。  性别选择，因为有性别对应的 value。当然也可以将性别数据作为常量引入。 省市选择，包含了省市信息。 邮箱，有补全邮箱后缀等逻辑。  antd官网中「自定义表单组件」就是一个有「特有逻辑」的组件，它">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://oyy3cbpm3.bkt.clouddn.com/15379691339723.jpg">
+<meta property="og:image" content="http://oyy3cbpm3.bkt.clouddn.com/15379701681393.jpg">
+<meta property="og:updated_time" content="2018-10-23T10:45:56.650Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="antd 自定义表单的问题 - 2">
+<meta name="twitter:description" content="antd 自定义表单的问题 - 1   前面提到，「基本信息」包含姓名、出生年月、性别、城市以及邮箱共 5 个输入项。而其中性别、省市与邮箱封装为了单独的组件，因为这类组件包含特有的数据或者逻辑。  性别选择，因为有性别对应的 value。当然也可以将性别数据作为常量引入。 省市选择，包含了省市信息。 邮箱，有补全邮箱后缀等逻辑。  antd官网中「自定义表单组件」就是一个有「特有逻辑」的组件，它">
+<meta name="twitter:image" content="http://oyy3cbpm3.bkt.clouddn.com/15379691339723.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/10/23/antd自定义表单的问题-2/"/>
+
+
+
+
+
+  <title> antd 自定义表单的问题 - 2 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2018/10/23/antd自定义表单的问题-2/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                antd 自定义表单的问题 - 2
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-23T08:00:00+08:00">
+              2018-10-23
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2018-10-23T18:45:56+08:00">
+              2018-10-23
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/React/" itemprop="url" rel="index">
+                    <span itemprop="name">React</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <a href="/blog/2018/10/22/antd自定义表单的问题-1/" title="antd 自定义表单的问题 - 1">antd 自定义表单的问题 - 1</a>
+<hr>
+
+<p>前面提到，「基本信息」包含姓名、出生年月、性别、城市以及邮箱共 5 个输入项。而其中性别、省市与邮箱封装为了单独的组件，因为这类组件<strong>包含特有的数据或者逻辑</strong>。</p>
+<ul>
+<li>性别选择，因为有性别对应的 value。当然也可以将性别数据作为常量引入。</li>
+<li>省市选择，包含了省市信息。</li>
+<li>邮箱，有补全邮箱后缀等逻辑。</li>
+</ul>
+<p><code>antd</code>官网中「自定义表单组件」就是一个有「特有逻辑」的组件，它同时包含两个字段。</p>
+<a id="more"></a>
+<h2 id="一、自定义表单标准代码分析"><a href="#一、自定义表单标准代码分析" class="headerlink" title="一、自定义表单标准代码分析"></a>一、自定义表单标准代码分析</h2><p>以省市选择为例来说明如何封装一个自定义表单组件。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @file 中国省市选择，代码来源 https://gist.github.com/afc163/7582f35654fd03d5be7009444345ea17</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; Cascader &#125; <span class="keyword">from</span> <span class="string">'antd'</span>;</span><br><span class="line"><span class="keyword">import</span> provinces <span class="keyword">from</span> <span class="string">'china-division/dist/provinces.json'</span>;</span><br><span class="line"><span class="keyword">import</span> cities <span class="keyword">from</span> <span class="string">'china-division/dist/cities.json'</span>;</span><br><span class="line"><span class="keyword">import</span> areas <span class="keyword">from</span> <span class="string">'china-division/dist/areas.json'</span>;</span><br><span class="line"></span><br><span class="line">areas.forEach(<span class="function"><span class="params">area</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> matchCity = cities.filter(<span class="function"><span class="params">city</span> =&gt;</span> city.code === area.cityCode)[<span class="number">0</span>];</span><br><span class="line">  <span class="keyword">if</span> (matchCity) &#123;</span><br><span class="line">    matchCity.children = matchCity.children || [];</span><br><span class="line">    matchCity.children.push(&#123;</span><br><span class="line">      label: area.name,</span><br><span class="line">      value: area.code</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">cities.forEach(<span class="function"><span class="params">city</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="keyword">const</span> matchProvince = provinces.filter(</span><br><span class="line">    province =&gt; province.code === city.provinceCode</span><br><span class="line">  )[<span class="number">0</span>];</span><br><span class="line">  <span class="keyword">if</span> (matchProvince) &#123;</span><br><span class="line">    matchProvince.children = matchProvince.children || [];</span><br><span class="line">    matchProvince.children.push(&#123;</span><br><span class="line">      label: city.name,</span><br><span class="line">      value: city.code,</span><br><span class="line">      children: city.children</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> options = provinces.map(<span class="function"><span class="params">province</span> =&gt;</span> (&#123;</span><br><span class="line">  label: province.name,</span><br><span class="line">  value: province.code,</span><br><span class="line">  children: province.children</span><br><span class="line">&#125;));</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">CitySelect</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(props) &#123;</span><br><span class="line">    <span class="keyword">super</span>(props);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> &#123; value &#125; = props;</span><br><span class="line">    <span class="keyword">this</span>.state = &#123;</span><br><span class="line">      value,</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">  componentWillReceiveProps(nextProps) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="string">'value'</span> <span class="keyword">in</span> nextProps) &#123;</span><br><span class="line">      <span class="built_in">console</span>.log(nextProps.value);</span><br><span class="line">      <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">        value: nextProps.value,</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  handleChange = <span class="function">(<span class="params">value</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; onChange &#125; = <span class="keyword">this</span>.props;</span><br><span class="line">    <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">      value,</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">if</span> (onChange) &#123;</span><br><span class="line">      onChange(value);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; value &#125; = <span class="keyword">this</span>.state;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;Cascader</span><br><span class="line">        value=&#123;value&#125;</span><br><span class="line">        options=&#123;options&#125;</span><br><span class="line">        showSearch</span><br><span class="line">        placeholder=<span class="string">"请选择地址"</span></span><br><span class="line">        onChange=&#123;<span class="keyword">this</span>.handleChange&#125;</span><br><span class="line">      /&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="1、代码说明"><a href="#1、代码说明" class="headerlink" title="1、代码说明"></a>1、代码说明</h3><p>这段代码属于标准的「antd 自定义表单」，既可作为普通表单使用，也可配合<code>antd</code>中的<code>Form</code>组件使用。<br>可以看到有<code>constructor</code>、<code>componentWillReceiveProps</code>和<code>handleChange</code>，这三个方法都有各自的作用。<br>首先，<code>handleChange</code>方法响应表单值的改变，并调用<code>props.onChange</code>方法，实现了向父组件通信，将数据传递给父组件。</p>
+<p><code>constructor</code>是为了配合<code>initialValue</code>，当配置了<code>initialValue</code>时，在<code>constructor</code>中可以从<code>props.value</code>上获取到对应值。</p>
+<p>而<code>componentWillReceiveProps</code>是为了配合<code>resetFields</code>以及<code>setFields</code>方法，能够从父组件直接控制表单的值，以及<code>initialValue</code>如果会发生改变，比如从接口中获取值，也是通过这里实现赋值的。</p>
+<h3 id="2、通过组合得到的自定义表单组件"><a href="#2、通过组合得到的自定义表单组件" class="headerlink" title="2、通过组合得到的自定义表单组件"></a>2、通过组合得到的自定义表单组件</h3><p>性别选择和邮箱输入组件同理，所以我们的<code>BasicInfoForm</code>代码应该如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @file 基本信息表单</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">  Form,</span><br><span class="line">  Input,</span><br><span class="line">  DatePicker,</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">'antd'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> SexSelect <span class="keyword">from</span> <span class="string">'../SexSelect'</span>;</span><br><span class="line"><span class="keyword">import</span> CitySelect <span class="keyword">from</span> <span class="string">'../CitySelect'</span>;</span><br><span class="line"><span class="keyword">import</span> EmailInput <span class="keyword">from</span> <span class="string">'../EmailInput'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">BasicInfoForm</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">PureComponent</span> </span>&#123;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;div className=<span class="string">"basic__content"</span>&gt;</span><br><span class="line">        &lt;Form.Item label=<span class="string">"姓名"</span>&gt;</span><br><span class="line">          &lt;Input placeholder=<span class="string">"请输入姓名"</span> /&gt;</span><br><span class="line">        &lt;<span class="regexp">/Form.Item&gt;</span></span><br><span class="line"><span class="regexp">        &lt;Form.Item label="出生年月"&gt;</span></span><br><span class="line"><span class="regexp">          &lt;DatePicker placeholder="请选择出生年月" /</span>&gt;</span><br><span class="line">        &lt;<span class="regexp">/Form.Item&gt;</span></span><br><span class="line"><span class="regexp">        &lt;Form.Item label="性别"&gt;</span></span><br><span class="line"><span class="regexp">          &lt;SexSelect style=&#123;&#123; width: '100%' &#125;&#125; placeholder="请选择性别" /</span>&gt;</span><br><span class="line">        &lt;<span class="regexp">/Form.Item&gt;</span></span><br><span class="line"><span class="regexp">        &lt;Form.Item label="所在城市"&gt;</span></span><br><span class="line"><span class="regexp">          &lt;CitySelect /</span>&gt;</span><br><span class="line">        &lt;<span class="regexp">/Form.Item&gt;</span></span><br><span class="line"><span class="regexp">        &lt;Form.Item label="邮箱"&gt;</span></span><br><span class="line"><span class="regexp">          &lt;EmailInput placeholder="请输入邮箱" /</span>&gt;</span><br><span class="line">        &lt;<span class="regexp">/Form.Item&gt;</span></span><br><span class="line"><span class="regexp">      &lt;/</span>div&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然实现了 UI，但这并不是一个「表单组件」，如果希望该组件是一个「自定义表单组件」，应该和上面的省市选择一样，实现<code>constructor</code>、<code>componentWillReceiveProps</code>和<code>handleChange</code>方法，前两个好说，问题就在于<code>handleChange</code>方法，由于存在 5 个表单，所以需要每个表单发生改变时，都调用<code>props.onChange</code>，那就需要有</p>
+<ul>
+<li>handleNameChange</li>
+<li>handleBirthdayChange</li>
+<li>handleSexChange</li>
+<li>handleCityChange</li>
+<li>handleEmailChange</li>
+</ul>
+<h3 id="3、onValueChange-简化获取多个表单值"><a href="#3、onValueChange-简化获取多个表单值" class="headerlink" title="3、onValueChange 简化获取多个表单值"></a>3、onValueChange 简化获取多个表单值</h3><p>幸好借助<code>antd</code>的<code>Form</code>组件可以简化这部分代码，</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">@Form.create(&#123;</span><br><span class="line">  <span class="comment">// 当表单值发生改变时都会调用该方法</span></span><br><span class="line">  onValuesChange(props, changed, values) &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; onChange &#125; = props;</span><br><span class="line">    <span class="keyword">if</span> (onChange) &#123;</span><br><span class="line">      onChange(&#123;</span><br><span class="line">        ...values,</span><br><span class="line">        ...changed,</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">BasicInfoForm</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">PureComponent</span> </span>&#123;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; getFieldDecorator &#125; = <span class="keyword">this</span>.props.form;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;div className=<span class="string">"basic__content"</span>&gt;</span><br><span class="line">        &lt;Form.Item label=<span class="string">"姓名"</span>&gt;</span><br><span class="line">          &#123;getFieldDecorator(<span class="string">'name'</span>)(<span class="xml"><span class="tag">&lt;<span class="name">Input</span> <span class="attr">placeholder</span>=<span class="string">"请输入姓名"</span> /&gt;</span>)&#125;</span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">Form.Item</span>&gt;</span></span></span><br><span class="line">        &lt;Form.Item label="出生年月"&gt;</span><br><span class="line">          &#123;getFieldDecorator('birthday')(</span><br><span class="line">            &lt;DatePicker placeholder="请选择出生年月" /&gt;</span><br><span class="line">          )&#125;</span><br><span class="line">        &lt;/Form.Item&gt;</span><br><span class="line">        &lt;Form.Item label="性别"&gt;</span><br><span class="line">          &#123;getFieldDecorator('sex')(</span><br><span class="line">            &lt;SexSelect style=&#123;&#123; width: '100%' &#125;&#125; placeholder="请选择性别" /&gt;</span><br><span class="line">          )&#125;</span><br><span class="line">        &lt;/Form.Item&gt;</span><br><span class="line">        &lt;Form.Item label="所在城市"&gt;</span><br><span class="line">          &#123;getFieldDecorator('city')(</span><br><span class="line">            &lt;CitySelect /&gt;</span><br><span class="line">          )&#125;</span><br><span class="line">        &lt;/Form.Item&gt;</span><br><span class="line">        &lt;Form.Item label="邮箱"&gt;</span><br><span class="line">          &#123;getFieldDecorator('email')(</span><br><span class="line">            &lt;EmailInput placeholder="请输入邮箱" /&gt;</span><br><span class="line">          )&#125;</span><br><span class="line">        &lt;/Form.Item&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>将组件替换掉我们页面组件中「基本信息」相关的代码，这是线上示例「 <a href="https://codesandbox.io/s/m9o5lznjlp" target="_blank" rel="noopener">封装基本信息表单</a>」。</p>
+<p>这里是我们实际输入后能够获取到的数据</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"basic"</span>: &#123;</span><br><span class="line">    <span class="string">"name"</span>: <span class="string">"ltaoo"</span>,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"2018-10-01T03:33:44.541Z"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">"city"</span>: [</span><br><span class="line">      <span class="string">"33"</span>,</span><br><span class="line">      <span class="string">"3301"</span>,</span><br><span class="line">      <span class="string">"330105"</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">"email"</span>: <span class="string">"litaowork@aliyun.com"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">"work"</span>: [</span><br><span class="line">    <span class="string">"深圳联友科技"</span>,</span><br><span class="line">    <span class="string">"杭州群核科技"</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="string">"projects"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"title"</span>: <span class="string">"BD System"</span>,</span><br><span class="line">      <span class="string">"type"</span>: <span class="number">1</span>,</span><br><span class="line">      <span class="string">"company"</span>: <span class="string">"杭州群核科技"</span></span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4、组合组件后带来的问题"><a href="#4、组合组件后带来的问题" class="headerlink" title="4、组合组件后带来的问题"></a>4、组合组件后带来的问题</h3><p>OK，能满足我们<strong>获取值</strong>的需求，但存在两个问题</p>
+<ul>
+<li>1、丢失了校验规则</li>
+<li>2、获取到的是<code>basic</code>字段，我们需要的是<code>basic</code>字段的<strong>值</strong>。</li>
+</ul>
+<h2 id="二、恢复丢失的校验规则"><a href="#二、恢复丢失的校验规则" class="headerlink" title="二、恢复丢失的校验规则"></a>二、恢复丢失的校验规则</h2><p>如果有实际试用过该代码的人可能会有疑问，输入邮箱时会对输入内容进行校验啊，为什么说「丢失了校验规则」呢？<br>实际上<strong>即使邮箱格式不正确并且有错误提示</strong>，但点击「保存」后还是可以<strong>获取表单值</strong>，而开始的例子是不能的，并且会将页面滚动到邮箱输入处。</p>
+<p>最直观的感受是什么都不填，直接点击「保存」按钮，<a href="https://codesandbox.io/s/xl8v6olw0o" target="_blank" rel="noopener">最开始的实现</a> 是可以正确校验的，而 <a href="https://codesandbox.io/s/m9o5lznjlp" target="_blank" rel="noopener">拆分为自定义表单组件</a> 后，点击按钮会通过校验，直接打印出当前的表单值。</p>
+<h3 id="1、自定义校验规则"><a href="#1、自定义校验规则" class="headerlink" title="1、自定义校验规则"></a>1、自定义校验规则</h3><p>参考<code>antd</code>中的自定义表单，如果需要对自定义表单进行校验，需要通过自定义<code>validator</code>实现，代码如下：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">'react'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; Icon, Form, Card, Button, Select, Input &#125; <span class="keyword">from</span> <span class="string">'antd'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> BasicInfoForm <span class="keyword">from</span> <span class="string">'../components/BasicInfoForm'</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">checkBasicInfo</span>(<span class="params">rule, values, callback</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(rule, values);</span><br><span class="line">  <span class="keyword">if</span> (!values) &#123;</span><br><span class="line">    callback(<span class="string">'请输入基本信息'</span>);</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">const</span> emailRegexp = <span class="regexp">/[\w!#$%&amp;'*+/=?^_`&#123;|&#125;~-]+(?:\.[\w!#$%&amp;'*+/=?^_`&#123;|&#125;~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/</span>;</span><br><span class="line">  <span class="keyword">if</span> (emailRegexp.exec(values.email)) &#123;</span><br><span class="line">    callback();</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  callback(<span class="string">'请检查邮箱格式'</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Form.create()</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  save = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; validateFieldsAndScroll &#125; = <span class="keyword">this</span>.props.form;</span><br><span class="line">    validateFieldsAndScroll(<span class="function">(<span class="params">err, values</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">const</span> body = <span class="built_in">JSON</span>.stringify(values, <span class="literal">null</span>, <span class="number">2</span>);</span><br><span class="line">      <span class="built_in">console</span>.log(body);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;;</span><br><span class="line">  </span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; getFieldDecorator, getFieldValue &#125; = <span class="keyword">this</span>.props.form;</span><br><span class="line">    <span class="comment">// 省略部分代码</span></span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;div className=<span class="string">"resume"</span>&gt;</span><br><span class="line">        &lt;Card</span><br><span class="line">          title=<span class="string">"基本信息"</span></span><br><span class="line">          style=&#123;&#123; <span class="attr">marginBottom</span>: <span class="number">10</span> &#125;&#125;</span><br><span class="line">          className=<span class="string">"resume__basic"</span></span><br><span class="line">        &gt;</span><br><span class="line">          &lt;div className=<span class="string">"basic__content"</span>&gt;</span><br><span class="line">            &#123;getFieldDecorator(<span class="string">'basic'</span>, &#123;</span><br><span class="line">              rules: [</span><br><span class="line">                &#123;</span><br><span class="line">                  validator: checkBasicInfo</span><br><span class="line">                &#125;</span><br><span class="line">              ]</span><br><span class="line">            &#125;)(<span class="xml"><span class="tag">&lt;<span class="name">BasicInfoForm</span> /&gt;</span>)&#125;</span></span><br><span class="line"><span class="xml">          <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">        &lt;<span class="regexp">/Card&gt;</span></span><br><span class="line"><span class="regexp">        &#123;/</span>* 省略部分代码 *<span class="regexp">/&#125;</span></span><br><span class="line"><span class="regexp">        &lt;Button type="primary" onClick=&#123;this.save&#125;&gt;</span></span><br><span class="line"><span class="regexp">          保存</span></span><br><span class="line"><span class="regexp">        &lt;/</span>Button&gt;</span><br><span class="line">      &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">    );</span></span><br><span class="line"><span class="regexp">  &#125;</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>直接点击「保存」按钮后，发现虽然没有直接打印表单值，但页面上也没有显示错误信息，只有控制台显示<code>async-validator: [&quot;请输入基本信息&quot;]</code>，这说明校验规则的确生效了。<br>这是因为<strong>错误提示是由<code>Form.Item</code>显示的</strong>，必须将<code>BasicInfoForm</code>放在<code>Form.Item</code>组件内才会显示我们在<code>callback</code>传入的错误信息。</p>
+<p><img src="http://oyy3cbpm3.bkt.clouddn.com/15379691339723.jpg" alt="Form.Item 组件"></p>
+<p>但是给<code>BasicInfoForm</code>包裹<code>Form.Item</code>后，虽然错误信息显示，但只会出现在最下方，无法实现在实际错误的表单下方显示，并且明显校验规则还需要我们再实现一次。<a href="https://codesandbox.io/s/88vvl45r92" target="_blank" rel="noopener">线上实例</a></p>
+<blockquote>
+<p>这也是一个<code>Form.Item</code>组件内无法同时存在两个及以上<code>getFieldDecorator</code>的原因。</p>
+</blockquote>
+<h3 id="2、更友好的错误展示"><a href="#2、更友好的错误展示" class="headerlink" title="2、更友好的错误展示"></a>2、更友好的错误展示</h3><p>这两个缺点都是非常不友好的，如果希望使用<code>Form.Item</code>提供的错误展示机制，正确地在表单下方展示，要怎么做呢？</p>
+<p>想到最开始的实现代码，虽然不怎么优雅，但校验却实实在在有用，能否直接复用呢？所以问题就是，为什么这样封装一层，原先的校验规则就失效了呢？</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">@Form.create(&#123;</span><br><span class="line">    <span class="comment">// 省略...</span></span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">BasicInfoForm</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">PureComponent</span> </span>&#123;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; getFieldDecorator &#125; = <span class="keyword">this</span>.props.form;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;div className=<span class="string">"basic__content"</span>&gt;</span><br><span class="line">        &lt;Form.Item label=<span class="string">"姓名"</span>&gt;</span><br><span class="line">          &#123;getFieldDecorator(<span class="string">'name'</span>, &#123;</span><br><span class="line">            rules: [</span><br><span class="line">              &#123;</span><br><span class="line">                required: <span class="literal">true</span>,</span><br><span class="line">                message: <span class="string">'请输入姓名'</span>,</span><br><span class="line">              &#125;,</span><br><span class="line">            ],</span><br><span class="line">          &#125;)(<span class="xml"><span class="tag">&lt;<span class="name">Input</span> <span class="attr">placeholder</span>=<span class="string">"请输入姓名"</span> /&gt;</span>)&#125;</span></span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">Form.Item</span>&gt;</span></span></span><br><span class="line">        &lt;Form.Item label="出生年月"&gt;</span><br><span class="line">          &#123;getFieldDecorator('birthday', &#123;</span><br><span class="line">            rules: [</span><br><span class="line">              &#123;</span><br><span class="line">                required: true,</span><br><span class="line">                message: '请选择出生年月',</span><br><span class="line">              &#125;,</span><br><span class="line">            ],</span><br><span class="line">          &#125;)(</span><br><span class="line">            &lt;DatePicker placeholder="请选择出生年月" /&gt;</span><br><span class="line">          )&#125;</span><br><span class="line">        &lt;/Form.Item&gt;</span><br><span class="line">        &lt;Form.Item label="性别"&gt;</span><br><span class="line">          &#123;getFieldDecorator('sex', &#123;</span><br><span class="line">            rules: [</span><br><span class="line">              &#123;</span><br><span class="line">                required: true,</span><br><span class="line">                message: '请选择性别',</span><br><span class="line">              &#125;,</span><br><span class="line">            ],</span><br><span class="line">          &#125;)(</span><br><span class="line">            &lt;SexSelect style=&#123;&#123; width: '100%' &#125;&#125; placeholder="请选择性别" /&gt;</span><br><span class="line">          )&#125;</span><br><span class="line">        &lt;/Form.Item&gt;</span><br><span class="line">        &lt;Form.Item label="所在城市"&gt;</span><br><span class="line">          &#123;getFieldDecorator('city', &#123;</span><br><span class="line">            rules: [</span><br><span class="line">              &#123;</span><br><span class="line">                required: true,</span><br><span class="line">                message: '请选择所在城市',</span><br><span class="line">              &#125;,</span><br><span class="line">            ],</span><br><span class="line">          &#125;)(</span><br><span class="line">            &lt;CitySelect /&gt;</span><br><span class="line">          )&#125;</span><br><span class="line">        &lt;/Form.Item&gt;</span><br><span class="line">        &lt;Form.Item label="邮箱"&gt;</span><br><span class="line">          &#123;getFieldDecorator('email', &#123;</span><br><span class="line">            rules: [</span><br><span class="line">              &#123;</span><br><span class="line">                required: true,</span><br><span class="line">                message: '请输入邮箱',</span><br><span class="line">              &#125;,</span><br><span class="line">              &#123;</span><br><span class="line">                type: 'email',</span><br><span class="line">                message: '邮箱格式不正确',</span><br><span class="line">              &#125;,</span><br><span class="line">            ],</span><br><span class="line">          &#125;)(</span><br><span class="line">            &lt;EmailInput placeholder="请输入邮箱" /&gt;</span><br><span class="line">          )&#125;</span><br><span class="line">        &lt;/Form.Item&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3、props-form-存储表单值"><a href="#3、props-form-存储表单值" class="headerlink" title="3、props.form 存储表单值"></a>3、props.form 存储表单值</h3><p>这是因为<code>props.form</code>的问题。<br><code>props.form</code>简单来说就是一个<code>store</code>，存储着所有经过<code>props.form.getFieldDecorator</code>包装后的表单组件的值与校验规则。通过调用<code>props.form.validateFieldsAndScroll</code>就可以对值进行校验了。</p>
+<p>而我们的代码中，实际上存在多个<code>props.form</code>，<code>App</code>组件有一个，<code>BasicInfoForm</code>组件也有一个，各自为政，互不干扰。</p>
+<p>所有如果想校验<code>BasicInfoForm</code>组件的表单，就必须用该组件内的<code>form.validateFieldsAndScroll</code>。</p>
+<p><img src="http://oyy3cbpm3.bkt.clouddn.com/15379701681393.jpg" alt="props.form"></p>
+<p>第一反应是使用<code>ref</code>，但由于<code>BasicInfoForm</code>是被<code>getFieldDecorator</code>装饰后的组件，<code>props</code>上并没有我们期望的<code>form</code>属性。这时应该使用官方提供的<code>wrappedComponentRef</code>替代。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">this.basicInfoForm.props.form.validateFieldsAndScroll((err, values) =&gt; &#123;</span><br><span class="line">    if (err) &#123;</span><br><span class="line">        return;</span><br><span class="line">    &#125;</span><br><span class="line">    // ...</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>又因为还有<code>workExpForm</code>和<code>projectExpForm</code>，所以就要再获取这两个表单的值，再组合起来。</p>
+<h3 id="4、自定义表单组件带来更多问题？"><a href="#4、自定义表单组件带来更多问题？" class="headerlink" title="4、自定义表单组件带来更多问题？"></a>4、自定义表单组件带来更多问题？</h3><p>看到这，就会有疑问了，拆分后带来了一大堆的问题。难道不应该对组件进行拆分吗？<br>如果只将一些简单的组件作为自定义表单组件，比如<code>CitySelect</code>，其他的保持原样是不是更简单些？。<br>这也不失为一种方法，所以是否应该拆分，就是仁者见仁智者见智了。</p>
+<p>但是就上面的问题而言，有一种解决办法，就是<strong>只有一个<code>props.form</code></strong>，即只在<code>App</code>组件使用<code>Form.create</code>包装，其他组件都通过<code>props</code>传递<code>form</code>。所以代码会变成这样：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">render() &#123;</span><br><span class="line">  <span class="keyword">const</span> &#123; getFieldDecorator &#125; = <span class="keyword">this</span>.props.form;</span><br><span class="line">  <span class="keyword">return</span> (</span><br><span class="line">    &lt;div className=<span class="string">"resume"</span>&gt;</span><br><span class="line">      &lt;ResumeForm form=&#123;<span class="keyword">this</span>.props.form&#125; /&gt;</span><br><span class="line">      &lt;Button type=<span class="string">"primary"</span> onClick=&#123;<span class="keyword">this</span>.save&#125;&gt;保存&lt;<span class="regexp">/Button&gt;</span></span><br><span class="line"><span class="regexp">      &lt;Button onClick=&#123;this.reset&#125;&gt;重置&lt;/</span>Button&gt;</span><br><span class="line">    &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">  );</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>这样做，就仅仅是「将代码拆分」，而不是「封装自定义表单组件」了。但这种做法带来的好处也是明显的，上面提到的第二个问题也同时解决了。</p>
+<h2 id="三、多余的字段"><a href="#三、多余的字段" class="headerlink" title="三、多余的字段"></a>三、多余的字段</h2><p>再来详细谈谈第二个问题。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"basic"</span>: &#123;</span><br><span class="line">    <span class="string">"name"</span>: <span class="string">"ltaoo"</span>,</span><br><span class="line">    <span class="string">"birthday"</span>: <span class="string">"2018-10-01T03:33:44.541Z"</span>,</span><br><span class="line">    <span class="string">"sex"</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">"city"</span>: [</span><br><span class="line">      <span class="string">"33"</span>,</span><br><span class="line">      <span class="string">"3301"</span>,</span><br><span class="line">      <span class="string">"330105"</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="string">"email"</span>: <span class="string">"litaowork@aliyun.com"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">"work"</span>: [</span><br><span class="line">    <span class="string">"深圳联友科技"</span>,</span><br><span class="line">    <span class="string">"杭州群核科技"</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="string">"projects"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"title"</span>: <span class="string">"BD System"</span>,</span><br><span class="line">      <span class="string">"type"</span>: <span class="number">1</span>,</span><br><span class="line">      <span class="string">"company"</span>: <span class="string">"杭州群核科技"</span></span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>封装组件后，获取到的是这样的数据，而我们实际需要的是</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"name"</span>: <span class="string">"ltaoo"</span>,</span><br><span class="line">  <span class="string">"birthday"</span>: <span class="string">"2018-10-01T03:33:44.541Z"</span>,</span><br><span class="line">  <span class="string">"sex"</span>: <span class="number">0</span>,</span><br><span class="line">  <span class="string">"city"</span>: [</span><br><span class="line">    <span class="string">"33"</span>,</span><br><span class="line">    <span class="string">"3301"</span>,</span><br><span class="line">    <span class="string">"330105"</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="string">"email"</span>: <span class="string">"litaowork@aliyun.com"</span></span><br><span class="line">  <span class="string">"work"</span>: [</span><br><span class="line">    <span class="string">"深圳联友科技"</span>,</span><br><span class="line">    <span class="string">"杭州群核科技"</span></span><br><span class="line">  ],</span><br><span class="line">  <span class="string">"projects"</span>: [</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="string">"title"</span>: <span class="string">"BD System"</span>,</span><br><span class="line">      <span class="string">"type"</span>: <span class="number">1</span>,</span><br><span class="line">      <span class="string">"company"</span>: <span class="string">"杭州群核科技"</span></span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后提交前处理一下就好了嘛，就这样：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">save = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="keyword">this</span>.basicInfoForm.props);</span><br><span class="line">  <span class="keyword">this</span>.basicInfoForm.props.form.validateFieldsAndScroll(<span class="function">(<span class="params">err, values</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (err) &#123;</span><br><span class="line">      <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">const</span> body = <span class="built_in">JSON</span>.stringify(values, <span class="literal">null</span>, <span class="number">2</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(&#123;</span><br><span class="line">      ...body.basic,</span><br><span class="line">      work: body.work,</span><br><span class="line">      projects: body.projects</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>虽然解决了这个问题，但我们需要<strong>在所有用到<code>ResumeForm</code>组件的地方处理数据</strong>，这很明显不够优雅。能否做到获取到的<code>values</code>就是我们期望的<strong>最终数据</strong>呢？</p>
+<p>从我们的使用经验来说，获取到的数据是和<code>getFieldDecorator</code>强相关的，<code>key</code>是参数，<code>value</code>是表单的值。所以应该从<code>getFieldDecorator</code>入手。</p>
+<h3 id="1、表单值转换"><a href="#1、表单值转换" class="headerlink" title="1、表单值转换"></a>1、表单值转换</h3><p>还有一个类似的问题，当组件使用到「日期输入」时，往往需要将表单的值转换为时间戳，这也是重复工作，能否表单暴露的值就是时间戳呢？</p>
+<p>如果上面的<code>city</code>数据，我们只需要最后一位，这个问题似乎是一样的。但这个问题可以使用<code>normalize</code>解决，该方法是用来「转换默认的 value」给控件。</p>
+<p>就是可以将表单的值做处理，但要求处理后的值也是控件能够接受的。默认我们选择城市后得到<code>[&quot;33&quot;, &quot;3301&quot;, &quot;330105&quot;]</code>，可以将其转换为<code>[&quot;330105]</code>，但不能变成<code>&quot;330105&quot;</code>，所以无法处理<code>moment</code>变成时间戳。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;Form.Item label=<span class="string">"所在城市"</span>&gt;</span><br><span class="line">  &#123;getFieldDecorator(<span class="string">'city'</span>, &#123;</span><br><span class="line">    rules: [</span><br><span class="line">      &#123;</span><br><span class="line">        required: <span class="literal">true</span>,</span><br><span class="line">        message: <span class="string">'请选择所在城市'</span></span><br><span class="line">      &#125;</span><br><span class="line">    ],</span><br><span class="line">    normalize: <span class="function"><span class="keyword">function</span>(<span class="params">value</span>) </span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(value);</span><br><span class="line">      <span class="keyword">return</span> value ? [value[value.length - <span class="number">1</span>]] : value;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)(<span class="xml"><span class="tag">&lt;<span class="name">CitySelect</span> /&gt;</span>)&#125;</span></span><br><span class="line"><span class="xml"><span class="tag">&lt;/<span class="name">Form.Item</span>&gt;</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="四、默认值"><a href="#四、默认值" class="headerlink" title="四、默认值"></a>四、默认值</h2><p>默认值也是表单组件一个非常重要的功能，无论是初始化默认值，减少用户填写成本；还是进入编辑状态时赋值，都要用到该功能。</p>
+<h3 id="1、默认值通过接口得到不会生效"><a href="#1、默认值通过接口得到不会生效" class="headerlink" title="1、默认值通过接口得到不会生效"></a>1、默认值通过接口得到不会生效</h3><p><code>antd</code>的表单组件，都提供了<code>defaultValue</code>属性，用以配置默认值：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">App</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    state = &#123; <span class="attr">name</span>: <span class="literal">undefined</span> &#125;</span><br><span class="line">    handleChange = <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">            name: e.target.value,</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">const</span> &#123; value &#125; = <span class="keyword">this</span>.state;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;Input</span><br><span class="line">                defaultValue=<span class="string">"wuya"</span></span><br><span class="line">                value=&#123;value&#125;</span><br><span class="line">                onChange=&#123;<span class="keyword">this</span>.handleChange&#125;</span><br><span class="line">            /&gt;</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>渲染后可以看到内表单有<code>wuya</code>默认值。但如果默认值是从接口请求得到的，就无法达到我们的预期效果。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">App</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    state = &#123; </span><br><span class="line">        defaultValue: </span><br><span class="line">        name: <span class="literal">undefined</span>,</span><br><span class="line">    &#125;</span><br><span class="line">    componentDidMount() &#123;</span><br><span class="line">        <span class="comment">// 模拟请求接口</span></span><br><span class="line">        setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">            <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">                defaultValue: <span class="string">'wuya'</span>,</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;, <span class="number">2000</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    handleChange = <span class="function">(<span class="params">e</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">            name: e.target.value,</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">const</span> &#123; defaultValue, value &#125; = <span class="keyword">this</span>.state;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;Input</span><br><span class="line">                defaultValue=&#123;defaultVlaue&#125;</span><br><span class="line">                value=&#123;value&#125;</span><br><span class="line">                onChange=&#123;<span class="keyword">this</span>.handleChange&#125;</span><br><span class="line">            /&gt;</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而如果改成<code>initialValue</code>就能够生效。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">@Form.create()</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  state = &#123;</span><br><span class="line">    defaultValue: <span class="literal">undefined</span></span><br><span class="line">  &#125;;</span><br><span class="line">  componentDidMount() &#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">        defaultValue: <span class="string">'ltaoo'</span></span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  save = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; validateFieldsAndScroll &#125; = <span class="keyword">this</span>.props.form;</span><br><span class="line">    validateFieldsAndScroll(<span class="function">(<span class="params">err, values</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">const</span> body = <span class="built_in">JSON</span>.stringify(values, <span class="literal">null</span>, <span class="number">2</span>);</span><br><span class="line">      <span class="built_in">console</span>.log(body);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; getFieldDecorator, getFieldValue &#125; = <span class="keyword">this</span>.props.form;</span><br><span class="line">    <span class="keyword">const</span> &#123; defaultValue &#125; = <span class="keyword">this</span>.state;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;div className=<span class="string">"resume"</span>&gt;</span><br><span class="line">        &#123;getFieldDecorator(<span class="string">'name'</span>, &#123;</span><br><span class="line">          initialValue: defaultValue</span><br><span class="line">        &#125;)(<span class="xml"><span class="tag">&lt;<span class="name">Input</span> /&gt;</span>)&#125;</span></span><br><span class="line">        &lt;Button type="primary" onClick=&#123;this.save&#125;&gt;</span><br><span class="line">          保存</span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">Button</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2、自定义表单实现-initialValue-默认值"><a href="#2、自定义表单实现-initialValue-默认值" class="headerlink" title="2、自定义表单实现 initialValue 默认值"></a>2、自定义表单实现 initialValue 默认值</h3><p>前面我们自己实现了<code>CitySelect</code>，它支持默认值吗？</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">@Form.create()</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  state = &#123;</span><br><span class="line">    defaultValue: <span class="literal">undefined</span></span><br><span class="line">  &#125;;</span><br><span class="line">  componentDidMount() &#123;</span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">        defaultValue: [<span class="string">'33'</span>, <span class="string">'3301'</span>, <span class="string">'330105'</span>]</span><br><span class="line">      &#125;);</span><br><span class="line">    &#125;, <span class="number">3000</span>);</span><br><span class="line">  &#125;</span><br><span class="line">  save = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; validateFieldsAndScroll &#125; = <span class="keyword">this</span>.props.form;</span><br><span class="line">    validateFieldsAndScroll(<span class="function">(<span class="params">err, values</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">const</span> body = <span class="built_in">JSON</span>.stringify(values, <span class="literal">null</span>, <span class="number">2</span>);</span><br><span class="line">      <span class="built_in">console</span>.log(body);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; getFieldDecorator, getFieldValue &#125; = <span class="keyword">this</span>.props.form;</span><br><span class="line">    <span class="keyword">const</span> &#123; defaultValue &#125; = <span class="keyword">this</span>.state;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;div className=<span class="string">"resume"</span>&gt;</span><br><span class="line">        &#123;getFieldDecorator(<span class="string">'city'</span>, &#123;</span><br><span class="line">          initialValue: defaultValue</span><br><span class="line">        &#125;)(<span class="xml"><span class="tag">&lt;<span class="name">CitySelect</span> /&gt;</span>)&#125;</span></span><br><span class="line">        &lt;Button type="primary" onClick=&#123;this.save&#125;&gt;</span><br><span class="line">          保存</span><br><span class="line"><span class="xml">        <span class="tag">&lt;/<span class="name">Button</span>&gt;</span></span></span><br><span class="line"><span class="xml">      <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>幸运的是支持。因为当<code>initialValue</code>发生改变时，会调用<code>CitySelect</code>的<code>componentWillReceiveProps</code>，并将<code>initialValue</code>作为<code>props.value</code>传入，实现了默认值的效果。</p>
+<h3 id="3、支持-defaultValue-默认值"><a href="#3、支持-defaultValue-默认值" class="headerlink" title="3、支持 defaultValue 默认值"></a>3、支持 defaultValue 默认值</h3><p>那<code>CitySelect</code>支持<code>defaultValue</code>默认值吗？很明显不支持对吧，因为回头看我们的<code>CitySelect</code>组件代码，完全没有出现过<code>defaultValue</code>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">@Form.create()</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">App</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  state = &#123;</span><br><span class="line">    defaultValue: [<span class="string">'33'</span>, <span class="string">'3301'</span>, <span class="string">'330105'</span>]</span><br><span class="line">  &#125;;</span><br><span class="line">  save = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; validateFieldsAndScroll &#125; = <span class="keyword">this</span>.props.form;</span><br><span class="line">    validateFieldsAndScroll(<span class="function">(<span class="params">err, values</span>) =&gt;</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (err) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">const</span> body = <span class="built_in">JSON</span>.stringify(values, <span class="literal">null</span>, <span class="number">2</span>);</span><br><span class="line">      <span class="built_in">console</span>.log(body);</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; getFieldDecorator, getFieldValue &#125; = <span class="keyword">this</span>.props.form;</span><br><span class="line">    <span class="keyword">const</span> &#123; defaultValue &#125; = <span class="keyword">this</span>.state;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;div className=<span class="string">"resume"</span>&gt;</span><br><span class="line">        &lt;CitySelect defaultValue=&#123;defaultValue&#125; /&gt;</span><br><span class="line">        &lt;Button type=<span class="string">"primary"</span> onClick=&#123;<span class="keyword">this</span>.save&#125;&gt;</span><br><span class="line">          保存</span><br><span class="line">        &lt;<span class="regexp">/Button&gt;</span></span><br><span class="line"><span class="regexp">      &lt;/</span>div&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>即使是直接给初始值也不行，更别说通过接口获取默认值了。那么接下来在不影响原有功能的基础上，添加<code>defaultValue</code>的支持。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CitySelect.js</span></span><br><span class="line">  <span class="keyword">constructor</span>(props) &#123;</span><br><span class="line">    <span class="keyword">super</span>(props);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> &#123; defaultValue, value = defaultValue &#125; = props;</span><br><span class="line">    <span class="keyword">this</span>.state = &#123;</span><br><span class="line">      value</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/react/" rel="tag"># react</a>
+          
+            <a href="/blog/tags/antd/" rel="tag"># antd</a>
+          
+            <a href="/blog/tags/form/" rel="tag"># form</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2018/10/22/python 按顺序合并 ts 文件/" rel="next" title="python 按顺序合并 ts 文件">
+                <i class="fa fa-chevron-left"></i> python 按顺序合并 ts 文件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/07/11/babel-preset-es2015/" rel="prev" title="babel-preset-es2015 详解">
+                babel-preset-es2015 详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、自定义表单标准代码分析"><span class="nav-number">1.</span> <span class="nav-text">一、自定义表单标准代码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、代码说明"><span class="nav-number">1.1.</span> <span class="nav-text">1、代码说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、通过组合得到的自定义表单组件"><span class="nav-number">1.2.</span> <span class="nav-text">2、通过组合得到的自定义表单组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、onValueChange-简化获取多个表单值"><span class="nav-number">1.3.</span> <span class="nav-text">3、onValueChange 简化获取多个表单值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、组合组件后带来的问题"><span class="nav-number">1.4.</span> <span class="nav-text">4、组合组件后带来的问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、恢复丢失的校验规则"><span class="nav-number">2.</span> <span class="nav-text">二、恢复丢失的校验规则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、自定义校验规则"><span class="nav-number">2.1.</span> <span class="nav-text">1、自定义校验规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、更友好的错误展示"><span class="nav-number">2.2.</span> <span class="nav-text">2、更友好的错误展示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、props-form-存储表单值"><span class="nav-number">2.3.</span> <span class="nav-text">3、props.form 存储表单值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4、自定义表单组件带来更多问题？"><span class="nav-number">2.4.</span> <span class="nav-text">4、自定义表单组件带来更多问题？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、多余的字段"><span class="nav-number">3.</span> <span class="nav-text">三、多余的字段</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、表单值转换"><span class="nav-number">3.1.</span> <span class="nav-text">1、表单值转换</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、默认值"><span class="nav-number">4.</span> <span class="nav-text">四、默认值</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、默认值通过接口得到不会生效"><span class="nav-number">4.1.</span> <span class="nav-text">1、默认值通过接口得到不会生效</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、自定义表单实现-initialValue-默认值"><span class="nav-number">4.2.</span> <span class="nav-text">2、自定义表单实现 initialValue 默认值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、支持-defaultValue-默认值"><span class="nav-number">4.3.</span> <span class="nav-text">3、支持 defaultValue 默认值</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

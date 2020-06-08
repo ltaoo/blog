@@ -1,0 +1,809 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="babel," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="babel-preset-es2015 是能将 es2015 新特性转换成 es3 的  babel plugin 的集合，这些集合到底包含了哪些插件呢，这篇博客会一一列出。">
+<meta name="keywords" content="babel">
+<meta property="og:type" content="article">
+<meta property="og:title" content="babel-preset-es2015 详解">
+<meta property="og:url" content="http://yoursite.com/2019/07/11/babel-preset-es2015/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="babel-preset-es2015 是能将 es2015 新特性转换成 es3 的  babel plugin 的集合，这些集合到底包含了哪些插件呢，这篇博客会一一列出。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-02-08T13:00:38.532Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="babel-preset-es2015 详解">
+<meta name="twitter:description" content="babel-preset-es2015 是能将 es2015 新特性转换成 es3 的  babel plugin 的集合，这些集合到底包含了哪些插件呢，这篇博客会一一列出。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2019/07/11/babel-preset-es2015/"/>
+
+
+
+
+
+  <title> babel-preset-es2015 详解 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2019/07/11/babel-preset-es2015/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                babel-preset-es2015 详解
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2019-07-11T08:00:00+08:00">
+              2019-07-11
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2020-02-08T21:00:38+08:00">
+              2020-02-08
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><code>babel-preset-es2015</code> 是能将 <code>es2015</code> 新特性转换成 <code>es3</code> 的  <code>babel plugin</code> 的集合，这些集合到底包含了哪些插件呢，这篇博客会一一列出。</p>
+<a id="more"></a>
+<p>通过源码，可以直接看到引入了哪些插件，共计 24 个</p>
+<ol>
+<li>babel-plugin-transform-es2015-template-literals</li>
+<li>babel-plugin-transform-es2015-literals</li>
+<li>babel-plugin-transform-es2015-function-name</li>
+<li>babel-plugin-transform-es2015-arrow-functions</li>
+<li>babel-plugin-transform-es2015-block-scoped-functions</li>
+<li>babel-plugin-transform-es2015-classes</li>
+<li>babel-plugin-transform-es2015-object-super</li>
+<li>babel-plugin-transform-es2015-shorthand-properties</li>
+<li>babel-plugin-transform-es2015-duplicate-keys</li>
+<li>babel-plugin-transform-es2015-computed-properties</li>
+<li>babel-plugin-transform-es2015-for-of</li>
+<li>babel-plugin-transform-es2015-sticky-regex</li>
+<li>babel-plugin-transform-es2015-unicode-regex</li>
+<li>babel-plugin-check-es2015-constants</li>
+<li>babel-plugin-transform-es2015-spread</li>
+<li>babel-plugin-transform-es2015-parameters</li>
+<li>babel-plugin-transform-es2015-destructuring</li>
+<li>babel-plugin-transform-es2015-block-scoping</li>
+<li>babel-plugin-transform-es2015-typeof-symbol</li>
+<li>babel-plugin-transform-es2015-modules-commonjs</li>
+<li>babel-plugin-transform-es2015-modules-systemjs</li>
+<li>babel-plugin-transform-es2015-modules-amd</li>
+<li>babel-plugin-transform-es2015-modules-umd</li>
+<li>babel-plugin-transform-regenerator</li>
+</ol>
+<p>这是 <code>babel-preset-es2015@6.24.1</code> 版本所引入的源码，如果使用 <code>babel@7.x</code>，这些插件也还是存在，但名字去掉了 <code>es2015</code>。下面以我认为的重要程度一一了解</p>
+<h2 id="babel-plugin-transform-arrow-functions"><a href="#babel-plugin-transform-arrow-functions" class="headerlink" title="babel-plugin-transform-arrow-functions"></a>babel-plugin-transform-arrow-functions</h2><p>箭头函数转换，不是单纯将箭头语法做了转换，还会处理 <code>this</code> 值。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> foo = <span class="function"><span class="params">()</span> =&gt;</span> &#123;&#125;;</span><br><span class="line"><span class="keyword">const</span> bar = &#123;</span><br><span class="line">    name: <span class="string">'ltaoo'</span>,</span><br><span class="line">    say: <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="keyword">this</span>.name);</span><br><span class="line">    &#125;,</span><br><span class="line">    hello() &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'hello'</span> + <span class="keyword">this</span>.name);</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> _this = <span class="keyword">this</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> foo = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> bar = &#123;</span><br><span class="line">  name: <span class="string">'ltaoo'</span>,</span><br><span class="line">  say: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(_this.name);</span><br><span class="line">  &#125;,</span><br><span class="line"></span><br><span class="line">  hello() &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'hello'</span> + <span class="keyword">this</span>.name);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>箭头函数内部的 <code>this</code> 值会被替换，保证了 <code>this</code> 指向不改变。</p>
+<p>如果有人问，箭头函数使用 <code>.call</code> 会改变 <code>this</code> 指向吗？答案是不会。</p>
+<h2 id="babel-plugin-transform-block-scoping"><a href="#babel-plugin-transform-block-scoping" class="headerlink" title="babel-plugin-transform-block-scoping"></a>babel-plugin-transform-block-scoping</h2><p>使用 <code>{}</code> 可以形成块级作用域，块级作用域的目的是为了不影响外部作用域。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> foo = <span class="string">'foo'</span>;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">let</span> foo = <span class="string">'scope foo'</span>;</span><br><span class="line">    <span class="keyword">const</span> bar = <span class="string">'bar'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>块级作用域外部 <code>foo</code> 仍然是 <code>foo</code>，内部 <code>foo</code> 变成了 <code>_foo</code> ，保证了不发生覆盖。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = <span class="string">'foo'</span>;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">var</span> _foo = <span class="string">'scope foo'</span>;</span><br><span class="line">  <span class="keyword">var</span> bar = <span class="string">'bar'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译后的代码似乎有问题，<code>bar</code> 仍然可以在外部访问到。这是因为外部作用域没有使用到 <code>bar</code>，如果代码是</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> foo = <span class="string">'foo'</span>;</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">let</span> foo = <span class="string">'scope foo'</span>;</span><br><span class="line">    <span class="keyword">const</span> bar = <span class="string">'bar'</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(bar);</span><br></pre></td></tr></table></figure>
+<p>结果就和预期一致了，块级作用域内部的 <code>bar</code> 变量也被转换为 <code>_bar</code>。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> foo = <span class="string">'foo'</span>;</span><br><span class="line">&#123;</span><br><span class="line">  <span class="keyword">var</span> _foo = <span class="string">'scope foo'</span>;</span><br><span class="line">  <span class="keyword">var</span> _bar = <span class="string">'bar'</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">console</span>.log(bar);</span><br></pre></td></tr></table></figure>
+<p>并且该插件还用于 <code>const</code>、<code>let</code> 关键字转化为 <code>var</code>，但在 <code>babel@6.x</code> 时，需要配合 <code>check-es2015-constants</code> 插件才能正确处理 <code>const</code> 关键字重新声明。而在 <code>babel@7.x</code> 就不需要 <code>check-es2015-constants</code> 插件了。</p>
+<p>但两者还是有一些区别，<code>babel@6.x</code> 会<strong>在编译时报错</strong>，而 <code>babel@7.x</code> 并不会报错，而是编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_readOnlyError</span>(<span class="params">name</span>) </span>&#123; <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">Error</span>(<span class="string">"\""</span> + name + <span class="string">"\" is read-only"</span>); &#125;</span><br><span class="line"><span class="keyword">var</span> foo = <span class="string">'a'</span>;</span><br><span class="line">foo = (_readOnlyError(<span class="string">"foo"</span>), <span class="string">'b'</span>)</span><br></pre></td></tr></table></figure>
+<p>运行时才会报错。</p>
+<h2 id="babel-plugin-transform-spread"><a href="#babel-plugin-transform-spread" class="headerlink" title="babel-plugin-transform-spread"></a>babel-plugin-transform-spread</h2><p>展开运算符，但在 <code>es2015</code> 规范中，只能用于展开数组，对象的展开还处于草案阶段，需要使用 <code>babel-plugin-transform-object-rest-spread</code> 插件。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数组展开</span></span><br><span class="line"><span class="keyword">const</span> foo = [...[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]];</span><br><span class="line"><span class="comment">// 数组收集</span></span><br><span class="line"><span class="keyword">const</span> [a, ...rest] = foo;</span><br><span class="line"><span class="comment">// 对象展开</span></span><br><span class="line"><span class="keyword">const</span> bar = &#123;</span><br><span class="line">    ...&#123;</span><br><span class="line">        a: <span class="string">'a'</span>,</span><br><span class="line">        b: <span class="string">'b'</span>,</span><br><span class="line">    &#125;,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 对象收集</span></span><br><span class="line"><span class="keyword">const</span> &#123; b, ...restProps &#125; = bar;</span><br></pre></td></tr></table></figure>
+<p>这里有四个语法，但只有数组展开能被该插件处理，编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 数组展开</span></span><br><span class="line"><span class="keyword">const</span> foo = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>].concat();</span><br><span class="line"><span class="comment">// 数组收集</span></span><br><span class="line"><span class="keyword">const</span> [a, ...rest] = foo;</span><br><span class="line"><span class="comment">// 对象展开</span></span><br><span class="line"><span class="keyword">const</span> bar = &#123; ...&#123;</span><br><span class="line">    a: <span class="string">'a'</span>,</span><br><span class="line">    b: <span class="string">'b'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 对象收集</span></span><br><span class="line"><span class="keyword">const</span> &#123;</span><br><span class="line">  b,</span><br><span class="line">  ...restProps</span><br><span class="line">&#125; = bar;</span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-destructuring"><a href="#babel-plugin-transform-destructuring" class="headerlink" title="babel-plugin-transform-destructuring"></a>babel-plugin-transform-destructuring</h2><p>解构语法支持，日常开发中最常用的语法，同样是上面的例子，能够正确处理数组收集和对象收集。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_objectWithoutProperties</span>(<span class="params">source, excluded</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (source == <span class="literal">null</span>) <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">    <span class="keyword">var</span> target = _objectWithoutPropertiesLoose(source, excluded);</span><br><span class="line">    <span class="keyword">var</span> key, i;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">Object</span>.getOwnPropertySymbols) &#123;</span><br><span class="line">        <span class="keyword">var</span> sourceSymbolKeys = <span class="built_in">Object</span>.getOwnPropertySymbols(source);</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; sourceSymbolKeys.length; i++) &#123;</span><br><span class="line">            key = sourceSymbolKeys[i];</span><br><span class="line">            <span class="keyword">if</span> (excluded.indexOf(key) &gt;= <span class="number">0</span>) <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">if</span> (!<span class="built_in">Object</span>.prototype.propertyIsEnumerable.call(source, key)) <span class="keyword">continue</span>;</span><br><span class="line">            target[key] = source[key];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> target;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_objectWithoutPropertiesLoose</span>(<span class="params">source, excluded</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (source == <span class="literal">null</span>) <span class="keyword">return</span> &#123;&#125;;</span><br><span class="line">    <span class="keyword">var</span> target = &#123;&#125;;</span><br><span class="line">    <span class="keyword">var</span> sourceKeys = <span class="built_in">Object</span>.keys(source);</span><br><span class="line">    <span class="keyword">var</span> key, i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; sourceKeys.length; i++) &#123;</span><br><span class="line">        key = sourceKeys[i];</span><br><span class="line">        <span class="keyword">if</span> (excluded.indexOf(key) &gt;= <span class="number">0</span>) <span class="keyword">continue</span>;</span><br><span class="line">        target[key] = source[key];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> target;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 数组展开</span></span><br><span class="line"><span class="keyword">const</span> foo = [...[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]];</span><br><span class="line"><span class="comment">// 数组收集(解构)</span></span><br><span class="line"><span class="keyword">const</span> a = foo[<span class="number">0</span>], rest = foo.slice(<span class="number">1</span>);</span><br><span class="line"><span class="comment">// 对象展开</span></span><br><span class="line"><span class="keyword">const</span> bar = &#123; ...&#123;</span><br><span class="line">    a: <span class="string">'a'</span>,</span><br><span class="line">    b: <span class="string">'b'</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 对象收集(解构)</span></span><br><span class="line"><span class="keyword">const</span> b = bar.b, restProps = _objectWithoutProperties(bar, [<span class="string">"b"</span>]);</span><br></pre></td></tr></table></figure>
+<p>但是对象展开语法需要 <code>@babel/plugin-proposal-object-rest-spread</code> 支持。</p>
+<blockquote>
+<p>还有个 @babel/plugin-syntax-object-rest-spread 插件，名字看起来差不多，但该插件无法处理对象展开。查看源码发现 proposal-object-rest-spread 引用了 syntax-object-rest-spread。</p>
+</blockquote>
+<h2 id="babel-plugin-transform-computed-properties"><a href="#babel-plugin-transform-computed-properties" class="headerlink" title="babel-plugin-transform-computed-properties"></a>babel-plugin-transform-computed-properties</h2><p>对象属性支持变量</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> foo = <span class="string">'a'</span>;</span><br><span class="line"><span class="keyword">const</span> bar = &#123;</span><br><span class="line">    [foo]: <span class="string">'b'</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_defineProperty</span>(<span class="params">obj, key, value</span>) </span>&#123; <span class="keyword">if</span> (key <span class="keyword">in</span> obj) &#123; <span class="built_in">Object</span>.defineProperty(obj, key, &#123; <span class="attr">value</span>: value, <span class="attr">enumerable</span>: <span class="literal">true</span>, <span class="attr">configurable</span>: <span class="literal">true</span>, <span class="attr">writable</span>: <span class="literal">true</span> &#125;); &#125; <span class="keyword">else</span> &#123; obj[key] = value; &#125; <span class="keyword">return</span> obj; &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> foo = <span class="string">'a'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> bar = _defineProperty(&#123;&#125;, foo, <span class="string">'b'</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-shorthand-properties"><a href="#babel-plugin-transform-shorthand-properties" class="headerlink" title="babel-plugin-transform-shorthand-properties"></a>babel-plugin-transform-shorthand-properties</h2><p>对象属性简写</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> name = <span class="string">'Hello'</span>;</span><br><span class="line"><span class="keyword">const</span> obj = &#123;</span><br><span class="line">	name,</span><br><span class="line">	foo() &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="keyword">this</span>.name);</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> name = <span class="string">'Hello'</span>;</span><br><span class="line"><span class="keyword">const</span> obj = &#123;</span><br><span class="line">	name: name,</span><br><span class="line">	foo: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="keyword">this</span>.name);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-classes"><a href="#babel-plugin-transform-classes" class="headerlink" title="babel-plugin-transform-classes"></a>babel-plugin-transform-classes</h2><p>类语法，更简单的方式写继承</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cat</span> <span class="keyword">extends</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">	<span class="keyword">constructor</span>() &#123;</span><br><span class="line">        <span class="keyword">super</span>();</span><br><span class="line">		<span class="keyword">this</span>.name = <span class="string">'Hello World'</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_possibleConstructorReturn</span>(<span class="params">self, call</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (!self) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">ReferenceError</span>(<span class="string">"this hasn't been initialised - super() hasn't been called"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> call &amp;&amp; (<span class="keyword">typeof</span> call === <span class="string">"object"</span> || <span class="keyword">typeof</span> call === <span class="string">"function"</span>) ? call : self;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_inherits</span>(<span class="params">subClass, superClass</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (<span class="keyword">typeof</span> superClass !== <span class="string">"function"</span> &amp;&amp; superClass !== <span class="literal">null</span>) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">"Super expression must either be null or a function, not "</span> + <span class="keyword">typeof</span> superClass);</span><br><span class="line">	&#125;</span><br><span class="line">	subClass.prototype = <span class="built_in">Object</span>.create(superClass &amp;&amp; superClass.prototype, &#123;</span><br><span class="line">		<span class="keyword">constructor</span>: &#123;</span><br><span class="line">			value: subClass,</span><br><span class="line">			enumerable: <span class="literal">false</span>,</span><br><span class="line">			writable: <span class="literal">true</span>,</span><br><span class="line">			configurable: <span class="literal">true</span>,</span><br><span class="line">		&#125;,</span><br><span class="line">	&#125;); </span><br><span class="line">	<span class="keyword">if</span> (superClass) &#123;</span><br><span class="line">		<span class="built_in">Object</span>.setPrototypeOf ? <span class="built_in">Object</span>.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_classCallCheck</span>(<span class="params">instance, Constructor</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (!(instance <span class="keyword">instanceof</span> Constructor)) &#123;</span><br><span class="line">		<span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">"Cannot call a class as a function"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> Animal = <span class="function"><span class="keyword">function</span> <span class="title">Animal</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	_classCallCheck(<span class="keyword">this</span>, Animal);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> Cat = <span class="function"><span class="keyword">function</span> (<span class="params">_Animal</span>) </span>&#123;</span><br><span class="line">	_inherits(Cat, _Animal);</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">Cat</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">		_classCallCheck(<span class="keyword">this</span>, Cat);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">var</span> _this = _possibleConstructorReturn(<span class="keyword">this</span>, (Cat.__proto__ || <span class="built_in">Object</span>.getPrototypeOf(Cat)).call(<span class="keyword">this</span>));</span><br><span class="line"></span><br><span class="line">		_this.name = <span class="string">'Hello World'</span>;</span><br><span class="line">		<span class="keyword">return</span> _this;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> Cat;</span><br><span class="line">&#125;(Animal);</span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-parameters"><a href="#babel-plugin-transform-parameters" class="headerlink" title="babel-plugin-transform-parameters"></a>babel-plugin-transform-parameters</h2><p>函数参数支持默认值、收集运算符</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">a, b = <span class="string">'b'</span>, &#123; c &#125;, ...rest</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(a, b, c, rest);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">a</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> b = <span class="built_in">arguments</span>.length &gt; <span class="number">1</span> &amp;&amp; <span class="built_in">arguments</span>[<span class="number">1</span>] !== <span class="literal">undefined</span> ? <span class="built_in">arguments</span>[<span class="number">1</span>] : <span class="string">'b'</span>;</span><br><span class="line">  <span class="keyword">let</span> &#123; <span class="comment">// 这里还是解构语法</span></span><br><span class="line">    c</span><br><span class="line">  &#125; = <span class="built_in">arguments</span>.length &gt; <span class="number">2</span> ? <span class="built_in">arguments</span>[<span class="number">2</span>] : <span class="literal">undefined</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> _len = <span class="built_in">arguments</span>.length, rest = <span class="keyword">new</span> <span class="built_in">Array</span>(_len &gt; <span class="number">3</span> ? _len - <span class="number">3</span> : <span class="number">0</span>), _key = <span class="number">3</span>; _key &lt; _len; _key++) &#123;</span><br><span class="line">    rest[_key - <span class="number">3</span>] = <span class="built_in">arguments</span>[_key];</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">console</span>.log(a, b, c, rest);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以发现，只有结构语法不被转换，加上 <code>@babel/plugin-transform-destructuring</code> 插件后，编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params">a</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">let</span> b = <span class="built_in">arguments</span>.length &gt; <span class="number">1</span> &amp;&amp; <span class="built_in">arguments</span>[<span class="number">1</span>] !== <span class="literal">undefined</span> ? <span class="built_in">arguments</span>[<span class="number">1</span>] : <span class="string">'b'</span>;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">let</span> _ref = <span class="built_in">arguments</span>.length &gt; <span class="number">2</span> ? <span class="built_in">arguments</span>[<span class="number">2</span>] : <span class="literal">undefined</span>,</span><br><span class="line">      c = _ref.c; <span class="comment">// 能够处理解构</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> _len = <span class="built_in">arguments</span>.length, rest = <span class="keyword">new</span> <span class="built_in">Array</span>(_len &gt; <span class="number">3</span> ? _len - <span class="number">3</span> : <span class="number">0</span>), _key = <span class="number">3</span>; _key &lt; _len; _key++) &#123;</span><br><span class="line">    rest[_key - <span class="number">3</span>] = <span class="built_in">arguments</span>[_key];</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">console</span>.log(a, b, c, rest);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-template-literals"><a href="#babel-plugin-transform-template-literals" class="headerlink" title="babel-plugin-transform-template-literals"></a>babel-plugin-transform-template-literals</h2><p>模板字符串</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> foo = <span class="string">'world'</span>;</span><br><span class="line"><span class="keyword">const</span> bar = <span class="string">`Hello <span class="subst">$&#123;foo&#125;</span>`</span>;</span><br><span class="line"><span class="keyword">const</span> str = <span class="string">`</span></span><br><span class="line"><span class="string">	Hello World;</span></span><br><span class="line"><span class="string">`</span>;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> foo = <span class="string">'world'</span>;</span><br><span class="line"><span class="keyword">const</span> bar = <span class="string">'Hello '</span> + foo;</span><br><span class="line"><span class="keyword">const</span> str = <span class="string">'\n\tHello World;\n'</span></span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-modules-xxx"><a href="#babel-plugin-transform-modules-xxx" class="headerlink" title="babel-plugin-transform-modules-xxx"></a>babel-plugin-transform-modules-xxx</h2><p>将 <code>export default</code> 这种语法(怎么称呼？标准模块机制？)转换为其他模块化代码</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> foo <span class="keyword">from</span> <span class="string">'./foo'</span>;</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<h3 id="amd"><a href="#amd" class="headerlink" title="amd"></a>amd</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">define([<span class="string">'exports'</span>, <span class="string">'./foo'</span>], <span class="function"><span class="keyword">function</span> (<span class="params">exports, _foo</span>) </span>&#123;</span><br><span class="line"><span class="meta">	'use strict'</span>;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">Object</span>.defineProperty(exports, <span class="string">"__esModule"</span>, &#123;</span><br><span class="line">		value: <span class="literal">true</span></span><br><span class="line">	&#125;);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> _foo2 = _interopRequireDefault(_foo);</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">_interopRequireDefault</span>(<span class="params">obj</span>) </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> obj &amp;&amp; obj.__esModule ? obj : &#123;</span><br><span class="line">			<span class="keyword">default</span>: obj</span><br><span class="line">		&#125;;</span><br><span class="line">	&#125;</span><br><span class="line">    </span><br><span class="line">    exports.default = <span class="number">1</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="umd"><a href="#umd" class="headerlink" title="umd"></a>umd</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">(<span class="function"><span class="keyword">function</span> (<span class="params">global, factory</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (<span class="keyword">typeof</span> define === <span class="string">"function"</span> &amp;&amp; define.amd) &#123;</span><br><span class="line">		define([<span class="string">'exports'</span>, <span class="string">'./foo'</span>], factory);</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="keyword">typeof</span> exports !== <span class="string">"undefined"</span>) &#123;</span><br><span class="line">		factory(exports, <span class="built_in">require</span>(<span class="string">'./foo'</span>));</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="keyword">var</span> mod = &#123;</span><br><span class="line">			exports: &#123;&#125;</span><br><span class="line">		&#125;;</span><br><span class="line">		factory(mod.exports, global.foo);</span><br><span class="line">		global.test = mod.exports;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;)(<span class="keyword">this</span>, <span class="function"><span class="keyword">function</span> (<span class="params">exports, _foo</span>) </span>&#123;</span><br><span class="line"><span class="meta">	'use strict'</span>;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">Object</span>.defineProperty(exports, <span class="string">"__esModule"</span>, &#123;</span><br><span class="line">		value: <span class="literal">true</span></span><br><span class="line">	&#125;);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">var</span> _foo2 = _interopRequireDefault(_foo);</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">function</span> <span class="title">_interopRequireDefault</span>(<span class="params">obj</span>) </span>&#123;</span><br><span class="line">		<span class="keyword">return</span> obj &amp;&amp; obj.__esModule ? obj : &#123;</span><br><span class="line">			<span class="keyword">default</span>: obj</span><br><span class="line">		&#125;;</span><br><span class="line">	&#125;</span><br><span class="line">    </span><br><span class="line">    exports.default = <span class="number">1</span>;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="commonjs"><a href="#commonjs" class="headerlink" title="commonjs"></a>commonjs</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span>;</span><br><span class="line"></span><br><span class="line"><span class="built_in">Object</span>.defineProperty(exports, <span class="string">"__esModule"</span>, &#123;</span><br><span class="line">	value: <span class="literal">true</span></span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> _foo = <span class="built_in">require</span>(<span class="string">'./foo'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> _foo2 = _interopRequireDefault(_foo);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_interopRequireDefault</span>(<span class="params">obj</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> obj &amp;&amp; obj.__esModule ? obj : &#123; <span class="attr">default</span>: obj &#125;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">exports.default = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<h3 id="systemjs"><a href="#systemjs" class="headerlink" title="systemjs"></a>systemjs</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">System.register([<span class="string">'./foo'</span>], <span class="function"><span class="keyword">function</span> (<span class="params">_export, _context</span>) </span>&#123;</span><br><span class="line"><span class="meta">	"use strict"</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">var</span> foo;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">		setters: [<span class="function"><span class="keyword">function</span> (<span class="params">_foo</span>) </span>&#123;</span><br><span class="line">			foo = _foo.default;</span><br><span class="line">		&#125;],</span><br><span class="line">        execute: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            _export(<span class="string">'default'</span>, <span class="number">1</span>);</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-regenerator"><a href="#babel-plugin-transform-regenerator" class="headerlink" title="babel-plugin-transform-regenerator"></a>babel-plugin-transform-regenerator</h2><p>支持 <code>generator</code> 语法</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span>* <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">yield</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> _marked = <span class="comment">/*#__PURE__*/</span>regeneratorRuntime.mark(foo);</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> regeneratorRuntime.wrap(<span class="function"><span class="keyword">function</span> <span class="title">foo$</span>(<span class="params">_context</span>) </span>&#123;</span><br><span class="line">		<span class="keyword">while</span> (<span class="number">1</span>) <span class="keyword">switch</span> (_context.prev = _context.next) &#123;</span><br><span class="line">			<span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">				_context.next = <span class="number">2</span>;</span><br><span class="line">				<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">			<span class="keyword">case</span> <span class="number">2</span>:</span><br><span class="line">			<span class="keyword">case</span> <span class="string">'end'</span>:</span><br><span class="line">				<span class="keyword">return</span> _context.stop();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;, _marked, <span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-for-of"><a href="#babel-plugin-transform-for-of" class="headerlink" title="babel-plugin-transform-for-of"></a>babel-plugin-transform-for-of</h2><p>这里开始是一些比较少用的语法</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;</span><br><span class="line">	a: <span class="string">'a'</span>,</span><br><span class="line">	b: <span class="string">'b'</span>,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">of</span> obj) &#123;</span><br><span class="line">	<span class="built_in">console</span>.log(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;</span><br><span class="line">	a: <span class="string">'a'</span>,</span><br><span class="line">	b: <span class="string">'b'</span></span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">var</span> _iteratorNormalCompletion = <span class="literal">true</span>;</span><br><span class="line"><span class="keyword">var</span> _didIteratorError = <span class="literal">false</span>;</span><br><span class="line"><span class="keyword">var</span> _iteratorError = <span class="literal">undefined</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">	<span class="keyword">for</span> (<span class="keyword">var</span> _iterator = obj[<span class="built_in">Symbol</span>.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = <span class="literal">true</span>) &#123;</span><br><span class="line">		<span class="keyword">const</span> key = _step.value;</span><br><span class="line"></span><br><span class="line">		<span class="built_in">console</span>.log(key);</span><br><span class="line">	&#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">	_didIteratorError = <span class="literal">true</span>;</span><br><span class="line">	_iteratorError = err;</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> (!_iteratorNormalCompletion &amp;&amp; _iterator.return) &#123;</span><br><span class="line">			_iterator.return();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">		<span class="keyword">if</span> (_didIteratorError) &#123;</span><br><span class="line">			<span class="keyword">throw</span> _iteratorError;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-object-super"><a href="#babel-plugin-transform-object-super" class="headerlink" title="babel-plugin-transform-object-super"></a>babel-plugin-transform-object-super</h2><p>支持调用超类</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> foo = &#123;</span><br><span class="line">	say() &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">super</span>.say() + <span class="string">'World'</span>;</span><br><span class="line">	&#125;,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> _get = <span class="function"><span class="keyword">function</span> <span class="title">get</span>(<span class="params">object, property, receiver</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">if</span> (object === <span class="literal">null</span>) &#123;</span><br><span class="line">		object = <span class="built_in">Function</span>.prototype;</span><br><span class="line">		<span class="keyword">var</span> desc = <span class="built_in">Object</span>.getOwnPropertyDescriptor(object, property);</span><br><span class="line">		<span class="keyword">if</span> (desc === <span class="literal">undefined</span>) &#123;</span><br><span class="line">			<span class="keyword">var</span> parent = <span class="built_in">Object</span>.getPrototypeOf(object);</span><br><span class="line">			<span class="keyword">if</span> (parent === <span class="literal">null</span>) &#123;</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">undefined</span>;</span><br><span class="line">			&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">				<span class="keyword">return</span> get(parent, property, receiver);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">"value"</span> <span class="keyword">in</span> desc) &#123;</span><br><span class="line">			<span class="keyword">return</span> desc.value;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="keyword">var</span> getter = desc.get;</span><br><span class="line">			<span class="keyword">if</span> (getter === <span class="literal">undefined</span>) &#123;</span><br><span class="line">				<span class="keyword">return</span> <span class="literal">undefined</span>;</span><br><span class="line">			&#125;</span><br><span class="line">			<span class="keyword">return</span> getter.call(receiver); </span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> foo = _obj = &#123;</span><br><span class="line">  say() &#123;</span><br><span class="line">    <span class="keyword">return</span> _get(_obj.__proto__ || <span class="built_in">Object</span>.getPrototypeOf(_obj), <span class="string">'say'</span>, <span class="keyword">this</span>).call(<span class="keyword">this</span>) + <span class="string">'World'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-duplicate-keys"><a href="#babel-plugin-transform-duplicate-keys" class="headerlink" title="babel-plugin-transform-duplicate-keys"></a>babel-plugin-transform-duplicate-keys</h2><p>支持写重复的键，忘记了在旧版本中如果对象有重复的键会怎么样了，但使用 <code>eslint</code> 的情况下，有重复键会报错的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;</span><br><span class="line">	a: <span class="string">'a'</span>,</span><br><span class="line">	a: <span class="string">'b'</span>,</span><br><span class="line">	a: <span class="string">'c'</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> obj = &#123;</span><br><span class="line">	a: <span class="string">'a'</span>,</span><br><span class="line">	[<span class="string">'a'</span>]: <span class="string">'b'</span>,</span><br><span class="line">	[<span class="string">'a'</span>]: <span class="string">'c'</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p> <code>obj.a === &#39;c&#39;</code> ，支持重复的 <code>key</code> 有什么意义呢？</p>
+<h2 id="babel-plugin-transform-sticky-regex"><a href="#babel-plugin-transform-sticky-regex" class="headerlink" title="babel-plugin-transform-sticky-regex"></a>babel-plugin-transform-sticky-regex</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> regexp = <span class="regexp">/foo/y</span>;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> regexp = <span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">"foo"</span>, <span class="string">"y"</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-unicode-regex"><a href="#babel-plugin-transform-unicode-regex" class="headerlink" title="babel-plugin-transform-unicode-regex"></a>babel-plugin-transform-unicode-regex</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> string = <span class="string">"foo💩bar"</span>;</span><br><span class="line"><span class="keyword">const</span> match = string.match(<span class="regexp">/foo(.)bar/u</span>);</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> string = <span class="string">"foo💩bar"</span>;</span><br><span class="line"><span class="keyword">const</span> match = string.match(<span class="regexp">/foo((?:[\0-\t\x0B\f\x0E-\u2027\u202A-\uD7FF\uE000-\uFFFF]|[\uD800-\uDBFF][\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?:[^\uD800-\uDBFF]|^)[\uDC00-\uDFFF]))bar/</span>);</span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-typeof-symbol"><a href="#babel-plugin-transform-typeof-symbol" class="headerlink" title="babel-plugin-transform-typeof-symbol"></a>babel-plugin-transform-typeof-symbol</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typeof</span> <span class="built_in">Symbol</span>() === <span class="string">'symbol'</span>;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> _typeof = <span class="keyword">typeof</span> <span class="built_in">Symbol</span> === <span class="string">"function"</span></span><br><span class="line">	&amp;&amp; (</span><br><span class="line">		<span class="keyword">typeof</span> <span class="built_in">Symbol</span>.iterator === <span class="string">"symbol"</span></span><br><span class="line">			? <span class="function"><span class="keyword">function</span> (<span class="params">obj</span>) </span>&#123; <span class="keyword">return</span> <span class="keyword">typeof</span> obj; &#125;</span><br><span class="line">			: <span class="function"><span class="keyword">function</span> (<span class="params">obj</span>) </span>&#123;</span><br><span class="line">				<span class="keyword">return</span> obj</span><br><span class="line">					&amp;&amp; <span class="keyword">typeof</span> <span class="built_in">Symbol</span> === <span class="string">"function"</span></span><br><span class="line">					&amp;&amp; obj.constructor === <span class="built_in">Symbol</span></span><br><span class="line">					&amp;&amp; (</span><br><span class="line">						obj !== <span class="built_in">Symbol</span>.prototype</span><br><span class="line">							? <span class="string">"symbol"</span></span><br><span class="line">							: <span class="keyword">typeof</span> obj</span><br><span class="line">					);</span><br><span class="line">			&#125;</span><br><span class="line">	);</span><br><span class="line">_typeof(<span class="built_in">Symbol</span>()) === <span class="string">'symbol'</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-literals"><a href="#babel-plugin-transform-literals" class="headerlink" title="babel-plugin-transform-literals"></a>babel-plugin-transform-literals</h2><p>编码转换</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> u = <span class="string">'Hello\u&#123;000A&#125;\u&#123;0009&#125;!'</span>;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> u = <span class="string">'Hello\n\t!'</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="babel-plugin-transform-block-scoped-functions"><a href="#babel-plugin-transform-block-scoped-functions" class="headerlink" title="babel-plugin-transform-block-scoped-functions"></a>babel-plugin-transform-block-scoped-functions</h2><p>从名字来看，是块级作用域函数，是指什么呢？</p>
+<p>是让块级作用域内声明的函数只作用域块级作用域。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">name</span> (<span class="params">n</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> n;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">name(<span class="string">"Steve"</span>);</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="keyword">let</span> name = <span class="function"><span class="keyword">function</span> (<span class="params">n</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> n;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line">name(<span class="string">"Steve"</span>);</span><br></pre></td></tr></table></figure>
+<p>感觉和 <code>block-scoping</code> 有点类似，块级作用域内的变量不被外部使用？如果不用 <code>block-scoped-functions</code> 而仅用 <code>block-scoping</code> 会怎么样呢？</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">_name</span>(<span class="params">n</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> n;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">name(<span class="string">"Steve"</span>);</span><br></pre></td></tr></table></figure>
+<p><code>_name</code> 函数对外部作用域还是可知的，有一些区别。</p>
+<h2 id="babel-plugin-transform-function-name"><a href="#babel-plugin-transform-function-name" class="headerlink" title="babel-plugin-transform-function-name"></a>babel-plugin-transform-function-name</h2><p>再是一些不算新特性的插件吧，比如这个给匿名函数增加函数名</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> foo = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>编译成</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> foo = <span class="function"><span class="keyword">function</span> <span class="title">foo</span>(<span class="params"></span>) </span>&#123;&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>可以发现，真正有用的插件大概有 10 个，但每次都会安装全部的，即使使用 <code>@babel/preset-env</code>，它也仅仅是根据浏览器可以去掉一些插件，但如果我们能根据项目中实际使用的语法，只配置 <code>plugin</code>，才是最精简的方式。</p>
+<p>但首先要求对项目中所使用的语法，以及新特性对应的插件非常了解，才能做到有的放矢。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/babel/" rel="tag"># babel</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2018/10/23/antd自定义表单的问题-2/" rel="next" title="antd 自定义表单的问题 - 2">
+                <i class="fa fa-chevron-left"></i> antd 自定义表单的问题 - 2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/12/04/easy-rotate-in-canvas/" rel="prev" title="怎么简单地在 canvas 中完成旋转">
+                怎么简单地在 canvas 中完成旋转 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-arrow-functions"><span class="nav-number">1.</span> <span class="nav-text">babel-plugin-transform-arrow-functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-block-scoping"><span class="nav-number">2.</span> <span class="nav-text">babel-plugin-transform-block-scoping</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-spread"><span class="nav-number">3.</span> <span class="nav-text">babel-plugin-transform-spread</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-destructuring"><span class="nav-number">4.</span> <span class="nav-text">babel-plugin-transform-destructuring</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-computed-properties"><span class="nav-number">5.</span> <span class="nav-text">babel-plugin-transform-computed-properties</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-shorthand-properties"><span class="nav-number">6.</span> <span class="nav-text">babel-plugin-transform-shorthand-properties</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-classes"><span class="nav-number">7.</span> <span class="nav-text">babel-plugin-transform-classes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-parameters"><span class="nav-number">8.</span> <span class="nav-text">babel-plugin-transform-parameters</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-template-literals"><span class="nav-number">9.</span> <span class="nav-text">babel-plugin-transform-template-literals</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-modules-xxx"><span class="nav-number">10.</span> <span class="nav-text">babel-plugin-transform-modules-xxx</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#amd"><span class="nav-number">10.1.</span> <span class="nav-text">amd</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#umd"><span class="nav-number">10.2.</span> <span class="nav-text">umd</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#commonjs"><span class="nav-number">10.3.</span> <span class="nav-text">commonjs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#systemjs"><span class="nav-number">10.4.</span> <span class="nav-text">systemjs</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-regenerator"><span class="nav-number">11.</span> <span class="nav-text">babel-plugin-transform-regenerator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-for-of"><span class="nav-number">12.</span> <span class="nav-text">babel-plugin-transform-for-of</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-object-super"><span class="nav-number">13.</span> <span class="nav-text">babel-plugin-transform-object-super</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-duplicate-keys"><span class="nav-number">14.</span> <span class="nav-text">babel-plugin-transform-duplicate-keys</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-sticky-regex"><span class="nav-number">15.</span> <span class="nav-text">babel-plugin-transform-sticky-regex</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-unicode-regex"><span class="nav-number">16.</span> <span class="nav-text">babel-plugin-transform-unicode-regex</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-typeof-symbol"><span class="nav-number">17.</span> <span class="nav-text">babel-plugin-transform-typeof-symbol</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-literals"><span class="nav-number">18.</span> <span class="nav-text">babel-plugin-transform-literals</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-block-scoped-functions"><span class="nav-number">19.</span> <span class="nav-text">babel-plugin-transform-block-scoped-functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#babel-plugin-transform-function-name"><span class="nav-number">20.</span> <span class="nav-text">babel-plugin-transform-function-name</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">21.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

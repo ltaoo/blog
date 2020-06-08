@@ -1,0 +1,741 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="动画," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="动画的原理就是每隔一段时间改变画面，这个时间小到眼睛无法识别，所以看起来就像是画面在动。 DOM 动画也是一样的，每隔 16 毫秒就改变 DOM 的某个 CSS 属性值，比如宽度、高度透明度等等，从而实现了我们所看到的 DOM 动画。 当然实现一个 DOM 动画类库并不是很困难，但一开始就要很完善很完美就很困难了，所以">
+<meta name="keywords" content="动画">
+<meta property="og:type" content="article">
+<meta property="og:title" content="模仿 velocity.js 实现 DOM 动画类库（一）">
+<meta property="og:url" content="http://yoursite.com/2017/04/10/fakeVelocity-1/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="动画的原理就是每隔一段时间改变画面，这个时间小到眼睛无法识别，所以看起来就像是画面在动。 DOM 动画也是一样的，每隔 16 毫秒就改变 DOM 的某个 CSS 属性值，比如宽度、高度透明度等等，从而实现了我们所看到的 DOM 动画。 当然实现一个 DOM 动画类库并不是很困难，但一开始就要很完善很完美就很困难了，所以我准备从最简单的入手，先实现透明度动画，再实现透明度与宽度同时动画。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/blog/2017/04/10/fakeVelocity-1/01.png">
+<meta property="og:updated_time" content="2017-12-30T07:20:12.748Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="模仿 velocity.js 实现 DOM 动画类库（一）">
+<meta name="twitter:description" content="动画的原理就是每隔一段时间改变画面，这个时间小到眼睛无法识别，所以看起来就像是画面在动。 DOM 动画也是一样的，每隔 16 毫秒就改变 DOM 的某个 CSS 属性值，比如宽度、高度透明度等等，从而实现了我们所看到的 DOM 动画。 当然实现一个 DOM 动画类库并不是很困难，但一开始就要很完善很完美就很困难了，所以我准备从最简单的入手，先实现透明度动画，再实现透明度与宽度同时动画。">
+<meta name="twitter:image" content="http://yoursite.com/blog/2017/04/10/fakeVelocity-1/01.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/04/10/fakeVelocity-1/"/>
+
+
+
+
+
+  <title> 模仿 velocity.js 实现 DOM 动画类库（一） | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2017/04/10/fakeVelocity-1/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                模仿 velocity.js 实现 DOM 动画类库（一）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-10T08:00:00+08:00">
+              2017-04-10
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2017-12-30T15:20:12+08:00">
+              2017-12-30
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>动画的原理就是每隔一段时间改变画面，这个时间小到眼睛无法识别，所以看起来就像是画面在动。</p>
+<p>DOM 动画也是一样的，每隔 16 毫秒就改变 DOM 的某个 CSS 属性值，比如宽度、高度透明度等等，从而实现了我们所看到的 DOM 动画。</p>
+<p>当然实现一个 DOM 动画类库并不是很困难，但一开始就要很完善很完美就很困难了，所以我准备从最简单的入手，先实现透明度动画，再实现透明度与宽度同时动画。</p>
+<a id="more"></a>
+<p>为什么先实现透明度呢？因为<code>opacity</code>的值没有单位，不像<code>width</code>有<code>px</code>单位，要改变<code>width</code>就要先分割值与单位，将值做改变后加上单位；也不像<code>background-color</code>一样可能是十六位进制<code>#fff</code>也可能是<code>rgb(0, 0, 0)</code>需要额外处理的。</p>
+<h2 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h2><p>当然上面说的原理太虚无缥缈了，如果用流程图说明，大概就是这样的：</p>
+<p><img src="/blog/2017/04/10/fakeVelocity-1/01.png" alt="代码原理"></p>
+<h2 id="实际代码"><a href="#实际代码" class="headerlink" title="实际代码"></a>实际代码</h2><p>落实到代码，总共有 5 个核心函数</p>
+<ul>
+<li>获取开始值 getPropertyValue =&gt; 步骤2</li>
+<li>分割属性值与单位 separateValue =&gt; 步骤2</li>
+<li>动画函数 tick =&gt; 步骤 4</li>
+<li>缓动函数计算当前值 easing =&gt; 步骤 4.1</li>
+<li>改变 DOM 属性 setPropertyValue =&gt; 步骤 4.2</li>
+</ul>
+<p>之后的代码都以实现下面的<code>div</code>透明度变化为目标。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>测试<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./src/fakeVelocity.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="css">        <span class="selector-id">#div</span> &#123;</span></span><br><span class="line"><span class="undefined">            width: 300px;</span></span><br><span class="line"><span class="undefined">            height: 180px;</span></span><br><span class="line"><span class="undefined">            background-color: red;</span></span><br><span class="line"><span class="undefined">        &#125;</span></span><br><span class="line"><span class="undefined">    </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"div"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"run"</span>&gt;</span>点击执行动画<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">        <span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="built_in">document</span>.querySelector(<span class="string">'#run'</span>).onclick = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                Animation(<span class="built_in">document</span>.querySelector(<span class="string">'#div'</span>), &#123;</span></span><br><span class="line"><span class="undefined">                    opacity: 0.5</span></span><br><span class="line"><span class="undefined">                &#125;)</span></span><br><span class="line"><span class="undefined">            &#125;</span></span><br><span class="line"><span class="undefined">        &#125;</span></span><br><span class="line"><span class="undefined">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="getPropertyValue"><a href="#getPropertyValue" class="headerlink" title="getPropertyValue"></a>getPropertyValue</h3><p>首先要获取到<code>#div</code>的初始透明度值，<code>div.style.opacity</code>？结果是空，这里需要用到<code>getComputedStyle</code>和<code>getPropertyValue</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getPropertyValue</span> (<span class="params">element, property</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">window</span>.getComputedStyle(element, <span class="literal">null</span>).getPropertyValue(property)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>getPropertyValue</code>是<code>getComputedStyle</code>返回对象的方法，所以不用担心会和我们自己定义的<code>getPropertyValue</code>冲突。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Animation</span> (<span class="params">element, propertiesMap</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">let</span> property,</span><br><span class="line">		 startValue,</span><br><span class="line">		 endValue,</span><br><span class="line">		 unitType</span><br><span class="line">	<span class="keyword">for</span>(property <span class="keyword">in</span> propertiesMap) &#123;</span><br><span class="line">		startValue = getPropertyValue(element, propertiesMap)</span><br><span class="line">		endValue = propertiesMap[property]</span><br><span class="line">		<span class="built_in">console</span>.log(startValue, endValue)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此时能够正确获取到动画开始值与动画结束值分别为<code>1</code>、<code>0.5</code>。</p>
+<h3 id="separateValue"><a href="#separateValue" class="headerlink" title="separateValue"></a>separateValue</h3><p>当然这个函数现在并没有用，因为<code>opacity</code>没有单位，但是我们知道后续需要增加有单位的值，所以先将这个函数声明好。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">separateValue</span> (<span class="params">property, value</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> [value, <span class="string">''</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>调用该函数后，将返回数组，第一个元素为值，第二个元素为单位。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">Animation</span>(<span class="params">element, propertiesMap</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> property,</span><br><span class="line">        startValue,</span><br><span class="line">        endValue,</span><br><span class="line">        unitType</span><br><span class="line">    <span class="keyword">for</span>(property <span class="keyword">in</span> propertiesMap) &#123;</span><br><span class="line">        startValue = getPropertyValue(element, property)</span><br><span class="line">        <span class="comment">// 分割值与单位</span></span><br><span class="line">        <span class="keyword">const</span> separatedValue = separateValue(property, startValue)</span><br><span class="line">        <span class="comment">// 2、真正的开始值</span></span><br><span class="line">        startValue = separatedValue[<span class="number">0</span>]</span><br><span class="line">        <span class="comment">// 2、单位</span></span><br><span class="line">        unitType = separatedValue[<span class="number">1</span>]</span><br><span class="line">        <span class="comment">// 2、结束值</span></span><br><span class="line">        endValue = propertiesMap[property]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>OK，回过头看看流程图，现在到了第三步，准备执行动画函数<code>tick</code>了。</p>
+<h3 id="tick"><a href="#tick" class="headerlink" title="tick"></a>tick</h3><p>先来声明好这个动画函数，前面也提到了，在这个函数内部，每次调用都会获取到当前时间，并与调用前声明的<code>startTime</code>进行比对，如果<code>currentTime - startTime &gt;= duration</code>就结束动画，否则就再调用一次<code>tick</code>。</p>
+<p><code>duration</code>就是动画持续时间，通过配置项传入，这里暂时写死在代码中。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> opts = &#123;</span><br><span class="line">	duration: <span class="number">400</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="number">3</span>、准备调用动画函数</span><br><span class="line"><span class="keyword">const</span> startTime = <span class="keyword">new</span> <span class="built_in">Date</span>().getTime()</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">tick</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="comment">// 这次调用的当前时间</span></span><br><span class="line">    <span class="keyword">let</span> currentTime = <span class="keyword">new</span> <span class="built_in">Date</span>().getTime()</span><br><span class="line">    <span class="comment">// 5、计算动画时间是否结束 (&gt;= duration)</span></span><br><span class="line">    <span class="keyword">const</span> percentComplete = <span class="built_in">Math</span>.min((currentTime - startTime) / opts.duration, <span class="number">1</span>)</span><br><span class="line">    <span class="comment">// 当前透明度的值，准备用来修改 DOM 对应属性</span></span><br><span class="line">    <span class="keyword">let</span> currentValue</span><br><span class="line">    <span class="comment">// 如果已经执行的动画时间大于动画应该执行的时间，就将值直接赋为结束值</span></span><br><span class="line">    <span class="keyword">if</span> (percentComplete === <span class="number">1</span>) &#123;</span><br><span class="line">        currentValue = endValue</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    	<span class="comment">// 4.1 计算当前值应该是多少</span></span><br><span class="line">        currentValue = <span class="built_in">parseFloat</span>(startValue) + (endValue - startValue) * easing[<span class="string">'swing'</span>](percentComplete)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">console</span>.log(currentValue)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 4、调用动画函数</span></span><br><span class="line">tick()</span><br></pre></td></tr></table></figure>
+<p>先看<strong>5、计算动画时间是否结束</strong>，这里并没有按照之前说的计算方法<code>currentTime - startTime &gt;= duration</code>计算动画是否结束，而是使用了比较</p>
+<ul>
+<li>(currentTime - startTime) / duration</li>
+<li>1</li>
+</ul>
+<p>这两个值的大小，取更小的那个值。当然<code>currentTime - startTime</code>大于等于<code>duration</code>时，才会是<code>1</code>更小，道理是相同的，不过因为</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(currentTime - startTime) / duration</span><br></pre></td></tr></table></figure>
+<p>这个值需要用在缓动函数内，所以就不做两次处理了，当然这样也是可以的，但是没必要不是吗？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((currentTime - startTime) &gt;= duration) &#123;</span><br><span class="line">	percentComplete = <span class="number">1</span></span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	percentComplete = (currentTime - startTime) / duration</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="缓动函数"><a href="#缓动函数" class="headerlink" title="缓动函数"></a>缓动函数</h4><p>这个就是直接拿现成的算法来用了，上面代码是这样使用的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">currentValue = <span class="built_in">parseFloat</span>(startValue) + (endValue - startValue) * easing[<span class="string">'swing'</span>](percentComplete)</span><br></pre></td></tr></table></figure>
+<p>重点在后面的<code>easing[&#39;swing&#39;](percentComplete)</code>，很容易理解，<code>easing</code>是一个对象，有<code>swing</code>属性，并且对应的值是一个函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// easing 缓动函数</span></span><br><span class="line">easing = &#123;</span><br><span class="line">    swing: <span class="function"><span class="keyword">function</span> (<span class="params">a</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">.5</span> - <span class="built_in">Math</span>.cos(a * <span class="built_in">Math</span>.PI) / <span class="number">2</span></span><br><span class="line">    &#125;,</span><br><span class="line">    Sine: <span class="function"><span class="keyword">function</span> (<span class="params">p</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span> - <span class="built_in">Math</span>.cos(p * <span class="built_in">Math</span>.PI / <span class="number">2</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    Circ: <span class="function"><span class="keyword">function</span> (<span class="params">p</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span> - <span class="built_in">Math</span>.sqrt(<span class="number">1</span> - p * p)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这么做的好处很明显，如果我不想用<code>swing</code>这个缓动函数而想换一个，这样就可以：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">easing[opts.easing](percentComplete)</span><br></pre></td></tr></table></figure>
+<p><code>opts.easing</code>只要传不同的字符串，就能够直接调用对应的函数，而且还可以让用户自己拓展<code>easing</code>这个对象，只要<code>opts.easing</code>能够对应上就可以了。</p>
+<p>这其实就是策略模式。</p>
+<h3 id="结束动画调用"><a href="#结束动画调用" class="headerlink" title="结束动画调用"></a>结束动画调用</h3><p>上面的<code>tick</code>函数只会执行一次，因为还没有用到<code>setInterval</code>或者<code>requestAnimationFrame</code>来重复调用<code>tick</code>函数。</p>
+<p>只需要在<code>tick</code>函数最后面，调用<code>requestAnimationFrame(tick)</code>即可，不过要加一个结束条件，就是<code>percentComplete !== 1</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">tick</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="keyword">let</span> currentTime = <span class="keyword">new</span> <span class="built_in">Date</span>().getTime()</span><br><span class="line">	<span class="keyword">const</span> percentComplete = <span class="built_in">Math</span>.min((currentTime - startTime) / opts.duration, <span class="number">1</span>)</span><br><span class="line">	<span class="comment">// 当前透明度的值，准备用来修改 DOM 对应属性</span></span><br><span class="line">	<span class="keyword">let</span> currentValue</span><br><span class="line">	<span class="comment">// 如果已经执行的动画时间大于动画应该执行的时间，就将值直接赋为结束值</span></span><br><span class="line">	<span class="keyword">if</span> (percentComplete === <span class="number">1</span>) &#123;</span><br><span class="line">	    currentValue = endValue</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">	    currentValue = <span class="built_in">parseFloat</span>(startValue) + (endValue - startValue) * easing[<span class="string">'swing'</span>](percentComplete)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">console</span>.log(currentValue)</span><br><span class="line">	<span class="comment">// 6、结束动画条件</span></span><br><span class="line">	<span class="keyword">if</span> (percentComplete !== <span class="number">1</span>) &#123;</span><br><span class="line">	    requestAnimationFrame(tick)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在打开控制台，点击按钮执行动画，就能看到打印<code>1 ~ 0.5</code>逐渐变化的过程，表示成功。现在就差最后一步，将这个值赋给 DOM 对应属性。</p>
+<h3 id="setPropertyValue"><a href="#setPropertyValue" class="headerlink" title="setPropertyValue"></a>setPropertyValue</h3><p>这个就简单了，</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">setPropertyValue</span> (<span class="params">element, property, value</span>) </span>&#123;</span><br><span class="line">	element.style[property] = value</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以在<code>tick</code>函数内这样调用该函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">tick</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> currentTime = <span class="keyword">new</span> <span class="built_in">Date</span>().getTime()</span><br><span class="line">    <span class="keyword">const</span> percentComplete = <span class="built_in">Math</span>.min((currentTime - startTime) / opts.duration, <span class="number">1</span>)</span><br><span class="line">    <span class="comment">// 当前透明度的值，准备用来修改 DOM 对应属性</span></span><br><span class="line">    <span class="keyword">let</span> currentValue</span><br><span class="line">    <span class="comment">// 如果已经执行的动画时间大于动画应该执行的时间，就将值直接赋为结束值</span></span><br><span class="line">    <span class="keyword">if</span> (percentComplete === <span class="number">1</span>) &#123;</span><br><span class="line">        currentValue = endValue</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        currentValue = <span class="built_in">parseFloat</span>(startValue) + (endValue - startValue) * easing[<span class="string">'swing'</span>](percentComplete)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">console</span>.log(currentValue)</span><br><span class="line">    <span class="comment">// 4.2、改变 dom 的属性值</span></span><br><span class="line">    setPropertyValue(element, property, currentValue + unitType)</span><br><span class="line">    <span class="comment">// 6、终止调用 tick</span></span><br><span class="line">    <span class="keyword">if</span> (percentComplete !== <span class="number">1</span>) &#123;</span><br><span class="line">        requestAnimationFrame(tick)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再重新刷新页面，点击按钮，看看能否正确改变透明度？</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>真正的<code>velocity.js</code>源码有 4000+ 行，即使是最初的版本也有 2000+，而我们自己实现的仅仅有 60+，所以可想而知有多简陋，不过千里之行，始于足下，能够开始，就是进步。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://github.com/julianshapiro/velocity/blob/0.0.0/jquery.velocity.js" target="_blank" rel="noopener">velocity</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/动画/" rel="tag"># 动画</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2017/02/21/JavaScript闭包学习笔记/" rel="next" title="JavaScript 闭包学习笔记">
+                <i class="fa fa-chevron-left"></i> JavaScript 闭包学习笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2017/04/11/fakeVelocity-2/" rel="prev" title="模仿 velocity.js 实现 DOM 动画类库（二）">
+                模仿 velocity.js 实现 DOM 动画类库（二） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#流程图"><span class="nav-number">1.</span> <span class="nav-text">流程图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实际代码"><span class="nav-number">2.</span> <span class="nav-text">实际代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#getPropertyValue"><span class="nav-number">2.1.</span> <span class="nav-text">getPropertyValue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#separateValue"><span class="nav-number">2.2.</span> <span class="nav-text">separateValue</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tick"><span class="nav-number">2.3.</span> <span class="nav-text">tick</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#缓动函数"><span class="nav-number">2.3.1.</span> <span class="nav-text">缓动函数</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结束动画调用"><span class="nav-number">2.4.</span> <span class="nav-text">结束动画调用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#setPropertyValue"><span class="nav-number">2.5.</span> <span class="nav-text">setPropertyValue</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

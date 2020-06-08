@@ -1,0 +1,734 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="模块加载器,轮子," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="模块化是现在编写 JavaScript 的必然选择，而模块规范和我们如何写模块化的代码有很大关系，比如AMD规范与CMD规范，而这些规范具体是指什么呢，下面以仿照sea.js的源码自己实现一个简单的模块加载器来具体了解CMD规范。">
+<meta name="keywords" content="模块加载器,轮子">
+<meta property="og:type" content="article">
+<meta property="og:title" content="模仿 sea.js 实现 CMD 模块加载器（一）">
+<meta property="og:url" content="http://yoursite.com/2017/04/16/fakeSea-1/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="模块化是现在编写 JavaScript 的必然选择，而模块规范和我们如何写模块化的代码有很大关系，比如AMD规范与CMD规范，而这些规范具体是指什么呢，下面以仿照sea.js的源码自己实现一个简单的模块加载器来具体了解CMD规范。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/blog/2017/04/16/fakeSea-1/46971596-810F-4DC9-9A99-5B7766D40289.png">
+<meta property="og:updated_time" content="2017-12-30T07:20:04.363Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="模仿 sea.js 实现 CMD 模块加载器（一）">
+<meta name="twitter:description" content="模块化是现在编写 JavaScript 的必然选择，而模块规范和我们如何写模块化的代码有很大关系，比如AMD规范与CMD规范，而这些规范具体是指什么呢，下面以仿照sea.js的源码自己实现一个简单的模块加载器来具体了解CMD规范。">
+<meta name="twitter:image" content="http://yoursite.com/blog/2017/04/16/fakeSea-1/46971596-810F-4DC9-9A99-5B7766D40289.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/04/16/fakeSea-1/"/>
+
+
+
+
+
+  <title> 模仿 sea.js 实现 CMD 模块加载器（一） | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2017/04/16/fakeSea-1/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                模仿 sea.js 实现 CMD 模块加载器（一）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-16T08:00:00+08:00">
+              2017-04-16
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2017-12-30T15:20:04+08:00">
+              2017-12-30
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>模块化是现在编写 JavaScript 的必然选择，而模块规范和我们如何写模块化的代码有很大关系，比如<code>AMD</code>规范与<code>CMD</code>规范，而这些规范具体是指什么呢，下面以仿照<code>sea.js</code>的源码自己实现一个简单的模块加载器来具体了解<code>CMD</code>规范。</p>
+<a id="more"></a>
+<p>还是先来实现一个最简单的模块加载器。</p>
+<h2 id="现代模块机制"><a href="#现代模块机制" class="headerlink" title="现代模块机制"></a>现代模块机制</h2><p>下面以一个简单的例子来介绍模块机制。<br><code>html</code>文件内加载了三个<code>js</code>文件，<code>fakeSea</code>为核心库，<code>say.js</code>声明了一个方法<code>say()</code>可以打印<code>hello</code>，<code>main.js</code>引入<code>say.js</code>并使用该方法。</p>
+<p>所以下面的代码可以在浏览器中打印出<code>hello</code>。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>实现简单的 CMD 模块加载器<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./fakeSea.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./say.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./main.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// fakeSea.js</span></span><br><span class="line"><span class="keyword">var</span> <span class="built_in">module</span> = &#123;&#125;</span><br><span class="line">;(<span class="function"><span class="keyword">function</span> (<span class="params">global</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 内部保存模块的对象</span></span><br><span class="line">    <span class="keyword">var</span> providedMods = &#123;&#125;</span><br><span class="line">    <span class="comment">// 使用模块</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">load</span> (<span class="params">ids, callback</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> deps = []</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = ids.length; i &lt; len; i++) &#123;</span><br><span class="line">            <span class="comment">// 获取保存在 module 内的模块，放入 deps 数组中</span></span><br><span class="line">            deps[i] = providedMods[ids[i]]</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        callback &amp;&amp; callback.apply(<span class="literal">null</span>, deps)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 声明模块</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">declare</span> (<span class="params">name, mod</span>) </span>&#123;</span><br><span class="line">        providedMods[name] = mod</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">module</span>.load = load</span><br><span class="line">    <span class="built_in">module</span>.declare = declare</span><br><span class="line">&#125;)(<span class="keyword">this</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// say.js</span></span><br><span class="line"><span class="built_in">module</span>.declare(<span class="string">'say'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    alert(<span class="string">'hello'</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"><span class="built_in">module</span>.load([<span class="string">'say'</span>], <span class="function"><span class="keyword">function</span> (<span class="params">say</span>) </span>&#123;</span><br><span class="line">    say()</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h3 id="为什么使用模块化"><a href="#为什么使用模块化" class="headerlink" title="为什么使用模块化"></a>为什么使用模块化</h3><p>当然在一个<code>js</code>文件中声明方法，另一个文件中使用，不用这种所谓的<strong>模块化</strong>也可以实现，但是存在一个问题就是存在太多全局变量。而使用模块化，全局只存在<code>module</code>一个变量。</p>
+<p>而且，现在虽然需要手动在<code>html</code>内引入<code>say.js</code>和<code>main.js</code>，但完善后的<code>fakeSea.js</code>，仅仅只需要引入<code>fakeSea.js</code>一个文件。</p>
+<p>同时，需要注意到先引入了<code>say.js</code>再引入<code>main.js</code>，因为<code>main.js</code>需要用到<code>say.js</code>内的函数，即<code>main.js</code>依赖<code>say.js</code>，使用模块化后就不需要担心先后顺序，都在内部进行了处理。</p>
+<h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p>很明显能够看出这是利用了“闭包”，<code>providedMods</code>变量存在于自执行函数的作用域内，按理说外部无法访问到，但是同时存在于该函数作用域内还有<code>load</code>以及<code>declare</code>函数，这两个函数能够访问到，所以<code>declare</code>用来修改<code>providedMods</code>变量，<code>load</code>用来获取<code>providedMods</code>变量。</p>
+<p>最后将这两个函数暴露至全局，外部就能够借助着两个函数访问作用域内的变量了。</p>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><p><code>sea.js</code>最初版本代码量虽然不多只有七百余行，但为了降低难度还是从”简陋版“过渡到”完善版“，一个一个功能点进行实现。</p>
+<h3 id="自动处理依赖"><a href="#自动处理依赖" class="headerlink" title="自动处理依赖"></a>自动处理依赖</h3><p>只需要指定入口文件，不需要关心先引入哪个模块，我们现在来实现该功能点。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>实现简单的 CMD 模块加载器<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./fakeSea.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./main.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// say.js</span></span><br><span class="line"><span class="built_in">module</span>.declare(<span class="function"><span class="keyword">function</span> (<span class="params">exports</span>) </span>&#123;</span><br><span class="line">    exports.say = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    	alert(<span class="string">'hello'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"><span class="built_in">module</span>.load([<span class="string">'./say.js'</span>], <span class="function"><span class="keyword">function</span> (<span class="params">module</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">module</span>.say()</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>可以看到<code>main.js</code>中指定了<code>say</code>模块的地址为<code>./say.js</code>，声明模块的方式也改变为<code>declare</code>方法接收函数作为参数，在函数内使用<code>exports</code>导出模块。</p>
+<h4 id="生成-script-标签"><a href="#生成-script-标签" class="headerlink" title="生成 script 标签"></a>生成 script 标签</h4><p>当<code>load</code>模块时，如果模块存在，就可以像上面一样直接使用，不存在则需要借助<code>script</code>标签加载该文件。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">load</span> (<span class="params">ids, callback</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 筛选出未加载的模块</span></span><br><span class="line">    <span class="keyword">var</span> urls = getUnMemoized(ids)</span><br><span class="line">    <span class="comment">// 如果未加载的模块数量为 0 ，表示都是已经加载好的模块，就可以直接调用回调函数了</span></span><br><span class="line">    <span class="keyword">if</span> (urls.length === <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> deps = []</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = ids.length; i &lt; len; i++) &#123;</span><br><span class="line">            <span class="comment">// 获取保存在 module 内的模块，放入 deps 数组中</span></span><br><span class="line">            deps[i] = providedMods[ids[i]]</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        callback &amp;&amp; callback.apply(<span class="literal">null</span>, deps)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 不然的话就要加载该模块</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = urls.length; i &lt; len; i++) &#123;</span><br><span class="line">            <span class="comment">// 使用 provide 函数来加载新模块</span></span><br><span class="line">            provide(urls[i])</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 筛选未加载的模块</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getUnMemoized</span> (<span class="params">ids</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> unLoadMods = []</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = ids.length; i &lt; len; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!providedMods[ids[i]]) unLoadMods.push(ids[i])</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> unLoadMods</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>重点在于<code>provide</code>函数，</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 加载新模块</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">provide</span> (<span class="params">url</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>)</span><br><span class="line">    script.src = url</span><br><span class="line">    script.async = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">var</span> head = <span class="built_in">document</span>.getElementsByTagName(<span class="string">'head'</span>)[<span class="number">0</span>]</span><br><span class="line">    head.appendChild(script)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可想而知，当<code>provide(&#39;./say.js&#39;)</code>的时候，会生成一个<code>script</code>标签插入<code>head</code>内，当文件下载成功，就会立即执行其中的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.declare(<span class="function"><span class="keyword">function</span> (<span class="params">exports</span>) </span>&#123;</span><br><span class="line">    exports = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        alert(<span class="string">'hello'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>我们”假设“该文件加载成功后，模块就被定义好了可以使用了，那就应该在文件加载成功的时候，通知<code>load</code>函数可以执行回调函数了是吧，所以需要用到多个回调函数：</p>
+<p><img src="/blog/2017/04/16/fakeSea-1/46971596-810F-4DC9-9A99-5B7766D40289.png" alt="回调流程"></p>
+<p>增加好回调函数后，刷新浏览器如果报错<code>TypeError: say in not a function</code>表示成功，能够执行我们想要执行的函数。</p>
+<h3 id="保存模块"><a href="#保存模块" class="headerlink" title="保存模块"></a>保存模块</h3><p>由于<code>load</code>时会从<code>providedMods</code>对象中获取需要的模块，所以肯定要在<code>script</code>标签下载文件成功后，将该模块加入到该全局对象中。</p>
+<p>为什么不在<code>declare</code>函数内完成该功能？因为<code>declare</code>只接收一个函数，没有<code>name</code>字段，不知道该怎么保存。</p>
+<p><code>sea.js</code>的实现是，在<code>declare</code>内将函数加入到一个数组中，再在能够拿到<code>name</code>的地方取出来。</p>
+<p>比如<code>provide</code>函数内，因为此时有<code>url</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 加载新模块</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">provide</span> (<span class="params">url, callback</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>)</span><br><span class="line">    script.addEventListener(<span class="string">'load'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = pendingMods.length; i &lt; len; i++) &#123;</span><br><span class="line">            <span class="keyword">var</span> mod = pendingMods[i]</span><br><span class="line">            <span class="comment">// 加入全局对象</span></span><br><span class="line">            mod &amp;&amp; memoize(url, mod)</span><br><span class="line">        &#125;</span><br><span class="line">        callback()</span><br><span class="line">    &#125;)</span><br><span class="line">    script.src = url</span><br><span class="line">    script.async = <span class="literal">true</span></span><br><span class="line">    <span class="keyword">var</span> head = <span class="built_in">document</span>.getElementsByTagName(<span class="string">'head'</span>)[<span class="number">0</span>]</span><br><span class="line">    head.appendChild(script)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="获取模块"><a href="#获取模块" class="headerlink" title="获取模块"></a>获取模块</h3><p>OK，我们现在假定已经完成了模块加载，现在是要调用<code>load</code>的回调函数了，我们需要将模块作为参数传入。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用模块</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">load</span> (<span class="params">ids, callback</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 筛选出未加载的模块</span></span><br><span class="line">    <span class="keyword">var</span> urls = getUnMemoized(ids)</span><br><span class="line">    <span class="comment">// 如果未加载的模块数量为 0 ，表示都是已经加载好的模块，就可以直接调用回调函数了</span></span><br><span class="line">    <span class="keyword">if</span> (urls.length === <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">var</span> deps = []</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = ids.length; i &lt; len; i++) &#123;</span><br><span class="line">            <span class="comment">// 获取保存在 module 内的模块，放入 deps 数组中</span></span><br><span class="line">            deps[i] = providedMods[ids[i]]</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        callback &amp;&amp; callback.apply(<span class="literal">null</span>, deps)</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 不然的话就要加载该模块</span></span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = urls.length; i &lt; len; i++) &#123;</span><br><span class="line">            <span class="comment">// 使用 provide 函数来加载新模块</span></span><br><span class="line">            provide(urls[i], <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">                callback()</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这部分代码肯定是没有用了，因为<code>providedMods[&#39;./say.js&#39;]</code>对应的值是：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> (<span class="params">exports</span>) </span>&#123;</span><br><span class="line">    exports.say = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        alert(<span class="string">'hello'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们需要的是<code>exports</code>这个变量，而不是整个函数。我们声明一个<code>require</code>函数用来获取依赖。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取依赖</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">require</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> factory = providedMods[id]</span><br><span class="line">    <span class="keyword">var</span> exports = &#123;&#125;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> factory === <span class="string">'function'</span>) &#123;</span><br><span class="line">        factory(exports)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> exports</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过声明一个空对象，作为参数传入后，经过<code>factory</code>的”加工“后，就变成了<code>say</code>函数。</p>
+<p>不过发现之前<code>load</code>代码存在很大的问题，如果</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">load([<span class="string">'a.js'</span>, <span class="string">'b.js'</span>], <span class="function"><span class="keyword">function</span> (<span class="params">a, b</span>)</span>&#123;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><code>a.js</code>和<code>b.js</code>都不存在需要使用<code>script</code>加载，而<code>provide</code>函数在<code>for</code>循环内，每加载成功一个<code>js</code>文件就要调用一次<code>callback</code>很明显不对。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = urls.length; i &lt; len; i++) &#123;</span><br><span class="line">    <span class="comment">// 使用 provide 函数来加载新模块</span></span><br><span class="line">    provide(urls[i], <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    	<span class="comment">// 会调用 urls.length 次数 </span></span><br><span class="line">        callback()</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>所以要重写。。。。怎么写呢，将<code>load</code>函数名改为<code>provide</code>，<code>provide</code>改为<code>fetch</code>，再新增<code>load</code>函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用模块</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">load</span> (<span class="params">ids, callback</span>) </span>&#123;</span><br><span class="line">    provide.call(<span class="literal">null</span>, ids, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> args = []</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = ids.length; i &lt; len; i++) &#123;</span><br><span class="line">            <span class="keyword">var</span> mod = <span class="built_in">require</span>(ids[i])</span><br><span class="line">            <span class="keyword">if</span> (mod) &#123;</span><br><span class="line">                args.push(mod)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        callback &amp;&amp; callback.apply(<span class="literal">null</span>, args)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// fakeSea.js</span></span><br><span class="line"><span class="keyword">var</span> <span class="built_in">module</span> = &#123;&#125;</span><br><span class="line">;(<span class="function"><span class="keyword">function</span> (<span class="params">global</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 内部保存模块的对象</span></span><br><span class="line">    <span class="keyword">var</span> providedMods = &#123;&#125;</span><br><span class="line">    <span class="comment">// 临时保存声明的模块</span></span><br><span class="line">    <span class="keyword">var</span> pendingMods = []</span><br><span class="line">    <span class="comment">// 使用模块</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">load</span> (<span class="params">ids, callback</span>) </span>&#123;</span><br><span class="line">        provide.call(<span class="literal">null</span>, ids, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> args = []</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = ids.length; i &lt; len; i++) &#123;</span><br><span class="line">                <span class="keyword">var</span> mod = <span class="built_in">require</span>(ids[i])</span><br><span class="line">                <span class="keyword">if</span> (mod) &#123;</span><br><span class="line">                    args.push(mod)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            callback &amp;&amp; callback.apply(<span class="literal">null</span>, args)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// </span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">provide</span> (<span class="params">ids, callback</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 筛选出未加载的模块</span></span><br><span class="line">        <span class="keyword">var</span> urls = getUnMemoized(ids)</span><br><span class="line">        <span class="comment">// 如果未加载的模块数量为 0 ，表示都是已经加载好的模块，就可以直接调用回调函数了</span></span><br><span class="line">        <span class="keyword">if</span> (urls.length === <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> callback &amp;&amp; callback.apply(<span class="literal">null</span>, deps)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 不然的话就要加载该模块</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = urls.length, count = len; i &lt; len; i++) &#123;</span><br><span class="line">                <span class="comment">// 使用 fetch 函数来加载新模块</span></span><br><span class="line">                fetch(urls[i], <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">                    <span class="comment">// 当模块都加载成功了，才调用回调函数</span></span><br><span class="line">                    --count === <span class="number">0</span> &amp;&amp; callback()</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 声明模块</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">declare</span> (<span class="params">factory</span>) </span>&#123;</span><br><span class="line">        pendingMods.push(factory)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 将模块加入到全局对象中</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">memoize</span> (<span class="params">url, mod</span>) </span>&#123;</span><br><span class="line">        providedMods[url] = mod</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 筛选未加载的模块</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">getUnMemoized</span> (<span class="params">ids</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> unLoadMods = []</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = ids.length; i &lt; len; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (!providedMods[ids[i]]) unLoadMods.push(ids[i])</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> unLoadMods</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 加载新模块</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">fetch</span> (<span class="params">url, callback</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> script = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>)</span><br><span class="line">        script.addEventListener(<span class="string">'load'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>, len = pendingMods.length; i &lt; len; i++) &#123;</span><br><span class="line">                <span class="keyword">var</span> mod = pendingMods[i]</span><br><span class="line">                <span class="comment">// 加入全局对象</span></span><br><span class="line">                mod &amp;&amp; memoize(url, mod)</span><br><span class="line">            &#125;</span><br><span class="line">            callback()</span><br><span class="line">        &#125;)</span><br><span class="line">        script.src = url</span><br><span class="line">        script.async = <span class="literal">true</span></span><br><span class="line">        <span class="keyword">var</span> head = <span class="built_in">document</span>.getElementsByTagName(<span class="string">'head'</span>)[<span class="number">0</span>]</span><br><span class="line">        head.appendChild(script)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 获取依赖</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">require</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> factory = providedMods[id]</span><br><span class="line">        <span class="keyword">var</span> exports = &#123;&#125;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> factory === <span class="string">'function'</span>) &#123;</span><br><span class="line">            factory(exports)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> exports</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">module</span>.load = load</span><br><span class="line">    <span class="built_in">module</span>.declare = declare</span><br><span class="line">&#125;)(<span class="keyword">this</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.js</span></span><br><span class="line"><span class="built_in">module</span>.load([<span class="string">'./say.js'</span>], <span class="function"><span class="keyword">function</span> (<span class="params">module</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">module</span>.say()</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// say.js</span></span><br><span class="line"><span class="built_in">module</span>.declare(<span class="function"><span class="keyword">function</span> (<span class="params">exports</span>) </span>&#123;</span><br><span class="line">    exports.say = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        alert(<span class="string">'hello'</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>虽然仅仅是一个简单的模块加载器，但是也能够大概了解如何获取模块、如何保存模块。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/模块加载器/" rel="tag"># 模块加载器</a>
+          
+            <a href="/blog/tags/轮子/" rel="tag"># 轮子</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2017/04/12/fakeVelocity-3/" rel="next" title="模仿 velocity.js 实现 DOM 动画类库（三）">
+                <i class="fa fa-chevron-left"></i> 模仿 velocity.js 实现 DOM 动画类库（三）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2017/04/29/类名与组件化/" rel="prev" title="类名与组件化">
+                类名与组件化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#现代模块机制"><span class="nav-number">1.</span> <span class="nav-text">现代模块机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么使用模块化"><span class="nav-number">1.1.</span> <span class="nav-text">为什么使用模块化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">1.2.</span> <span class="nav-text">原理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-number">2.</span> <span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自动处理依赖"><span class="nav-number">2.1.</span> <span class="nav-text">自动处理依赖</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#生成-script-标签"><span class="nav-number">2.1.1.</span> <span class="nav-text">生成 script 标签</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#保存模块"><span class="nav-number">2.2.</span> <span class="nav-text">保存模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取模块"><span class="nav-number">2.3.</span> <span class="nav-text">获取模块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#完整代码"><span class="nav-number">2.4.</span> <span class="nav-text">完整代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

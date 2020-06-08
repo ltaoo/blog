@@ -1,0 +1,780 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript,Promise," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Promise在日常中经常用到，并且也能够熟练使用： 1234567new Promise((resolve) =&amp;gt; &amp;#123;  console.log(&apos;a&apos;)  resolve(&apos;b&apos;)  console.log(&apos;c&apos;)&amp">
+<meta name="keywords" content="JavaScript,Promise">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一次「错误」的 Promise 实现 - 1">
+<meta property="og:url" content="http://yoursite.com/2018/02/11/一次「错误」的 Promise 实现/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="Promise在日常中经常用到，并且也能够熟练使用： 1234567new Promise((resolve) =&amp;gt; &amp;#123;  console.log(&apos;a&apos;)  resolve(&apos;b&apos;)  console.log(&apos;c&apos;)&amp;#125;).then((data) =&amp;gt; &amp;#123;  console.log(data)&amp;#125;); 上面代码会依次打印a、c、b，对此我们都毫无">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://oyy3cbpm3.bkt.clouddn.com/15182655749667.jpg">
+<meta property="og:image" content="http://oyy3cbpm3.bkt.clouddn.com/15182662332911.jpg">
+<meta property="og:image" content="http://oyy3cbpm3.bkt.clouddn.com/15182672169883.jpg">
+<meta property="og:updated_time" content="2018-02-18T15:07:31.576Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一次「错误」的 Promise 实现 - 1">
+<meta name="twitter:description" content="Promise在日常中经常用到，并且也能够熟练使用： 1234567new Promise((resolve) =&amp;gt; &amp;#123;  console.log(&apos;a&apos;)  resolve(&apos;b&apos;)  console.log(&apos;c&apos;)&amp;#125;).then((data) =&amp;gt; &amp;#123;  console.log(data)&amp;#125;); 上面代码会依次打印a、c、b，对此我们都毫无">
+<meta name="twitter:image" content="http://oyy3cbpm3.bkt.clouddn.com/15182655749667.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/02/11/一次「错误」的 Promise 实现/"/>
+
+
+
+
+
+  <title> 一次「错误」的 Promise 实现 - 1 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2018/02/11/一次「错误」的 Promise 实现/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                一次「错误」的 Promise 实现 - 1
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-02-11T08:00:00+08:00">
+              2018-02-11
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2018-02-18T23:07:31+08:00">
+              2018-02-18
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><code>Promise</code>在日常中经常用到，并且也能够熟练使用：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'a'</span>)</span><br><span class="line">  resolve(<span class="string">'b'</span>)</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'c'</span>)</span><br><span class="line">&#125;).then(<span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(data)</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>上面代码会依次打印<code>a、c、b</code>，对此我们都毫无疑义。</p>
+<p>但是为什么呢？我们能自己实现一个<code>Promise</code>库吗？</p>
+<a id="more"></a>
+<h2 id="「错误」的实现"><a href="#「错误」的实现" class="headerlink" title="「错误」的实现"></a>「错误」的实现</h2><p>不参考任何教程、代码，只从上面的结果推理出<code>Promise</code>是什么样的，或许正确，或许错误。但这也是最有趣的地方，完成后可以与其他<code>Promise</code>库对照，差距究竟差在哪。</p>
+<blockquote>
+<p>读者，也就是你，如果真的想对<code>Promise</code>深入了解，更正确的做法也是自己手撸一个，而不是从各种「二手信息」（包括此文）中学习。</p>
+</blockquote>
+<p>话不多说，开始探索之旅。</p>
+<h3 id="Promise-类"><a href="#Promise-类" class="headerlink" title="Promise 类"></a>Promise 类</h3><p>首先分析上面的代码，很容易看出是先调用<code>new</code>关键字生成<code>Promise</code>实例，并执行传入的参数，假设形参是<code>fn</code>。</p>
+<p>然后调用得到的实例上的<code>then</code>方法，也传入一个参数，该参数也会被调用，假设该形参为<code>resolved</code>。</p>
+<p>所以<code>Promise</code>类应该是这样的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 用 FakePromise 避免覆盖原生的 Promise</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FakePromise</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(fn) &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    then(resolved) &#123;  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="constructor-NaN"><a href="#constructor-NaN" class="headerlink" title="constructor"></a>constructor</h3><p>而我们又知道，在调用<code>new</code>关键字时，马上就会打印<code>a、c</code>，这表示传入的参数<code>fn</code>被立即调用了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">constructor</span>(fn) &#123;</span><br><span class="line">    fn();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>并且该函数有形参<code>resolve</code>会被调用时使用，所以在调用<code>fn</code>时还要传入实参<code>resolve</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">constructor</span>(fn) &#123;</span><br><span class="line">    fn(resolve);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>那么问题来了，这个<code>resolve</code>实参是哪里来的？或许是在全局的一个函数？那么试试看好了：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">resolve</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FakePromise</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(fn) &#123;</span><br><span class="line">        fn(resolve);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    then(resolved) &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用开始的实例测试一下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> FakePromise(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'a'</span>);</span><br><span class="line">    resolve(<span class="string">'b'</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'c'</span>);</span><br><span class="line">&#125;)</span><br><span class="line">    .then(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(res);</span><br><span class="line">    &#125;);</span><br><span class="line">    </span><br><span class="line"><span class="comment">// a</span></span><br><span class="line"><span class="comment">// c</span></span><br></pre></td></tr></table></figure>
+<p>bingo！没有报错就是好的开始，好的开始就是成功了一半~~~</p>
+<h3 id="then-方法"><a href="#then-方法" class="headerlink" title="then 方法"></a>then 方法</h3><p>继续，我们从开始的例子打印的结果<code>a、c、b</code>可以知道在调用<code>then</code>方法后，也会调用传入的参数<code>resolved</code>，并且还接受一个参数，该参数为<code>constructor</code>内<code>resolve</code>的实参。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FakePromise</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(fn) &#123;</span><br><span class="line">        fn(resolve);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    then(resolved) &#123;</span><br><span class="line">        resolved(params);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="http://oyy3cbpm3.bkt.clouddn.com/15182655749667.jpg" alt="resolved的参数即resolve的实参"></p>
+<p>整体观察一下，在「1」调用了「2」，此时「2」是可以拿到<code>b</code>这个参数的，是否可以将参数保存起来作为全局变量，在「3」处使用呢？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> globalParam = <span class="literal">null</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">resolve</span>(<span class="params">param</span>) </span>&#123;</span><br><span class="line">    globalParam = param;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FakePromise</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(fn) &#123;</span><br><span class="line">        fn(resolve);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    then(resolved) &#123;</span><br><span class="line">        resolved(globalParam);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>再实际测试一下，成功打印<code>a、c、b</code>！！实际的<code>Promise</code>就这么简单吗？</p>
+<p>用复杂些的例子测试：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> FakePromise(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'a'</span>);</span><br><span class="line">    <span class="comment">// resolve('b');</span></span><br><span class="line">    setTimeout(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">        resolve(<span class="string">'b'</span>);</span><br><span class="line">    &#125;, <span class="number">1000</span>);</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'c'</span>);</span><br><span class="line">&#125;)</span><br><span class="line">    .then(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(res);</span><br><span class="line">    &#125;);</span><br><span class="line"><span class="comment">// a</span></span><br><span class="line"><span class="comment">// c</span></span><br><span class="line"><span class="comment">// null</span></span><br></pre></td></tr></table></figure>
+<p>结果是<code>&#39;a&#39;、&#39;c&#39;、null</code>，此时流程是这样的（按执行顺序）：</p>
+<p><img src="http://oyy3cbpm3.bkt.clouddn.com/15182662332911.jpg" alt="流程图"></p>
+<p><code>resolved</code>在<code>resolve</code>前执行，导致<code>globalParam = param</code>没有执行，所以传入的是<code>null</code>。</p>
+<h3 id="then-与-resolve-的顺序"><a href="#then-与-resolve-的顺序" class="headerlink" title="then 与 resolve 的顺序"></a>then 与 resolve 的顺序</h3><p>问题出在哪里呢？</p>
+<p>可以想到，必须要<code>resolve(&#39;b&#39;)</code>执行完后，才能调用<code>resolved</code>。</p>
+<blockquote>
+<p>resolved: hi，resolve，执行了吗？<br>resolve: 还没呢，再等会，要不然我通知你吧，不然你每隔一秒就来问也挺累的。<br>resolved: 那成，麻烦你了啊老铁</p>
+</blockquote>
+<p>按照这个思路，修改下代码，如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> globalResolved = <span class="literal">null</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">resolve</span>(<span class="params">param</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (globalResolved) &#123;</span><br><span class="line">        globalResolved(param);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FakePromise</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(fn) &#123;</span><br><span class="line">        fn(resolve);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    then(resolved) &#123;</span><br><span class="line">        <span class="comment">// resolved(globalParam);</span></span><br><span class="line">        <span class="comment">// 这里不能立即调用 resolve，必须等 resolve 通知</span></span><br><span class="line">        <span class="comment">// 那就先保存起来</span></span><br><span class="line">        globalResolved = resolved;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在<code>then</code>方法内，不立即执行传入的<code>resolved</code>了，而是保存起来，等待<code>resolve</code>执行完成后再调用，就实现了「<code>resolve</code>通知<code>resolved</code>」。</p>
+<p>实际测试发现在打印<code>&#39;c&#39;</code>后延迟 1s 后打印了<code>&#39;b&#39;</code>。</p>
+<p>但是发现使用开始的例子测试又出问题了：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> FakePromise(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'a'</span>);</span><br><span class="line">    resolve(<span class="string">'b'</span>);</span><br><span class="line">    <span class="comment">// setTimeout(() =&gt; &#123;</span></span><br><span class="line">    <span class="comment">//     resolve('b');</span></span><br><span class="line">    <span class="comment">// &#125;, 1000);</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'c'</span>);</span><br><span class="line">&#125;)</span><br><span class="line">    .then(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(res);</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line"><span class="comment">// a</span></span><br><span class="line"><span class="comment">// c</span></span><br></pre></td></tr></table></figure>
+<p>只打印了<code>&#39;a&#39;、&#39;c&#39;</code>，这是因为先执行<code>resolve(&#39;b&#39;)</code>后才执行<code>resolved()</code>。</p>
+<p>用上面的例子来说，就是<code>resolve</code>想要通知<code>resolved</code>时发现<code>resolved</code>还没出现。。。</p>
+<blockquote>
+<p>resolve: 老铁，你要的参数来了，老铁呢？</p>
+</blockquote>
+<h3 id="「成功」的实现"><a href="#「成功」的实现" class="headerlink" title="「成功」的实现"></a>「成功」的实现</h3><p>如果这样，还要判断<code>then</code>是否执行？</p>
+<p>捋一捋，首先我们可以认为两个函数是同时执行的（同一个 task）</p>
+<ul>
+<li>constructor</li>
+<li>then</li>
+</ul>
+<p>当调用<code>then</code>的实参<code>resolved</code>时，<code>constructor</code>的实参<code>fn</code>内可能还有函数<code>setTimeout</code>在执行。</p>
+<p>所以是全局<code>resolve</code>的调用时间不确定，只能在它调用时去通知<code>resolved</code>，并且还要判断<code>resolved</code>是否存在。</p>
+<p><img src="http://oyy3cbpm3.bkt.clouddn.com/15182672169883.jpg" alt="可能的流程图"></p>
+<p>思路没有问题，回顾下之前的实现：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第一次的尝试，由 then 的参数 resolved 通知</span></span><br><span class="line"><span class="keyword">let</span> globalParam = <span class="literal">null</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">resolve</span>(<span class="params">param</span>) </span>&#123;</span><br><span class="line">    globalParam = param;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 第二次的尝试，由 resolve 通知</span></span><br><span class="line"><span class="keyword">let</span> globalResolved = <span class="literal">null</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">resolve</span>(<span class="params">param</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (globalResolved) &#123;</span><br><span class="line">        globalResolved(param);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果把这两者结合起来呢？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> globalParam = <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">let</span> globalResolved = <span class="literal">null</span>;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">resolve</span>(<span class="params">param</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 2</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> param === <span class="string">'function'</span>) &#123;</span><br><span class="line">        <span class="comment">// 3</span></span><br><span class="line">        <span class="keyword">if</span> (globalParam) &#123;</span><br><span class="line">            param(globalParam);</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        globalResolved = param;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 4</span></span><br><span class="line">    <span class="keyword">if</span> (globalResolved) &#123;</span><br><span class="line">        globalResolved(param);</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 1</span></span><br><span class="line">    globalParam = param;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FakePromise</span> </span>&#123;</span><br><span class="line">    <span class="keyword">constructor</span>(fn) &#123;</span><br><span class="line">        fn(resolve);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    then(resolved) &#123;</span><br><span class="line">        resolve(resolved);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>思路就是分两种情况，</p>
+<p>1、假设<code>constructor</code>内的<code>resolve</code>先执行了，此时还没有<code>globalResolved</code>，就保存<code>param</code>，即上面代码的「1」。</p>
+<p>然后会执行到<code>then</code>方法中的<code>resolve(resolved)</code>，「2」「3」处的条件为真，成功。</p>
+<p>2、假设先执行了<code>then</code>的<code>resolve(resolved)</code>，能够通过「2」的条件判断，但是无法通过「3」，所以保存了参数到<code>globalResolved</code>变量中。然后执行到了<code>constructor</code>内的<code>resolve</code>，「4」条件为真，也能够成功打印。</p>
+<p>总之<code>resolve</code>必须要被调用两次。</p>
+<p>代码在两种情况下都能够成功打印需要的结果，但仔细思考，如果<code>constructor</code>内的<code>resolve</code>参数是一个函数呢？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">new</span> FakePromise(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'a'</span>);</span><br><span class="line">    resolve(<span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'i am function'</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="comment">// setTimeout(() =&gt; &#123;</span></span><br><span class="line">    <span class="comment">//     resolve('b');</span></span><br><span class="line">    <span class="comment">// &#125;, 1000);</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'c'</span>);</span><br><span class="line">&#125;)</span><br><span class="line">    .then(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(res);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="各种错误"><a href="#各种错误" class="headerlink" title="各种错误"></a>各种错误</h3><p>脑洞告一段落，虽然「实现」了需要的功能，但实际上并没有按照规范来，比如我们都知道<code>Promise</code>在执行过程中是有「状态」的，并且必然是以下其中一种状态</p>
+<ul>
+<li>Pending</li>
+<li>Fulfilled</li>
+<li>Rejected</li>
+</ul>
+<p>参考 <a href="https://github.com/then/promise" target="_blank" rel="noopener">Bare bones Promises/A+ implementation</a> 发现核心原理和上面的类似，除了一些潜在的<code>bug</code>、没有状态等等，一个最大的问题是代码都是<strong>同步执行</strong>，即在一个 task 中，而规范要求</p>
+<blockquote>
+<p>实践中要确保 onFulfilled 和 onRejected 方法异步执行，且应该在 then 方法被调用的那一轮事件循环之后的新执行栈中执行。</p>
+</blockquote>
+<p>举个例子，下面的代码执行结果是什么？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">console</span>.log(<span class="string">'start'</span>);</span><br><span class="line"><span class="comment">// 上面「错误」的 Promise 实现</span></span><br><span class="line"><span class="keyword">new</span> FakePromise(<span class="function">(<span class="params">resolve</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'a'</span>);</span><br><span class="line">    resolve(<span class="string">'b'</span>);</span><br><span class="line">    <span class="comment">// setTimeout(() =&gt; &#123;</span></span><br><span class="line">    <span class="comment">//     resolve('b');</span></span><br><span class="line">    <span class="comment">// &#125;, 1000);</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'c'</span>);</span><br><span class="line">&#125;)</span><br><span class="line">    .then(<span class="function">(<span class="params">res</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(res);</span><br><span class="line">    &#125;);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'end'</span>);</span><br></pre></td></tr></table></figure>
+<p>先仔细思考下。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">// 想清楚了？</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 确定吗？</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 确定你确定你想清楚了？</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// 好吧，来看答案</span><br></pre></td></tr></table></figure>
+<p>在使用自己实现的<code>FakePromise</code>时，输出为：<code>&#39;start&#39;、&#39;a&#39;、&#39;b&#39;、&#39;c&#39;、&#39;end&#39;</code>。</p>
+<p>将上面代码的<code>FakePromise</code>改为原生的<code>Promise</code>即可查看到正确的输出为：<code>&#39;start&#39;、&#39;a&#39;、&#39;c&#39;、&#39;end&#39;、&#39;b&#39;</code>。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>其实<code>Promise</code>也没有想象的难，花一些时间就能够实现。但相比实现了，更重要的是探索的过程，以及对于「规范」的了解。</p>
+<p>下一篇将<code>FakePromise</code>改造成「正确」的<code>Promise</code>实现，敬请期待~</p>
+<blockquote>
+<p>对于上面答案有疑义的可以看 <a href="http://ftandy.com/2015/08/23/2015-08-23-tasks-microtasks-queues-and-schedules/" target="_blank" rel="noopener">Tasks, microtasks, queues and schedules(译)</a> 这篇。</p>
+</blockquote>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="http://malcolmyu.github.io/malnote/2015/06/12/Promises-A-Plus/" target="_blank" rel="noopener">【翻译】Promises/A+规范</a></li>
+<li><a href="http://ftandy.com/2015/08/23/2015-08-23-tasks-microtasks-queues-and-schedules/" target="_blank" rel="noopener">Tasks, microtasks, queues and schedules(译)</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+            <a href="/blog/tags/Promise/" rel="tag"># Promise</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2018/02/09/可视化布局/" rel="next" title="可视化布局工具有价值吗？">
+                <i class="fa fa-chevron-left"></i> 可视化布局工具有价值吗？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2018/04/04/一次「错误」的 Promise 实现 - 2/" rel="prev" title="一次「错误」的 Promise 实现 - 2">
+                一次「错误」的 Promise 实现 - 2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#「错误」的实现"><span class="nav-number">1.</span> <span class="nav-text">「错误」的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Promise-类"><span class="nav-number">1.1.</span> <span class="nav-text">Promise 类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#constructor-NaN"><span class="nav-number">1.2.</span> <span class="nav-text">constructor</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#then-方法"><span class="nav-number">1.3.</span> <span class="nav-text">then 方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#then-与-resolve-的顺序"><span class="nav-number">1.4.</span> <span class="nav-text">then 与 resolve 的顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#「成功」的实现"><span class="nav-number">1.5.</span> <span class="nav-text">「成功」的实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#各种错误"><span class="nav-number">1.6.</span> <span class="nav-text">各种错误</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">2.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">3.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

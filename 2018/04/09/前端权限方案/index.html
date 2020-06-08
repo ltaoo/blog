@@ -1,0 +1,799 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="现如今我们访问的每个网站，或多或少都会存在「权限控制」。 以一个博客系统为例，系统内共有三种角色  1、游客 2、会员 3、管理员  不同角色支持不同的操作，比如  1、游客可以访问博客列表页、博客详情页 2、会员除游客权限外，还可以提交博客、提交评论、对博客进行编辑、删除操作等。 3、管理员除上述权限外，还可访问用户">
+<meta name="keywords" content="JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端怎么做好权限控制">
+<meta property="og:url" content="http://yoursite.com/2018/04/09/前端权限方案/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="现如今我们访问的每个网站，或多或少都会存在「权限控制」。 以一个博客系统为例，系统内共有三种角色  1、游客 2、会员 3、管理员  不同角色支持不同的操作，比如  1、游客可以访问博客列表页、博客详情页 2、会员除游客权限外，还可以提交博客、提交评论、对博客进行编辑、删除操作等。 3、管理员除上述权限外，还可访问用户管理页对用户进行管理。  上述说明「什么用户能够进行什么操作，不能进行什么操作」">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://oyy3cbpm3.bkt.clouddn.com/15231083412127.jpg">
+<meta property="og:updated_time" content="2018-05-02T04:03:54.849Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端怎么做好权限控制">
+<meta name="twitter:description" content="现如今我们访问的每个网站，或多或少都会存在「权限控制」。 以一个博客系统为例，系统内共有三种角色  1、游客 2、会员 3、管理员  不同角色支持不同的操作，比如  1、游客可以访问博客列表页、博客详情页 2、会员除游客权限外，还可以提交博客、提交评论、对博客进行编辑、删除操作等。 3、管理员除上述权限外，还可访问用户管理页对用户进行管理。  上述说明「什么用户能够进行什么操作，不能进行什么操作」">
+<meta name="twitter:image" content="http://oyy3cbpm3.bkt.clouddn.com/15231083412127.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/04/09/前端权限方案/"/>
+
+
+
+
+
+  <title> 前端怎么做好权限控制 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2018/04/09/前端权限方案/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                前端怎么做好权限控制
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-09T08:00:00+08:00">
+              2018-04-09
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2018-05-02T12:03:54+08:00">
+              2018-05-02
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>现如今我们访问的每个网站，或多或少都会存在「权限控制」。</p>
+<p>以一个博客系统为例，系统内共有三种角色</p>
+<ul>
+<li>1、游客</li>
+<li>2、会员</li>
+<li>3、管理员</li>
+</ul>
+<p>不同角色支持不同的操作，比如</p>
+<ul>
+<li>1、游客可以访问博客列表页、博客详情页</li>
+<li>2、会员除游客权限外，还可以提交博客、提交评论、对博客进行编辑、删除操作等。</li>
+<li>3、管理员除上述权限外，还可访问用户管理页对用户进行管理。</li>
+</ul>
+<p>上述说明「什么用户能够进行什么操作，不能进行什么操作」，可以理解为就是「权限」，根据这些权限，做出正确的处理，就是「权限控制」，而「角色」，是「权限」的集合，也方便我们对用户的定义。</p>
+<a id="more"></a>
+<h2 id="一、为什么要做权限控制"><a href="#一、为什么要做权限控制" class="headerlink" title="一、为什么要做权限控制"></a>一、为什么要做权限控制</h2><p>最主要的原因是有了「用户」的概念，需要对不同的用户提供不同的服务。</p>
+<p>如果一个博客系统没有权限控制，游客可以任意发布、编辑、删除博客，整个系统就乱了套，无法进行有效的管理。</p>
+<p>不过，这些都是针对后端而言的，对前端来说，做权限控制，很大程度上是为了用户体验，下面会解释这个观点。</p>
+<h2 id="二、如何做权限控制"><a href="#二、如何做权限控制" class="headerlink" title="二、如何做权限控制"></a>二、如何做权限控制</h2><h3 id="1、后端的权限控制"><a href="#1、后端的权限控制" class="headerlink" title="1、后端的权限控制"></a>1、后端的权限控制</h3><p>既然提到了「权限控制仅针对后端有用」，那么后端是如何做权限控制呢？</p>
+<p>以<code>Django</code>为例，初始化项目后，就会预置<code>&#39;django.contrib.auth&#39;</code>应用，该应用提供了现成的用户表、登录注册功能以及用户权限相关的功能，无需开发者自己实现。</p>
+<p>它的权限很简单，除了是否为管理员，就是对指定「数据表」是否有<code>add</code>、<code>change</code>和<code>delete</code>的权限了。</p>
+<p><img src="http://oyy3cbpm3.bkt.clouddn.com/15231083412127.jpg" alt=""></p>
+<p>当后端接收到请求，会做如下处理：</p>
+<ul>
+<li>1、获取当前请求属于哪个用户发出</li>
+<li>2、获取该用户拥有什么权限</li>
+<li>3、想要进行什么操作</li>
+<li>4、是否有该操作的权限</li>
+<li>5、成功操作或失败</li>
+</ul>
+<p>通过条件判断，给出用户操作的结果，就完成了后端的权限控制。</p>
+<h3 id="2、前端的权限控制"><a href="#2、前端的权限控制" class="headerlink" title="2、前端的权限控制"></a>2、前端的权限控制</h3><p>前端的权限控制，往往通过隐藏<code>DOM</code>元素实现，比如博客页面，作者和管理员可以看到「删除博客」按钮，游客则看不到。</p>
+<p>仅仅这样就够了吗？是的，这样就够了。</p>
+<p>作为前端开发，我们都听过「前端不可信」，即后端无论如何都不能相信前端发送的请求数据。</p>
+<p>无论<code>Web</code>端还是移动端，都是可以被「破解」的，通过抓包等手段，可以得到发送的实际请求，从而伪造请求并发送。</p>
+<p>假设会员 A 写了一篇博客，博客序号为 20，通过控制台得到删除该博客的请求为：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DELETE /api/blog/20/</span><br></pre></td></tr></table></figure>
+<p>会员A 退出登录后，身份变为了游客，当他访问另一篇序号为 21 的博客时，恶意的使用控制台发送<code>DELETE /api/blog/21/</code>的请求。</p>
+<p>如果后端完全相信前端而没有做权限判断，那博客 21 的作者就无故丢失了一篇博客。所以后端仍需要对发起请求的用户进行权限的判断，并给出正确的处理。</p>
+<blockquote>
+<p>问：既然后端都做好了权限控制，前端再做一次是不是没有必要？</p>
+</blockquote>
+<p>从「处理权限并返回处理结果」上来说，的确是没有必要。</p>
+<p>如果前端没有对游客隐藏「删除博客」按钮，游客点击删除后，返回提示「没有权限操作」，游客将十分困惑，「为什么能让我点击却又告诉我没有权限？」。</p>
+<p>从另一方面，尝试过一次「没有权限」的提示后，大部分都不会再去点了，但是可能会有一部分继续「疯狂操作」，就为了看看错误提示。。。</p>
+<p>对应这种情况，前端隐藏删除按钮后，提高了「误操作」成本，可以减轻一部分服务器的压力，避免处理一些无意义的请求。</p>
+<blockquote>
+<p>但是对于恶意用户，总是可以找出办法「疯狂操作」，所以说前端的权限控制，很大程度上是为了更好的用户体验。</p>
+</blockquote>
+<h2 id="三、前端权限控制具体方案"><a href="#三、前端权限控制具体方案" class="headerlink" title="三、前端权限控制具体方案"></a>三、前端权限控制具体方案</h2><p>在之前后端渲染模板的做法，当用户请求页面时，就可以得到用户角色，并判断是否有权限，如果没有则重定向到登录页或者错误页。</p>
+<p>模板渲染时，也可以在模板内根据用户角色决定是否渲染和权限有关的<code>DOM</code>。</p>
+<p>而现在流行的单页面应用，路由都交给了前端控制，模板内也无法直接获取到用户从而决定是否渲染，一切都交给了<code>js</code>处理。</p>
+<p>总体来说，分为三步，对，就和「如何将大象装进冰箱」这个问题的答案一样。</p>
+<ul>
+<li>1、获取用户角色</li>
+<li>2、保存用户角色</li>
+<li>3、判断用户角色并作出不同处理</li>
+</ul>
+<h3 id="1、获取用户角色"><a href="#1、获取用户角色" class="headerlink" title="1、获取用户角色"></a>1、获取用户角色</h3><p>要根据用户角色做不同的处理，首先要获取到用户角色。可以在登录时一并返回，也可以提供一个独立的接口用以请求。</p>
+<h3 id="2、保存用户角色"><a href="#2、保存用户角色" class="headerlink" title="2、保存用户角色"></a>2、保存用户角色</h3><p>角色往往和其他用户信息一样，保存在<code>localStorage</code>，也是因为除了这里，没有其他合适的地方了。</p>
+<blockquote>
+<p>也许会说保存在<code>localStorage</code>会不会不安全，很容易被篡改。的确可能，所以前面也提到，前端的权限，只是为了更好的用户体验，真正的权限控制必须要由后端来做。</p>
+</blockquote>
+<h3 id="3、根据角色进行处理"><a href="#3、根据角色进行处理" class="headerlink" title="3、根据角色进行处理"></a>3、根据角色进行处理</h3><p>当然，最难的就是这一步了，核心原理，就是<code>if</code>条件判断（废话），假设我们有这些角色：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> ROLE_MAP = &#123;</span><br><span class="line">    <span class="number">1</span>: <span class="string">'会员'</span>,</span><br><span class="line">    <span class="number">2</span>: <span class="string">'管理员'</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这是已登录用户，如未登录，则用户角色为「游客」。登录后会返回如下信息：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"username"</span>: <span class="string">"wuya"</span></span><br><span class="line">    <span class="string">"role"</span>: <span class="number">2</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>用户角色为 2，表示是「管理员」，所以能够看到「删除博客」按钮。</p>
+<p>以<code>vue</code>举例，简单在指定组件上使用<code>v-if</code>指令即可。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">template</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">button</span> <span class="attr">v-if</span>=<span class="string">"hasPermission"</span>&gt;</span>删除博客<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">template</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span></span><br><span class="line"><span class="javascript">    name: <span class="string">'permission_example'</span>,</span></span><br><span class="line"><span class="undefined">    data() &#123;</span></span><br><span class="line"><span class="javascript">        <span class="keyword">const</span> user = localStorage.getItem(<span class="string">'user'</span>);</span></span><br><span class="line"><span class="javascript">        <span class="keyword">return</span> &#123;</span></span><br><span class="line"><span class="undefined">            user,</span></span><br><span class="line"><span class="undefined">        &#125;;</span></span><br><span class="line"><span class="undefined">    &#125;,</span></span><br><span class="line"><span class="undefined">    computed: &#123;</span></span><br><span class="line"><span class="undefined">        hasPermission() &#123;</span></span><br><span class="line"><span class="javascript">            <span class="keyword">return</span> <span class="keyword">this</span>.user.role === <span class="number">2</span>;</span></span><br><span class="line"><span class="undefined">        &#125;</span></span><br><span class="line"><span class="undefined">    &#125;,</span></span><br><span class="line"><span class="undefined">&#125;</span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>如果是<code>react</code>则稍微麻烦一丢丢：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">App</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    state = &#123;</span><br><span class="line">        role: <span class="number">2</span>,</span><br><span class="line">    &#125;</span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">const</span> &#123;</span><br><span class="line">            role,</span><br><span class="line">        &#125; = <span class="keyword">this</span>.state;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">const</span> deleteBtn = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (role === <span class="number">2</span>) &#123;</span><br><span class="line">            deleteBtn = <span class="xml"><span class="tag">&lt;<span class="name">button</span>&gt;</span>删除博客<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;div&gt;</span><br><span class="line">                &#123;deleteBtn&#125;</span><br><span class="line">            &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">        );   </span></span><br><span class="line"><span class="regexp">    &#125;</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>完美解决~下班回家</p>
+<blockquote>
+<p>产品：等下，我觉得吧，管理员还是不能删博客，另外再加一个「专门删博客管理员」角色，只有他能删吧。</p>
+</blockquote>
+<p>…好的没问题，简单。增加角色，并将<code>2</code>改成了<code>3</code>（专门删博客管理员）。</p>
+<blockquote>
+<p>产品：为什么博客列表页管理员还是有删除按钮啊？</p>
+</blockquote>
+<p>啊，博客列表页还有删除按钮啊，我再补一下。。。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BlogList</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    state = &#123;</span><br><span class="line">        role: <span class="number">1</span>,</span><br><span class="line">        blogs: [],</span><br><span class="line">    &#125;</span><br><span class="line">    render() &#123;</span><br><span class="line">        <span class="keyword">const</span> &#123;</span><br><span class="line">            role,</span><br><span class="line">            blogs,</span><br><span class="line">        &#125; = <span class="keyword">this</span>.state;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">const</span> deleteBtn = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (role === <span class="number">3</span>) &#123;</span><br><span class="line">            deleteBtn = <span class="xml"><span class="tag">&lt;<span class="name">button</span>&gt;</span>删除博客<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> (</span><br><span class="line">            &lt;div&gt;</span><br><span class="line">                &#123;blogs.map(<span class="function"><span class="params">blog</span> =&gt;</span> (</span><br><span class="line">                    &lt;div&gt;</span><br><span class="line">                        &lt;p&gt;&#123;blog.title&#125;&lt;<span class="regexp">/p&gt;</span></span><br><span class="line"><span class="regexp">                        &#123;deleteBtn&#125;</span></span><br><span class="line"><span class="regexp">                    &lt;/</span>div&gt;</span><br><span class="line">                ))&#125;</span><br><span class="line">            &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">        );   </span></span><br><span class="line"><span class="regexp">    &#125;</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>产品：我又有个新想法。。。</p>
+</blockquote>
+<h2 id="四、权限组件"><a href="#四、权限组件" class="headerlink" title="四、权限组件"></a>四、权限组件</h2><p>为了避免这种枯燥且易出错的的方式，我们可以参考后端，将用以与用户交互的组件定义为「资源」，同时维护一组「角色」拥有的「资源」对照表。</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> React <span class="keyword">from</span> <span class="string">"react"</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 角色对应有什么资源的权限</span></span><br><span class="line"><span class="keyword">const</span> PERMISSION_MAP = &#123;</span><br><span class="line">  <span class="comment">// 声明会员有什么权限</span></span><br><span class="line">  <span class="number">1</span>: [],</span><br><span class="line">  <span class="comment">// 管理员拥有的权限</span></span><br><span class="line">  <span class="number">2</span>: [<span class="string">'deleteBlog'</span>]</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">PermissionWrapper</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  state = &#123;</span><br><span class="line">    role: <span class="number">1</span></span><br><span class="line">  &#125;;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; role &#125; = <span class="keyword">this</span>.state;</span><br><span class="line">    <span class="keyword">const</span> &#123; source &#125; = <span class="keyword">this</span>.props;</span><br><span class="line">    <span class="comment">// 如果当前用户有该资源权限，就展示该组件</span></span><br><span class="line">    <span class="keyword">if</span> (PERMISSION_MAP[role].includes(source)) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.props.children;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后就可以在页面上使用该组件了：</p>
+<figure class="highlight jsx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">App</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;PermissionWrapper source=<span class="string">"deleteBlog"</span>&gt;</span><br><span class="line">          &lt;button&gt;删除博客&lt;<span class="regexp">/button&gt;</span></span><br><span class="line"><span class="regexp">        &lt;/</span>PermissionWrapper&gt;</span><br><span class="line">      &lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">    );</span></span><br><span class="line"><span class="regexp">  &#125;</span></span><br><span class="line"><span class="regexp">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>如果出现需求反复变更的情况，只需要编辑<code>PERMISSION_MAP</code>这一个对象即可，即使删除博客按钮会出现在多个地方。</p>
+<p>这种方式可以减轻一部分维护成本。</p>
+<h3 id="1、核心逻辑"><a href="#1、核心逻辑" class="headerlink" title="1、核心逻辑"></a>1、核心逻辑</h3><p>核心逻辑还是之前提到的<code>if</code>判断，只是多了一个组件，将<code>if</code>条件判断移到了该组件内。</p>
+<p>所以任何框架都适用，再以<code>vue</code>为例，要实现上述功能，该怎么做。</p>
+<h3 id="2、vue-实现"><a href="#2、vue-实现" class="headerlink" title="2、vue 实现"></a>2、vue 实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  &lt;div&gt;</span><br><span class="line">    &lt;div v-if=&quot;hasPermission&quot;&gt;</span><br><span class="line">      &lt;slot name=&quot;content&quot;&gt;</span><br><span class="line">      &lt;/slot&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">const PERMISSION_MAP = &#123;</span><br><span class="line">  1: [],</span><br><span class="line">  2: [&quot;deleteBlog&quot;]</span><br><span class="line">&#125;;</span><br><span class="line">export default &#123;</span><br><span class="line">  name: &quot;Permission&quot;,</span><br><span class="line">  props: [&quot;source&quot;],</span><br><span class="line">  data() &#123;</span><br><span class="line">    return &#123;</span><br><span class="line">      user: &#123;</span><br><span class="line">        role: 1</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;,</span><br><span class="line">  computed: &#123;</span><br><span class="line">    hasPermission() &#123;</span><br><span class="line">      const &#123; role &#125; = this.user;</span><br><span class="line">      const &#123; source &#125; = this;</span><br><span class="line">      return PERMISSION_MAP[role].includes(source);</span><br><span class="line">    &#125;,</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>使用：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> &lt;Permission source=&quot;deleteBlog&quot;&gt;</span><br><span class="line">  &lt;div slot=&quot;content&quot;&gt;</span><br><span class="line">    &lt;button&gt;删除博客&lt;/button&gt;</span><br><span class="line">  &lt;/div&gt;</span><br><span class="line">&lt;/Permission&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="3、jQuery-实现"><a href="#3、jQuery-实现" class="headerlink" title="3、jQuery 实现"></a>3、jQuery 实现</h3><p>不同于使用框架可以决定是否渲染指定组件，采用<code>jQuery</code>只能隐藏或者移除指定的<code>DOM</code>，而且也不够优雅。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;body&gt;</span><br><span class="line">    &lt;button class=&quot;resource&quot; data-type=&quot;deleteBlog&quot;&gt;删除博客&lt;/button&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">    const PERMISSION_MAP = &#123;</span><br><span class="line">        1: [],</span><br><span class="line">        2: [&apos;deleteBlog&apos;],</span><br><span class="line">    &#125;;</span><br><span class="line">    const user = &#123;</span><br><span class="line">        role: 1,</span><br><span class="line">    &#125;;</span><br><span class="line">    $(document).ready(function () &#123;</span><br><span class="line">        const &#123; role &#125; = user;</span><br><span class="line">        resourceDOM = $(&apos;.resource&apos;);</span><br><span class="line">        for (let i = 0, l = resourceDOM.length; i &lt; l; i += 1) &#123;</span><br><span class="line">            const resource = resourceDOM[i];</span><br><span class="line">            const type = resource.dataset.type;</span><br><span class="line">            if (!PERMISSION_MAP[role].includes(type)) &#123;</span><br><span class="line">                resource.remove();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<h2 id="五、页面访问权限"><a href="#五、页面访问权限" class="headerlink" title="五、页面访问权限"></a>五、页面访问权限</h2><p>上面实现的权限组件，似乎只能处理页面内的组件，能处理页面吗？</p>
+<p>现在博客系统新增需求，游客无法访问所有页面，只能注册成为会员，登录后进行访问。</p>
+<p>使用<code>vue</code>的情况下，官方推荐在路由钩子内，进入页面前对当前用户权限进行判断并处理，能够进入，或者重定向到登录页。</p>
+<p>同样的，我们可以将「页面」视为资源，判断指定角色是否拥有该资源即可。</p>
+<p>使用<code>react</code>则麻烦一些，由于<code>react-router</code>没有提供路由钩子，无法像<code>vue</code>一样统一处理，</p>
+<p>但仍然可以和处理页面组件权限一样，有两种方案：</p>
+<ul>
+<li>1、修改页面组件</li>
+<li>2、修改<code>Route</code>组件</li>
+</ul>
+<h3 id="1、修改页面组件"><a href="#1、修改页面组件" class="headerlink" title="1、修改页面组件"></a>1、修改页面组件</h3><p>下面是博客列表页的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Blogs</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">    render() &#123;</span><br><span class="line">        &lt;Permission source=<span class="string">"blog_page"</span>&gt;</span><br><span class="line">            &lt;div&gt;...原先的页面代码&lt;<span class="regexp">/div&gt;</span></span><br><span class="line"><span class="regexp">        &lt;/</span>Permission&gt;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然能够在没有权限的情况下无法看到页面了，但显示一片空白也不好，我们可以在<code>Permission</code>内不返回<code>null</code>，而根据条件比如指定当前是处理页面，就返回一个<code>NotFound</code>页面。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">PermissionWrapper</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  state = &#123;</span><br><span class="line">    user: &#123;</span><br><span class="line">      role: <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; user &#125; = <span class="keyword">this</span>.state;</span><br><span class="line">    <span class="comment">// 声明资源类型，增加 page 参数</span></span><br><span class="line">    <span class="keyword">const</span> &#123; source, page &#125; = <span class="keyword">this</span>.props;</span><br><span class="line">    <span class="comment">// 如果当前用户有该资源权限，就展示该组件</span></span><br><span class="line">    <span class="keyword">if</span> (PERMISSION_MAP[user.role].includes(source)) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="keyword">this</span>.props.children;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> （page) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">NotFound</span> /&gt;</span></span></span><br><span class="line"><span class="xml">    &#125;</span></span><br><span class="line"><span class="xml">    return null;</span></span><br><span class="line"><span class="xml">  &#125;</span></span><br><span class="line"><span class="xml">&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="2、修改-Route-组件"><a href="#2、修改-Route-组件" class="headerlink" title="2、修改 Route 组件"></a>2、修改 Route 组件</h3><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">PermissionRoute</span> <span class="keyword">extends</span> <span class="title">React</span>.<span class="title">Component</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(props) &#123;</span><br><span class="line">    <span class="keyword">super</span>(props);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> &#123; resourceName, user = &#123;&#125; &#125; = props;</span><br><span class="line">    <span class="keyword">const</span> &#123; staffType &#125; = user;</span><br><span class="line">    <span class="keyword">this</span>.state = &#123;</span><br><span class="line">      hasPermission: <span class="keyword">this</span>.computedHasPermission(staffType, resourceName),</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">  componentWillReceiveProps(nextProps) &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; resourceName, user = &#123;&#125; &#125; = nextProps;</span><br><span class="line">    <span class="keyword">const</span> &#123; staffType &#125; = user;</span><br><span class="line">    <span class="keyword">const</span> hasPermission = <span class="keyword">this</span>.computedHasPermission(staffType, resourceName);</span><br><span class="line">    <span class="keyword">this</span>.setState(&#123;</span><br><span class="line">      hasPermission,</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line">  computedHasPermission = <span class="function">(<span class="params">staffType, resourceName</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> (permission[staffType] || []).includes(resourceName);</span><br><span class="line">  &#125;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; hasPermission &#125; = <span class="keyword">this</span>.state;</span><br><span class="line">    <span class="keyword">return</span> (</span><br><span class="line">      hasPermission ? <span class="xml"><span class="tag">&lt;<span class="name">Route</span> &#123;<span class="attr">...this.props</span>&#125; /&gt;</span> : <span class="tag">&lt;<span class="name">NotFound</span> /&gt;</span></span></span><br><span class="line"><span class="xml">    );</span></span><br><span class="line"><span class="xml">  &#125;</span></span><br><span class="line"><span class="xml">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>核心逻辑还是一致的，判断用户权限，如果有权限，则返回正常的<code>&lt;Route&gt;</code>，就可以渲染出预期的页面。否则显示<code>NotFound</code>页面。</p>
+<h2 id="六、缺点"><a href="#六、缺点" class="headerlink" title="六、缺点"></a>六、缺点</h2><p>虽然解决了一部分问题，但也引入了「资源」的维护成本，对资源的描述需要足够准确，才能直观的从权限对照表中看出资源对应的组件到底是什么。</p>
+<p>同时对于一些复杂的权限处理无法胜任，还是以「删除博客」按钮为例，博客的作者对博客有删除权限。</p>
+<p>那么，博客删除按钮只应该出现在作者属于「当前登录用户」的博客页面，如果访问其他作者的博客详情页，只是简单判断当前用户「是否有权限」，还是能够看到「删除博客」按钮。</p>
+<p>即不仅是「有没有权限」，还涉及到「是不是」的问题。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2018/04/04/一次「错误」的 Promise 实现 - 2/" rel="next" title="一次「错误」的 Promise 实现 - 2">
+                <i class="fa fa-chevron-left"></i> 一次「错误」的 Promise 实现 - 2
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2018/07/09/前端如何缓存请求/" rel="prev" title="前端如何缓存请求">
+                前端如何缓存请求 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、为什么要做权限控制"><span class="nav-number">1.</span> <span class="nav-text">一、为什么要做权限控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、如何做权限控制"><span class="nav-number">2.</span> <span class="nav-text">二、如何做权限控制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、后端的权限控制"><span class="nav-number">2.1.</span> <span class="nav-text">1、后端的权限控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、前端的权限控制"><span class="nav-number">2.2.</span> <span class="nav-text">2、前端的权限控制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、前端权限控制具体方案"><span class="nav-number">3.</span> <span class="nav-text">三、前端权限控制具体方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、获取用户角色"><span class="nav-number">3.1.</span> <span class="nav-text">1、获取用户角色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、保存用户角色"><span class="nav-number">3.2.</span> <span class="nav-text">2、保存用户角色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、根据角色进行处理"><span class="nav-number">3.3.</span> <span class="nav-text">3、根据角色进行处理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、权限组件"><span class="nav-number">4.</span> <span class="nav-text">四、权限组件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、核心逻辑"><span class="nav-number">4.1.</span> <span class="nav-text">1、核心逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、vue-实现"><span class="nav-number">4.2.</span> <span class="nav-text">2、vue 实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、jQuery-实现"><span class="nav-number">4.3.</span> <span class="nav-text">3、jQuery 实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、页面访问权限"><span class="nav-number">5.</span> <span class="nav-text">五、页面访问权限</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、修改页面组件"><span class="nav-number">5.1.</span> <span class="nav-text">1、修改页面组件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、修改-Route-组件"><span class="nav-number">5.2.</span> <span class="nav-text">2、修改 Route 组件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、缺点"><span class="nav-number">6.</span> <span class="nav-text">六、缺点</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,704 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="看到图灵社区的电子书阅读奖励计划，很赞的促进阅读的方式，刚好也在看一些书，所以就有了这篇读后感。 内容不长，两三天时间就能看完。看完后还是有一些意外，觉得自己对于 js 已经算了解，但还是有很多细节方面的知识盲点。经过这次阅读对于 JavaScript 的理解肯定是增加了一些，但更多的是在“学习”方面有了更深刻的认知，">
+<meta name="keywords" content="JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《你不知道的 JavaScript》读后感">
+<meta property="og:url" content="http://yoursite.com/2017/02/07/《你不知道的 JavaScript》读后感/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="看到图灵社区的电子书阅读奖励计划，很赞的促进阅读的方式，刚好也在看一些书，所以就有了这篇读后感。 内容不长，两三天时间就能看完。看完后还是有一些意外，觉得自己对于 js 已经算了解，但还是有很多细节方面的知识盲点。经过这次阅读对于 JavaScript 的理解肯定是增加了一些，但更多的是在“学习”方面有了更深刻的认知，学习到如何“学习”。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-30T07:20:32.674Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="《你不知道的 JavaScript》读后感">
+<meta name="twitter:description" content="看到图灵社区的电子书阅读奖励计划，很赞的促进阅读的方式，刚好也在看一些书，所以就有了这篇读后感。 内容不长，两三天时间就能看完。看完后还是有一些意外，觉得自己对于 js 已经算了解，但还是有很多细节方面的知识盲点。经过这次阅读对于 JavaScript 的理解肯定是增加了一些，但更多的是在“学习”方面有了更深刻的认知，学习到如何“学习”。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/02/07/《你不知道的 JavaScript》读后感/"/>
+
+
+
+
+
+  <title> 《你不知道的 JavaScript》读后感 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2017/02/07/《你不知道的 JavaScript》读后感/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                《你不知道的 JavaScript》读后感
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-07T08:00:00+08:00">
+              2017-02-07
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2017-12-30T15:20:32+08:00">
+              2017-12-30
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/随笔/" itemprop="url" rel="index">
+                    <span itemprop="name">随笔</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>看到图灵社区的<a href="http://www.ituring.com.cn/article/273646" target="_blank" rel="noopener">电子书阅读奖励计划</a>，很赞的促进阅读的方式，刚好也在看一些书，所以就有了这篇读后感。</p>
+<p>内容不长，两三天时间就能看完。看完后还是有一些意外，觉得自己对于 js 已经算了解，但还是有很多细节方面的知识盲点。经过这次阅读对于 JavaScript 的理解肯定是增加了一些，但更多的是在“学习”方面有了更深刻的认知，学习到如何“学习”。<br><a id="more"></a></p>
+<h2 id="举个栗子"><a href="#举个栗子" class="headerlink" title="举个栗子"></a>举个栗子</h2><p>在 p27 提到</p>
+<blockquote>
+<p>(function foo(){ .. }) 作为函数表达式意味着foo 只能在.. 所代表的位置中被访问，外部作用域则不行。foo 变量名被隐藏在自身中意味着不会非必要地污染外部作用域。</p>
+</blockquote>
+<p>看到的时候就觉得很奇怪，函数名只能在自身作用域访问到，那这个函数名还有什么意义，重点是为什么在外部作用域无法被访问到？</p>
+<p>于是写了这么一段代码想要测试<code>()</code>是否会产生作用域导致无法在外部访问(虽然明知道不可能…)：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">;(<span class="keyword">var</span> a = <span class="number">1</span>)</span><br><span class="line"><span class="built_in">console</span>.log(a)</span><br></pre></td></tr></table></figure></p>
+<p>但是报错很意外：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">;(var a = 1)</span><br><span class="line">  ^^^</span><br><span class="line">SyntaxError: Unexpected token var</span><br></pre></td></tr></table></figure></p>
+<p>到这里就发现，自己对于<code>()</code>有什么作用的知识点完全不了解。在了解到<code>()</code>可以用来<strong>强制表达式执行</strong>后，又产生了对 IIFE 的一个疑问，如果 IIFE 是“声明一个函数并立即调用”，那下面的代码为什么不行？<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">'hello iife'</span>)</span><br><span class="line">&#125;()</span><br></pre></td></tr></table></figure></p>
+<p>为什么在最外层加上<code>()</code>就可以了，既然<code>()</code>是用来强制表达式执行，表示内部首先是一个表达式，表达式也可以直接运行的吧。</p>
+<p>虽然在继续阅读书的过程中解开了这个疑惑，但我的第一篇博客就是写的关于 IIFE，却发现自己对于 IIFE 这么不了解，实在汗颜。</p>
+<h2 id="舒适区与一万小时定律"><a href="#舒适区与一万小时定律" class="headerlink" title="舒适区与一万小时定律"></a>舒适区与一万小时定律</h2><p>在 p77 页关于<code>this</code>的知识点时提到了“舒适区”这个概念，字面意思就是让自己感到舒适的区域。长时间待在舒适区，并不会让自己的能力有多大提升。而“一万小时定律”是指：</p>
+<blockquote>
+<p>要成为某个领域的专家，需要10000小时，按比例计算就是：如果每天工作八个小时，一周工作五天，那么成为一个领域的专家至少需要五年。这就是一万小时定律。</p>
+</blockquote>
+<p>如果将两者结合起来思考，在舒适区内的 10000 小时，也能够让人成为专家吗？</p>
+<h2 id="刻意练习"><a href="#刻意练习" class="headerlink" title="刻意练习"></a>刻意练习</h2><p>我觉得是不能的，因为经过实践证明。。。每天涂涂画画自己学会的简笔画，并不会让自己成为顶尖的画师。当然这么说很极端，不过跳出舒适区，刻意去让自己处于“头疼”的境地，绝对比待在舒适区享受成就感要更好。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a, b, c;</span><br></pre></td></tr></table></figure>
+<p>这样声明变量很常见，自己也会写，但是为什么可以这样声明呢？<code>,</code>的作用又是什么？</p>
+<p>刻意练习，或者说深究原理吧，才能让自己有更强的竞争力，毕竟要花更多时间在探究“为什么”上~</p>
+<p>不止这本书，在 CSS 方面有名的张鑫旭也是将简单的知识点挖掘出意想不到的点，所以保持着这种好奇心，一定能让自己有更多收获。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://mp.weixin.qq.com/s?__biz=MzA4ODI5NTE4Mg==&amp;mid=2650242539&amp;idx=1&amp;sn=472dd1ead7ec2df5f40d40fbe7002849&amp;chksm=882f8f8abf58069c0bec785bdbebb3ab60bdac716791d5f8c6d109e61725cddbde48d4e26228&amp;mpshare=1&amp;scene=1&amp;srcid=0131ezqxWypbMLoCcIVeWXyg&amp;from=singlemessage&amp;key=5459fe1fff87676fc6c1bc9ddbb3032292476eaad646a5dd2d748a5b768cfaeca3f220fc3de644eaf47584d349575df310955f6aaa1c323fbc1d7ac7ebec3f0cc84bbac85ea67bd05bcc8d91d8c50b7f&amp;ascene=1&amp;uin=MTQ2MTA2MjA2NA%3D%3D&amp;devicetype=android-22&amp;version=26050431&amp;nettype=WIFI&amp;abtest_cookie=AQABAAgAAQBGhh4AAAA%3D&amp;pass_ticket=0W3IVp6m4EQkjoAHtS30%2BlpZS8NDWLh2Kn1jEq1luFGki7SJMwAZynZyGlkmFi9b&amp;wx_header=1" target="_blank" rel="noopener">为什么有人工作10年仍不是专家，有人2年就足够卓越了？</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2017/01/13/完整记录在 windows7 下使用 docker 的过程/" rel="next" title="完整记录在 windows7 下使用 docker 的过程">
+                <i class="fa fa-chevron-left"></i> 完整记录在 windows7 下使用 docker 的过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2017/02/21/JavaScript作用域学习笔记/" rel="prev" title="JavaScript 作用域学习笔记">
+                JavaScript 作用域学习笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#举个栗子"><span class="nav-number">1.</span> <span class="nav-text">举个栗子</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#舒适区与一万小时定律"><span class="nav-number">2.</span> <span class="nav-text">舒适区与一万小时定律</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#刻意练习"><span class="nav-number">3.</span> <span class="nav-text">刻意练习</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

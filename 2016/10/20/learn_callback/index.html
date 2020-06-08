@@ -1,0 +1,731 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="promise,generator," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="学习 promise、generator和最新的 await。 假设现在有这么一个需求：  用户输入关键词查询记录，先按照书籍ISBN码进行搜索，如果没有搜索到，就按照书籍名称搜索，如果没有搜索到，就按照借阅会员学号搜索，如果没有搜索到，就按照借阅会员姓名搜索。">
+<meta name="keywords" content="promise,generator">
+<meta property="og:type" content="article">
+<meta property="og:title" content="callback、promise、generator和await">
+<meta property="og:url" content="http://yoursite.com/2016/10/20/learn_callback/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="学习 promise、generator和最新的 await。 假设现在有这么一个需求：  用户输入关键词查询记录，先按照书籍ISBN码进行搜索，如果没有搜索到，就按照书籍名称搜索，如果没有搜索到，就按照借阅会员学号搜索，如果没有搜索到，就按照借阅会员姓名搜索。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-02-10T08:38:25.596Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="callback、promise、generator和await">
+<meta name="twitter:description" content="学习 promise、generator和最新的 await。 假设现在有这么一个需求：  用户输入关键词查询记录，先按照书籍ISBN码进行搜索，如果没有搜索到，就按照书籍名称搜索，如果没有搜索到，就按照借阅会员学号搜索，如果没有搜索到，就按照借阅会员姓名搜索。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/10/20/learn_callback/"/>
+
+
+
+
+
+  <title> callback、promise、generator和await | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2016/10/20/learn_callback/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                callback、promise、generator和await
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-10-20T22:21:40+08:00">
+              2016-10-20
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2018-02-10T16:38:25+08:00">
+              2018-02-10
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>学习 promise、generator和最新的 await。</p>
+<p>假设现在有这么一个需求：</p>
+<blockquote>
+<p>用户输入关键词查询记录，先按照书籍ISBN码进行搜索，如果没有搜索到，就按照书籍名称搜索，如果没有搜索到，就按照借阅会员学号搜索，如果没有搜索到，就按照借阅会员姓名搜索。</p>
+</blockquote>
+<a id="more"></a>
+<p>数据是这样的：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"record"</span>: [</span><br><span class="line">    &#123; <span class="attr">"id"</span>: <span class="number">1</span>, <span class="attr">"title"</span>: <span class="string">"小王子"</span>, <span class="attr">"author"</span>: <span class="string">"圣埃克絮佩里"</span>,  <span class="attr">"isbn"</span>: <span class="string">"9787511305206"</span>, <span class="attr">"number"</span>: <span class="string">"学号一"</span>, <span class="attr">"name"</span>: <span class="string">"ltaoo"</span>&#125;,</span><br><span class="line">    &#123; <span class="attr">"id"</span>: <span class="number">2</span>, <span class="attr">"title"</span>: <span class="string">"草房子"</span>, <span class="attr">"author"</span>: <span class="string">"曹文轩"</span>,  <span class="attr">"isbn"</span>: <span class="string">"9787020078400"</span>, <span class="attr">"number"</span>: <span class="string">"学号二"</span>, <span class="attr">"name"</span>: <span class="string">"hello"</span>&#125;,</span><br><span class="line">    &#123; <span class="attr">"id"</span>: <span class="number">3</span>, <span class="attr">"title"</span>: <span class="string">"青铜葵花"</span>, <span class="attr">"author"</span>: <span class="string">"曹文轩"</span>,  <span class="attr">"isbn"</span>: <span class="string">"9787534633362"</span>, <span class="attr">"number"</span>: <span class="string">"学号三"</span>, <span class="attr">"name"</span>: <span class="string">"world"</span>&#125;,</span><br><span class="line">    &#123; <span class="attr">"id"</span>: <span class="number">4</span>, <span class="attr">"title"</span>: <span class="string">"城南旧事"</span>, <span class="attr">"author"</span>: <span class="string">"林海音"</span>,  <span class="attr">"isbn"</span>: <span class="string">"9787561344972"</span>, <span class="attr">"number"</span>: <span class="string">"学号四"</span>, <span class="attr">"name"</span>: <span class="string">"and"</span>&#125;,</span><br><span class="line">    &#123; <span class="attr">"id"</span>: <span class="number">5</span>, <span class="attr">"title"</span>: <span class="string">"HTTP权威指南"</span>, <span class="attr">"author"</span>: <span class="string">"吉尔利 (David Gourley)"</span>,  <span class="attr">"isbn"</span>: <span class="string">"9787115281487"</span>, <span class="attr">"number"</span>: <span class="string">"学号五"</span>, <span class="attr">"name"</span>: <span class="string">"some"</span>&#125;,</span><br><span class="line">    &#123; <span class="attr">"id"</span>: <span class="number">6</span>, <span class="attr">"title"</span>: <span class="string">"JavaScript权威指南"</span>, <span class="attr">"author"</span>: <span class="string">"弗兰纳根(David Flanagan) "</span>,  <span class="attr">"isbn"</span>: <span class="string">"9787111376613"</span>, <span class="attr">"number"</span>: <span class="string">"学号六"</span>, <span class="attr">"name"</span>: <span class="string">"thing"</span>&#125;,</span><br><span class="line">    &#123; <span class="attr">"id"</span>: <span class="number">7</span>, <span class="attr">"title"</span>: <span class="string">"JavaScript设计模式与开发实践"</span>, <span class="attr">"author"</span>: <span class="string">"曾探"</span>,  <span class="attr">"isbn"</span>: <span class="string">"9787115388889"</span>, <span class="attr">"number"</span>: <span class="string">"学号七"</span>, <span class="attr">"name"</span>: <span class="string">"about"</span>&#125;,</span><br><span class="line">    &#123; <span class="attr">"id"</span>: <span class="number">8</span>, <span class="attr">"title"</span>: <span class="string">"JavaScript高级程序设计"</span>, <span class="attr">"author"</span>: <span class="string">"泽卡斯 (Zakas. Nicholas C.)"</span>,  <span class="attr">"isbn"</span>: <span class="string">"9787115275790"</span>, <span class="attr">"number"</span>: <span class="string">"学号八"</span>, <span class="attr">"name"</span>: <span class="string">"you"</span>&#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>为了方便使用了<code>json-server</code>作为接口返回这些数据。</p>
+<ul>
+<li><a href="http://127.0.0.1:3000/record?author=林海音" target="_blank" rel="noopener">http://127.0.0.1:3000/record?author=林海音</a> 会返回第四条数据</li>
+<li><a href="http://127.0.0.1:3000/record?title=JavaScript权威指南" target="_blank" rel="noopener">http://127.0.0.1:3000/record?title=JavaScript权威指南</a> 会返回第六条数据</li>
+</ul>
+<p>详细使用可以查看 json-server 文档。</p>
+<h2 id="callback"><a href="#callback" class="headerlink" title="callback"></a>callback</h2><p>由于每一次的搜索，都依赖于上一次的结果，所以必须在上一次查询的结果中进行下一次的查询。<br>这是我之前的写法：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> req = <span class="built_in">require</span>(<span class="string">'request'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> searchByAuthor = <span class="string">'http://127.0.0.1:3000/record?author='</span>;</span><br><span class="line"><span class="keyword">var</span> searchByBookName = <span class="string">'http://127.0.0.1:3000/record?title='</span>;</span><br><span class="line"><span class="keyword">var</span> searchByNumber = <span class="string">'http://127.0.0.1:3000/record?number='</span>;</span><br><span class="line"><span class="keyword">var</span> searchByName = <span class="string">'http://127.0.0.1:3000/record?name='</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">search</span>(<span class="params">params, cb</span>) </span>&#123;</span><br><span class="line">  req(searchByAuthor+params, <span class="function"><span class="keyword">function</span> (<span class="params">err, response, body</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'按照作者名查询'</span>);</span><br><span class="line">    <span class="keyword">if</span>(<span class="built_in">JSON</span>.parse(body).length !== <span class="number">0</span>) &#123;</span><br><span class="line">      cb(body)</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">      req(searchByBookName+params, <span class="function"><span class="keyword">function</span> (<span class="params">err, response, body</span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'按照书名查询'</span>);</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">JSON</span>.parse(body).length !== <span class="number">0</span>) &#123;</span><br><span class="line">          cb(body)</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">          req(searchByNumber+params, <span class="function"><span class="keyword">function</span> (<span class="params">err, response, body</span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">'按照学号查询'</span>);</span><br><span class="line">            <span class="keyword">if</span>(<span class="built_in">JSON</span>.parse(body).length !== <span class="number">0</span>) &#123;</span><br><span class="line">              cb(body)</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">              req(searchByName+params, <span class="function"><span class="keyword">function</span>(<span class="params">err, response, body</span>) </span>&#123;</span><br><span class="line">                <span class="built_in">console</span>.log(<span class="string">'按照姓名查询'</span>);</span><br><span class="line">                <span class="keyword">if</span>(<span class="built_in">JSON</span>.parse(body).length !== <span class="number">0</span>) &#123;</span><br><span class="line">                  cb(body)</span><br><span class="line">                &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                  cb(<span class="string">'empty'</span>)</span><br><span class="line">                &#125;</span><br><span class="line">              &#125;)</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 进行查询</span></span><br><span class="line"><span class="keyword">var</span> query = <span class="built_in">encodeURI</span>(<span class="string">'hello'</span>);</span><br><span class="line">search(query, <span class="function"><span class="keyword">function</span> (<span class="params">result</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(result);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>如果条件再多几个，嵌套更深，整个代码会往右边偏。。。。为了解决这个问题，出现了 Promise。</p>
+<h2 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h2><p>Promise 是对象，有 then 和 catch 方法，可以获取到成功和失败各自的返回结果。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">temp</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span> (<span class="params">resolve, reject</span>) </span>&#123;</span><br><span class="line">      req(params, <span class="function"><span class="keyword">function</span> (<span class="params">err, response, body</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(err) &#123;</span><br><span class="line">          reject(err);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">JSON</span>.parse(body).length !== <span class="number">0</span>) &#123;</span><br><span class="line">          resolve(body);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">          reject(<span class="string">'empty'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>定义了一个<code>temp</code>函数，调用该函数后会返回一个 promise 对象，调用该对象的 then 方法接收成功的返回结果，调用 catch 方法接收失败的返回结果。</p>
+<p>所以上面的例子这么改写：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> req = <span class="built_in">require</span>(<span class="string">'request'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> searchByAuthor = <span class="string">'http://127.0.0.1:3000/record?author='</span>;</span><br><span class="line"><span class="keyword">var</span> searchByBookName = <span class="string">'http://127.0.0.1:3000/record?title='</span>;</span><br><span class="line"><span class="keyword">var</span> searchByNumber = <span class="string">'http://127.0.0.1:3000/record?number='</span>;</span><br><span class="line"><span class="keyword">var</span> searchByName = <span class="string">'http://127.0.0.1:3000/record?name='</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">search</span>(<span class="params">param, cb</span>) </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">temp</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span> (<span class="params">resolve, reject</span>) </span>&#123;</span><br><span class="line">      req(params, <span class="function"><span class="keyword">function</span> (<span class="params">err, response, body</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(err) &#123;</span><br><span class="line">          reject(err);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span>(<span class="built_in">JSON</span>.parse(body).length !== <span class="number">0</span>) &#123;</span><br><span class="line">          resolve(body);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">          reject(<span class="string">'empty'</span>);</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  temp(searchByAuthor+param)</span><br><span class="line">    .then(<span class="function"><span class="keyword">function</span> (<span class="params">result</span>)</span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'按照作者名查询'</span>);</span><br><span class="line">      cb(result);</span><br><span class="line">    &#125;)</span><br><span class="line">    .catch(<span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> temp(searchByBookName+param);</span><br><span class="line">    &#125;)</span><br><span class="line">    .then(<span class="function"><span class="keyword">function</span>(<span class="params">result</span>) </span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'按照书名查询'</span>);</span><br><span class="line">      cb(result);</span><br><span class="line">    &#125;)</span><br><span class="line">    .catch(<span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> temp(searchByNumber+param);</span><br><span class="line">    &#125;)</span><br><span class="line">    .then(<span class="function"><span class="keyword">function</span> (<span class="params">result</span>) </span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'按照学号查询'</span>);</span><br><span class="line">      <span class="built_in">console</span>.log(reuslt);</span><br><span class="line">    &#125;)</span><br><span class="line">    .catch(<span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> temp(searchByName+param);</span><br><span class="line">    &#125;)</span><br><span class="line">    .then(<span class="function"><span class="keyword">function</span> (<span class="params">result</span>) </span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'按照姓名查询'</span>);</span><br><span class="line">      cb(result);</span><br><span class="line">    &#125;)</span><br><span class="line">    .catch(<span class="function"><span class="keyword">function</span>(<span class="params">err</span>) </span>&#123;</span><br><span class="line">      cb(<span class="string">'empty'</span>);</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 开始查询</span></span><br><span class="line"><span class="keyword">var</span> query = <span class="built_in">encodeURI</span>(<span class="string">'hello'</span>);</span><br><span class="line">search(query, <span class="function"><span class="keyword">function</span> (<span class="params">res</span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(res);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>可以很明显看到不存在嵌套了，而是采用了链式调用。。。重点在于<code>catch</code>方法返回一个新的 promise 对象。</p>
+<h2 id="generator"><a href="#generator" class="headerlink" title="generator"></a>generator</h2><p>generator 可以将异步函数变成同步的。道理很简单， yield 关键字会暂停函数的运行，直到返回值了才继续往下执行。</p>
+<p>参考 - <a href="http://www.voidcn.com/blog/zhiweiusetc/article/p-6093190.html" target="_blank" rel="noopener">http://www.voidcn.com/blog/zhiweiusetc/article/p-6093190.html</a></p>
+<p>使用 generator 改写上面的例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> req = <span class="built_in">require</span>(<span class="string">'request'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> searchByAuthor = <span class="string">'http://127.0.0.1:3000/record?author='</span>;</span><br><span class="line"><span class="keyword">var</span> searchByBookName = <span class="string">'http://127.0.0.1:3000/record?title='</span>;</span><br><span class="line"><span class="keyword">var</span> searchByNumber = <span class="string">'http://127.0.0.1:3000/record?number='</span>;</span><br><span class="line"><span class="keyword">var</span> searchByName = <span class="string">'http://127.0.0.1:3000/record?name='</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> query = <span class="built_in">encodeURI</span>(<span class="string">'学号三'</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">run</span>(<span class="params">generatorFunction</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> generatorltr = generatorFunction(resume);</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">resume</span>(<span class="params">err, response, body</span>) </span>&#123;</span><br><span class="line">    generatorltr.next(<span class="built_in">JSON</span>.parse(body));</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 这只是用来启动函数的。</span></span><br><span class="line">  generatorltr.next();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">run(<span class="function"><span class="keyword">function</span> *<span class="title">search</span>(<span class="params">resume</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> result = <span class="literal">null</span>;</span><br><span class="line">  </span><br><span class="line">  <span class="comment">// 这里每一行返回的值，都是这次调用接口得到的 body。</span></span><br><span class="line">  result = <span class="keyword">yield</span> req(searchByAuthor+query, resume);</span><br><span class="line">  <span class="comment">// 判断 body 中是否有值，了解这次查询是否成功，如果不成功，就继续查询</span></span><br><span class="line">  result = result.length === <span class="number">0</span> ? <span class="keyword">yield</span> req(searchByBookName+query, resume) : result;</span><br><span class="line">  result = result.length === <span class="number">0</span> ? <span class="keyword">yield</span> req(searchByNumber+query, resume) : result;</span><br><span class="line">  result = result.length === <span class="number">0</span> ? <span class="keyword">yield</span> req(searchByName+query, resume) : result;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">console</span>.log(result);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>不是嵌套，也不是链式调用，而是按照代码顺序。而且是在开始时定义一个变量，通过接口查询后，就能够直接拿到值，写起来像是同步的。</p>
+<p>这个例子重点在 yield 返回 generatorltr.next() 传的参数。</p>
+<h2 id="async-of-es7"><a href="#async-of-es7" class="headerlink" title="async of es7"></a>async of es7</h2><p>代码比前面都简单，不过需要使用 babel 才能够使用到 es7 的这个新特性。直接上代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span>;</span><br><span class="line"><span class="keyword">var</span> req = <span class="built_in">require</span>(<span class="string">'request'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> searchByAuthor = <span class="string">'http://127.0.0.1:3000/record?author='</span>;</span><br><span class="line"><span class="keyword">var</span> searchByBookName = <span class="string">'http://127.0.0.1:3000/record?title='</span>;</span><br><span class="line"><span class="keyword">var</span> searchByNumber = <span class="string">'http://127.0.0.1:3000/record?number='</span>;</span><br><span class="line"><span class="keyword">var</span> searchByName = <span class="string">'http://127.0.0.1:3000/record?name='</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> query = <span class="built_in">encodeURI</span>(<span class="string">'hello'</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">temp</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function"><span class="keyword">function</span> (<span class="params">resolve, reject</span>) </span>&#123;</span><br><span class="line">    req(params, <span class="function"><span class="keyword">function</span> (<span class="params">err, response, body</span>) </span>&#123;</span><br><span class="line">      <span class="keyword">if</span>(err) &#123;</span><br><span class="line">        reject(err);</span><br><span class="line">      &#125;</span><br><span class="line">      resolve(<span class="built_in">JSON</span>.parse(body));</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">search</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> result = <span class="literal">null</span>;</span><br><span class="line"></span><br><span class="line">  result = <span class="keyword">await</span> temp(searchByAuthor+query);</span><br><span class="line">  result = result.length === <span class="number">0</span> ? <span class="keyword">await</span> temp(searchByBookName+query) : result;</span><br><span class="line">  result = result.length === <span class="number">0</span> ? <span class="keyword">await</span> temp(searchByNumber+query) : result;</span><br><span class="line">  result = result.length === <span class="number">0</span> ? <span class="keyword">await</span> temp(searchByName+query) : result;</span><br><span class="line"></span><br><span class="line">  <span class="built_in">console</span>.log(result);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">search();</span><br></pre></td></tr></table></figure>
+<p>看起来和 generator 一模一样，因为 async 其实就是 generator 的语法糖。</p>
+<blockquote>
+<p>一比较就会发现，async 函数就是将 Generator 函数的星号（*）替换成 async，将 yield 替换成 await，仅此而已。</p>
+</blockquote>
+<h2 id="github-repository"><a href="#github-repository" class="headerlink" title="github repository"></a>github repository</h2><p><a href="https://github.com/ltaoo/learnCallback" target="_blank" rel="noopener">https://github.com/ltaoo/learnCallback</a></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p>基础 </p>
+<ul>
+<li><a href="http://www.alloyteam.com/2015/03/es6-generator-introduction/" target="_blank" rel="noopener">ES6 Generator介绍</a></li>
+</ul>
+<p>本文参考</p>
+<ul>
+<li><a href="http://www.html-js.com/article/A-day-to-learn-JavaScript-to-replace-the-callback-function-with-ES6-Generator" target="_blank" rel="noopener">用ES6 Generator替代回调函数</a></li>
+<li><a href="http://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000/001471087582981d6c0ea265bf241b59a04fa6f61d767f6000" target="_blank" rel="noopener">创建koa2工程</a></li>
+<li><a href="http://www.ruanyifeng.com/blog/2015/05/async.html" target="_blank" rel="noopener">async 函数的含义和用法</a></li>
+</ul>
+<p>拓展阅读</p>
+<ul>
+<li><a href="https://cnodejs.org/topic/53474cd19e21582e740117df" target="_blank" rel="noopener">co最简版实现</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/promise/" rel="tag"># promise</a>
+          
+            <a href="/blog/tags/generator/" rel="tag"># generator</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2016/10/16/thinkofdesign/" rel="next" title="对产品的理解">
+                <i class="fa fa-chevron-left"></i> 对产品的理解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2016/11/05/study-nodejs/" rel="prev" title="nodeJs 应用开发学习">
+                nodeJs 应用开发学习 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#callback"><span class="nav-number">1.</span> <span class="nav-text">callback</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Promise"><span class="nav-number">2.</span> <span class="nav-text">Promise</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#generator"><span class="nav-number">3.</span> <span class="nav-text">generator</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#async-of-es7"><span class="nav-number">4.</span> <span class="nav-text">async of es7</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#github-repository"><span class="nav-number">5.</span> <span class="nav-text">github repository</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

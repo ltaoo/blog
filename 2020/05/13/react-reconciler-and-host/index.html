@@ -1,0 +1,770 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="记 react-reconciler and host 分享">
+<meta property="og:url" content="http://yoursite.com/2020/05/13/react-reconciler-and-host/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/title.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513140952633.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513141859486.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513142553820.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200512170957956.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200512171125680.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200512171813274.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513144132979.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200512174501117.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200512174623435.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200512184839641.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513151040172.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513151502251.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513152036804.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513152110606.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513152717579.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513152939274.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513153426095.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513155141064.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513155102628.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513155603107.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513155617899.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513160236432.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513160251891.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513160314477.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513160947756.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513161206888.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513161454722.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513161935968.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513162214744.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513162329225.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513162424070.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513162749684.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513163024514.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513163045472.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/image-20200513163055633.png">
+<meta property="og:updated_time" content="2020-06-07T15:14:50.076Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="记 react-reconciler and host 分享">
+<meta name="twitter:image" content="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/title.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/05/13/react-reconciler-and-host/"/>
+
+
+
+
+
+  <title> 记 react-reconciler and host 分享 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2020/05/13/react-reconciler-and-host/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                记 react-reconciler and host 分享
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-05-13T08:00:00+08:00">
+              2020-05-13
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2020-06-07T23:14:50+08:00">
+              2020-06-07
+            </time>
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><img src="/blog/2020/05/13/react-reconciler-and-host/title.png" alt="cover"></p>
+<a id="more"></a>
+<p>Hi，大家好，我这次分享的主题是 <code>react-reconciler and host</code>，不知道大家对这两个东西有了解吗？没有最好了（笑），希望这次分享能让大家了解这是什么，怎么使用。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513140952633.png" alt="1"></p>
+<p>我们先来聊聊 <code>React</code>，我们现在开发已经离不开框架了，为什么 <code>React</code> 或者 <code>Vue</code> 变成主流趋势了呢？或者说 <code>React</code> 相比原生、<code>jQuery</code> 有什么优点呢？</p>
+<p>性能好对吧，为什么性能好呢？因为它有虚拟 <code>DOM</code> 加 <code>Diff</code> 算法，官方有这么一段话，<code>React</code> 使用一些聪明的方法来减少更新页面的昂贵的 <code>DOM</code> 操作。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513141859486.png" alt="2"></p>
+<p>用一个例子简单说明</p>
+<p>我们有一份数据要渲染到页面上，之前的做法是根据数据生成 <code>html</code> 替换原先的；现在做法是找到具体的 <code>DOM</code> 发生了什么改变，然后应用这个改变即可。</p>
+<p>这两种方式对浏览器来说区别是非常大的，当然这里大家应该都了解所以就不展开了。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513142553820.png" alt="3"></p>
+<p>OK，我们接下来来介绍 <code>reconciler</code>，<code>react</code> 在新版本把更新相关的作为了一个单独的包，就叫 <code>react-reconciler</code>，那么具体是哪些内容呢？我们先来看看更新过程</p>
+<p>首先是创建更新，我们调用 <code>setState</code> 就会创建一个更新，然后经过一系列的函数，把这个更新挂载到发生更新的组件对应的 <code>fiber</code> 上，最后调用 <code>renderRootSync</code></p>
+<p>第二个步骤是去遍历 <code>fiber</code> 树，在遍历的过程中，会更新 <code>fiber</code> 以及对比子节点这里对比不是所谓的 <code>diff</code> ，具体的后面会讲到；并且，在遍历过程还会筛选出有变化，包括更新、移除、新增的 <code>fiber</code> 保存起来。</p>
+<p>第五个步骤会进行一些准备工作，包括新增 <code>DOM</code> 的初始化、如何更新 <code>DOM</code> 的说明。</p>
+<p>最后就是执行对 <code>DOM</code> 的操作了，更新、移除、新增节点。</p>
+<p>前面五个步骤是 <code>reconciler</code> 的范畴，最后是属于 <code>host</code> 的范畴。</p>
+<p>可能对 <code>fiber</code> 有些疑问，我们接下来就介绍 <code>fiber</code></p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200512170957956.png" alt="5. fiber"></p>
+<p><code>fiber</code> 是 <code>React</code> 内部的数据结构，可以由  <code>ReactElement</code> 生成的。我们用 <code>jsx</code> 来描述页面，<code>jsx</code> 会变成 <code>ReactElement</code> 对吧，每个 <code>Element</code> 都会生成一个 <code>fiber</code> </p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200512171125680.png" alt="6. fiber tree"></p>
+<p>所以我们的页面最终会生成一棵 <code>fiber</code> 树，父子节点通过 <code>child</code> 字段，兄弟节点通过 <code>sibling</code> 字段相连。如果有这样 <code>jsx</code>，生成的 <code>fiber</code> 树是这样的。<code>fiberRoot</code> 是内部创建的。</p>
+<p>前面提到更新过程会遍历 <code>fiber</code> 树，那是深度优先还是广度优先呢？就是说先遍历兄弟节点，还是先遍历子节点？</p>
+<p>答案是先遍历子节点，也就是深度优先，这和前面的第四步「收集有变化的 <code>fiber</code> 」有关，这里可以看看实现深度遍历的代码，为了方便看这里省去了一些内容</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200512171813274.png" alt="7. code of loop fiber tree"></p>
+<p>遍历就是从第一个开始，然后获取它的子节点，如果存在子节点就继续遍历，否则就调用 <code>completeUnitOfWork</code>，该方法会去找是否有兄弟节点，如果没有就看看父节点有没有兄弟节点，如果有就返回，继续遍历。</p>
+<p>OK，到这里我们就了解了 <code>fiber</code>、<code>fiber</code> 树和遍历方式对吧，对这部分有疑问吗？如果没有那我们就继续，</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513144132979.png" alt="7"></p>
+<p>大家肯定注意到，前面很多方法名都和 <code>work</code> 相关，<code>beginWork</code>、<code>completeWork</code> 等等，</p>
+<p>其实 <code>work</code> 就是 <code>fiber</code>，只是换了个名字，更确切的说是 <code>fiber</code> 在进行更新过程的语义，<code>React</code> 把更新 <code>fiber</code> 的过程看作「一件事」，并且是每个 <code>fiber</code> 的更新都是一件事</p>
+<p>除此之外，在开始做事之前，会先创建一个副本，在这个副本上进行工作，原始内容不变，这其实是借鉴自 <code>git</code> 分支的概念，我们每次要开发新功能，是不是先切一个 <code>feature</code> 分支，在这个分支上写代码，不影响 <code>master</code>，完成后再把 <code>feature</code> 分支合并到 <code>master</code>，<code>React</code> 这里也是一样的。<code>current</code> 等同 <code>master</code>，<code>workInProgress</code> 等同 <code>feature</code>。</p>
+<p>并且开始工作的 <code>fiber</code> 是一个循环结构， <code>current.alternate === workInProgress</code>，<code>workInProgress.alternate === current</code>。好，我们现在知道了 <code>fiber</code> 是什么，知道 <code>work</code> 是什么对吧，接下来我们再详细聊聊更新过程</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200512174501117.png" alt="9. setState"></p>
+<p>更新的起点是  <code>setState</code>，我们通常都是使用该方法来触发更新，该方法会创建一个 <code>update</code>，然后挂载到 <code>fiber.updateQueue</code> 上，<code>update.payload</code> 就是更新的内容。</p>
+<p>这部分逻辑没有很复杂的地方吧，唯一要注意的可能是 <code>expirationTime</code>，即所谓的过期时间，默认情况它是一个常量，1073741823，该值虽然是一个数字，但在 <code>react</code> 是用来表达「优先级」的含义，值越大，优先级越高，就是更新这个 <code>fiber</code> 的优先级越高。</p>
+<p>由于需要使用 <code>ConcurrentMode</code> 才会触发不同的 <code>expirationTime</code> 所以这里就不展开了，默认情况下更新优先级都相同。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200512174623435.png" alt="10. updateComponent"></p>
+<p>创建更新后并挂载到 <code>fiber</code> 上后，调用一系列的方法遍历 <code>fiber</code> 树，遍历过程会调用 <code>beginWork</code> ，算是真正开始进行更新的方法吧，该方法内会根据 <code>fiber</code> 的 <code>tag</code> 调用不同的更新方法，比如 <code>updateClassComponent</code>、<code>updateHostComponent</code> 等等，<code>updateClassComponent</code> 内的逻辑可能会比较多，生命周期就是在这里调用的，还有实例化等操作，具体的可以自己看哈，就不展开了，最后会调用 <code>render</code> 方法返回子节点，如果存在子节点就调用 <code>reconcileChildren</code> 方法，意为「调和」，可以理解成对比吧，<code>updateHostComponent</code> 也是一样的。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200512184839641.png" alt="11. reconcileChildren code"></p>
+<p><code>reconcileChildren</code> 有个分支，看是新建，还是对比，但无论是新建还是对比，都是返回新的 <code>fiber</code> 作为子 <code>fiber</code>。可以说，<code>reconcilerChildren</code> 就是用 <code>ReactElement</code> 生成新 <code>fiber</code> 的方法。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513151040172.png" alt="11"></p>
+<p>这里是用之前的例子来说明</p>
+<p>第一次调用 <code>reconcileChildren</code> 时，<code>workInProgress</code> 是 <code>App</code> 这个 <code>fiber</code>，<code>newChildren</code> 是 <code>render</code> 调用的结果，用  <code>workInProgress.child</code> 和 <code>div</code> 这个 <code>element</code> 对比，返回新 <code>fiber</code>；第二次调用 <code>workInProgress</code> 就是这个新 <code>fiber</code>，也就是 <code>div</code> 这个，然后用它的子节点 <code>p</code> 和数组 <code>Element</code> 做对比；第三次是 <code>p0</code> 这个 <code>fiber</code>，第四次是 <code>p1</code>。</p>
+<p>这里能理解吗</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513151502251.png" alt="image-20200513151502251"></p>
+<p>更具体就是判断下 <code>newChildren</code> 类型是什么然后调用对应的方法，比如这里的 <code>reconcileSingleElement</code> 和 <code>reconcileChildrenArray</code>，但是无论哪个，它们都是会返回 <code>fiber</code>，不同之处在于是复用已有的 <code>fiber</code> 还是直接用 <code>element</code>创建新的 <code>fiber</code>。</p>
+<p>这里详细讲讲是数组的情况吧，因为这里就涉及到 <code>key</code> 的作用了</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513152036804.png" alt="image-20200513152036804"></p>
+<p>这里是直接把代码翻译过来了</p>
+<p>这么看可能还是很难理解，那我们用图形来说明，这是一个有新增节点、移除节点的例子。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513152110606.png" alt="image-20200513152110606"></p>
+<p>上面矩形表示的是 <code>fiber</code>，下面圆形表示 <code>ReactElement</code>，我们要「对比」这些，就是找出新增和移除</p>
+<p>首先是第一个，直接调用 <code>updateSlot</code> 返回  <code>fiber</code>；然后第二个 <code>fiber p1</code> 和下面的 <code>null</code>，为什么是 <code>null</code> 呢，因为 <code>hasP1 === false</code> 了，同样调用 <code>updateSlot</code> 但是返回 <code>null</code>，所以中断遍历；</p>
+<p>中断后，优先看看 <code>ReactElement</code> 是不是已经遍历完了，如果遍历完了，就说明剩下的 <code>fiber</code> 兄弟节点都是被移除的，但是这里发现还有；然后再看看 <code>fiber</code> 是否还有兄弟节点，如果没有就说明剩下的 <code>ReactElement</code> 都是新增的，但是这里我们发现还有，所以剩下的 <code>ReactElement</code> 不是新增的；</p>
+<p>然后，把剩下的 <code>fiber</code> 保存到 <code>Map</code> 中，就是右上角这个，创建这个 <code>Map</code> 优先用 <code>fiber.key</code> 作为 <code>key</code> ，否则就用 <code>index</code>。</p>
+<p>然后遍历剩下的 <code>ReactElement</code>，调用 <code>updateFromMap</code>  创建 <code>fiber</code>，在方法里会判断是复用已有的还是创建一个全新的，先是 <code>index === 2</code> 这个，发现有，那么就复用之前的，并且从 <code>Map</code> 中移除 2 这个；然后是 <code>index === 3</code> 这个，发现没有，那就是创建一个全新的。</p>
+<p>好，遍历完成了，发现 <code>Map</code> 中还剩一个 <code>index === 1</code> 这个，那这个就是被删除的了。这样，就清楚了删除和新增的具体是哪些了。</p>
+<p>这里能理解吗，下面还有两个例子我们再来看看</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513152717579.png" alt="image-20200513152717579"></p>
+<p>这个例子演示的是 <code>newIdx === newChildren.length</code> 的例子，和之前一样，先遍历，但是 <code>newChildren</code> 直接遍历完了，然后判断 <code>newIdx === newChildren.length</code>，那还剩下的兄弟 <code>fiber</code> 就肯定是被移除的对吧，所以直接返回。 </p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513152939274.png" alt="image-20200513152939274"></p>
+<p>这个例子类似，先是遍历，然后发现不存在兄弟节点，中断遍历，然后由于不存在兄弟节点了，那剩下的 <code>newChildren</code> 肯定都是要用来创建新的 <code>fiber</code>。</p>
+<p>但是现在只是知道了新增和移除的，那更新的呢？是在 <code>beginWork</code> 之后，会调用 <code>completeWork</code> 方法，该方法会找出更新的 <code>fiber</code></p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513153426095.png" alt="image-20200513153426095"></p>
+<p>在调用 <code>completeWork</code> 方法前是调用 <code>completeUnitOfWork</code>，该方法是用来收集 <code>effect</code> 的，<code>effect</code> 就是新增、移除和更新的 <code>fiber</code>。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513155141064.png" alt="image-20200513155141064"></p>
+<p>该方法会在遍历过程，<code>child === null</code> 的时候调用，这里大概说明了下，不过我们还是用图形来说明吧，这里假设更新同时存在更新、移除和新增。</p>
+<p>我们在遍历到 <code>p0 fiber</code> 时，它的 <code>child === null</code> 所以会调用 <code>completeUnitOfWork</code> 对吧，在该方法内，会先调用一次 <code>complteWork</code>，如果它有更新，<code>effectTag</code> 就会改变，但是它的 <code>effectTag</code> 还是 0，所以忽略该 <code>fiber</code>，然后返回它的兄弟节点继续遍历，调用 <code>beginWork</code> 方法，同样的，<code>child === null</code> ，不过在调用 <code>completeWork</code> 后，它的 <code>effectTag</code> 变成了 <code>Update</code>，所以回到 <code>complteUnitOfWork</code> 方法内，会把它自身挂载到父 <code>fiber</code> 的 <code>effect chain</code> 上，然后继续返回兄弟节点；</p>
+<p>接下来就是 <code>p3</code>，这个是新增的，道理同上；我们再看看具体怎么保存的吧。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513155102628.png" alt="image-20200513155102628"></p>
+<p><code>p2</code> 是更新的，先看看父 <code>fiber</code> 是否存在 <code>effect chain</code>，这时是已经存在的，就是之前遍历过程中移除的 <code>p1</code>，早已经挂载到父 <code>fiber</code> 上了。我们先看看自身上有没有 <code>effect</code> ，发现没有，然后把 <code>returnFiber.nextEffect</code> 指向自身，再把 <code>returnFiber.lastEffect</code> 指向自身。这样就挂载好了 <code>p2</code>。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513155603107.png" alt="image-20200513155603107"></p>
+<p>然后是 <code>p3</code>，和 <code>p2</code> 同理，不再赘述。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513155617899.png" alt="image-20200513155617899"></p>
+<p>关键的地方来了，在处理完 <code>p3</code> 后，仍然在当前方法也就是 <code>complteUnitOfWork</code> 方法内，用 <code>returnFiber</code> 继续调用 <code>completeWork</code> 和挂载的逻辑，因为这里有一个 <code>do while</code> 循环；</p>
+<p>这时 <code>returnFiber === div</code>，它调用 <code>complteWork</code>，然后和前面逻辑一样，把自身的 <code>effect chain</code> 挂载到父 <code>fiber</code> 上，此时是有的，所以就挂载上去了。</p>
+<p>靠这样，所有的 <code>effect</code> 最终会到 <code>fiberRoot</code> 上。</p>
+<p>到这里其实 <code>reconciler</code> 的核心部分已经讲完了，有什么问题吗？</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513160236432.png" alt="image-20200513160236432"></p>
+<p>收集好之后，终于可以对 <code>DOM</code> 进行操作了，就是调用 <code>commitRoot</code>，根据 <code>effectTag</code> 的值执行具体的操作。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513160251891.png" alt="image-20200513160251891"></p>
+<p>移除、新增和更新。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513160314477.png" alt="image-20200513160314477"></p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513160947756.png" alt="image-20200513160947756"></p>
+<p>更新稍微麻烦些，它要知道怎么去更新，在前面 <code>complteWork</code> 方法内会调用 <code>updateHostComponent</code>，这个不同于 <code>beginWork</code> 内的，这里会去进行对比，得出要更新的内容，保存在 <code>updateQueue</code> 字段上，这是一个数组，每两个元素表示一次更新的内容，比如 <code>children</code> 变成 2；<code>className</code> 变成 <code>selected</code>。</p>
+<p>如果确实有更新，也是在这里把 <code>effectTag</code> 改成 <code>Update</code> 的。</p>
+<p>到这里，<code>react-reconciler</code> 的内容就真的完了，后面的是 <code>host</code> 相关的了。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513161206888.png" alt="image-20200513161206888"></p>
+<p><code>host</code> 就是所谓的宿主，浏览器是宿主，原生是宿主。</p>
+<p>先来看看浏览器，简单来说，浏览器页面，就是对 <code>DOM</code> 的图形化展示。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513161454722.png" alt="image-20200513161454722"></p>
+<p>浏览器使用渲染引擎对 <code>DOM</code> 进行渲染，变成图片，就是这样。我们改变 <code>DOM</code>，渲染引擎重新渲染，生成新的图片。</p>
+<p>改变 <code>DOM</code> 可以是手动改，也可以让 <code>reconciler</code> 修改，如果是 <code>reconciler</code>，连接两者的就是 <code>hostConfig</code>，即宿主提供一些方法给 <code>reconciler</code> 调用。</p>
+<p>所以我们如果想在其他宿主使用 <code>reconciler</code>，实现这样一个 <code>hostConfig</code> 就可以了。甚至我们可以在 <code>nodejs</code> 中使用 <code>react-reconciler</code>。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513161935968.png" alt="image-20200513161935968"></p>
+<p>需要提供平台对象，浏览器是 <code>HTMLElement</code>，我们这里就叫 <code>NodeElement</code> 好了，分为容器和文本；以及创建 <code>Node</code> 的方法、移除 <code>Node</code> 的方法、更新 <code>Node</code> 的方法和插入 <code>Node</code> 的方法。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513162214744.png" alt="image-20200513162214744"></p>
+<p> <code>hostConfig.js</code> 文件保存上述的方法，为了简单所以这里省略了很多。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513162329225.png" alt="image-20200513162329225"></p>
+<p>连接方式很简单，调用 <code>reconciler</code> 传入 <code>hostConfig</code> 就可以了。然后向外暴露一个渲染方法，等同于 <code>ReactDOM.render</code>。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513162424070.png" alt="image-20200513162424070"></p>
+<p>然后我们就可以用 <code>jsx</code> 在 <code>nodejs</code> 平台写代码了不过我们没有 <code>babel</code> 所以只能直接用 <code>createElement</code> 了。</p>
+<p>调用 <code>render</code> 方法后，可以打印看看返回值是什么。然后我们可以再次调用 <code>render</code>，触发更新逻辑，返回新的结果。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513162749684.png" alt="image-20200513162749684"></p>
+<p>这里根据 <code>jsx</code> 生成的平台对象实例，等同于 <code>DOM</code>。再实现一个渲染引擎将这个对象渲染成图片，就实现了我们的宿主平台。</p>
+<p>这里附上示例代码</p>
+<p><a href="https://codesandbox.io/s/eloquent-moser-ryh3i?file=/src/index.js" target="_blank" rel="noopener">https://codesandbox.io/s/eloquent-moser-ryh3i?file=/src/index.js</a></p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513163024514.png" alt="image-20200513163024514"></p>
+<p>OK，分享到这里就结束了，我们可以再回顾下之前的内容。</p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513163045472.png" alt="image-20200513163045472"></p>
+<p><img src="/blog/2020/05/13/react-reconciler-and-host/image-20200513163055633.png" alt="image-20200513163055633"></p>
+<p>至此，全部内容就介绍完了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2020/04/13/setState 是同步还是异步/" rel="next" title="setState 是同步还是异步">
+                <i class="fa fa-chevron-left"></i> setState 是同步还是异步
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

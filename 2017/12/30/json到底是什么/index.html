@@ -1,0 +1,750 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="json," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="A: “这个接口我传个 JSON 给你，格式是这样的 &amp;#39;[1, 2, 3]&amp;#39;”B: “等下，这不是数组吗，JSON 应该有键啊，类似这样才行&amp;#39;{ &amp;quot;key&amp;quot;: [1, 2, 3] }&amp;#39;”A: “不，这就是 JSON 格式">
+<meta name="keywords" content="json">
+<meta property="og:type" content="article">
+<meta property="og:title" content="“[1,2,3]”是JSON吗？">
+<meta property="og:url" content="http://yoursite.com/2017/12/30/json到底是什么/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="A: “这个接口我传个 JSON 给你，格式是这样的 &amp;#39;[1, 2, 3]&amp;#39;”B: “等下，这不是数组吗，JSON 应该有键啊，类似这样才行&amp;#39;{ &amp;quot;key&amp;quot;: [1, 2, 3] }&amp;#39;”A: “不，这就是 JSON 格式的数据”B: “啊，是吗？” 如果你对上面的对话也心存疑虑，可以继续往下看。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-01-07T12:57:24.544Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="“[1,2,3]”是JSON吗？">
+<meta name="twitter:description" content="A: “这个接口我传个 JSON 给你，格式是这样的 &amp;#39;[1, 2, 3]&amp;#39;”B: “等下，这不是数组吗，JSON 应该有键啊，类似这样才行&amp;#39;{ &amp;quot;key&amp;quot;: [1, 2, 3] }&amp;#39;”A: “不，这就是 JSON 格式的数据”B: “啊，是吗？” 如果你对上面的对话也心存疑虑，可以继续往下看。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/12/30/json到底是什么/"/>
+
+
+
+
+
+  <title> “[1,2,3]”是JSON吗？ | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2017/12/30/json到底是什么/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                “[1,2,3]”是JSON吗？
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-12-30T08:00:00+08:00">
+              2017-12-30
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2018-01-07T20:57:24+08:00">
+              2018-01-07
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>A: “这个接口我传个 JSON 给你，格式是这样的 <code>&#39;[1, 2, 3]&#39;</code>”<br>B: “等下，这不是数组吗，JSON 应该有键啊，类似这样才行<code>&#39;{ &quot;key&quot;: [1, 2, 3] }&#39;</code>”<br>A: “不，这就是 JSON 格式的数据”<br>B: “啊，是吗？”</p>
+<p>如果你对上面的对话也心存疑虑，可以继续往下看。</p>
+<a id="more"></a>
+<h2 id="什么是-JSON"><a href="#什么是-JSON" class="headerlink" title="什么是 JSON"></a>什么是 JSON</h2><p>首先应该明确<code>JSON</code>是什么，再讨论<code>[1, 2, 3]</code>是不是。</p>
+<blockquote>
+<p>JSON(JavaScript Object Notation) 是一种轻量级的<strong>数据交换格式</strong>。</p>
+</blockquote>
+<p>它仅仅是一种格式，就好比厨师脑中的食谱，这道菜有什么材料。而从原材料变成成品给顾客食用，这个过程食谱并没有实际参与，只是一个指导作用。</p>
+<p>所以<code>JSON</code>也是不存在于我们的程序中，不存在任何地方，只是一个思维，存在我们脑海里。</p>
+<p>这个思维，就是<code>JSON</code>这种格式应该包含哪些元素。</p>
+<h2 id="JSON-格式"><a href="#JSON-格式" class="headerlink" title="JSON 格式"></a>JSON 格式</h2><p><code>JSON</code>建构于两种结构：</p>
+<ul>
+<li>“名称/值”对的集合</li>
+<li>值的有序列表</li>
+</ul>
+<p>从这里就能看出<code>[1, 2, 3]</code>是符合<code>JSON</code>格式的。</p>
+<blockquote>
+<p>但不能说<code>[1, 2, 3]</code>是一个<code>JSON</code>，它在<code>javascript</code>中可以被转换为数组，也可以在其他语言中被转换为数组（如果有这种类型）。而之所以只有这两种，是因为大部分现代计算机语言都支持。</p>
+</blockquote>
+<p>那<code>[1, 2, undefined, 3]</code>符合<code>JSON</code>格式吗？</p>
+<p>简单一想，</p>
+<blockquote>
+<p>“既然结构要是计算机语言都支持的，那结构中的值也需要吧，而<code>undefined</code>是<code>javascript</code>独有的，其他语言并没有，所以不符合<code>JSON</code>格式。”</p>
+</blockquote>
+<p>bingo！合法的<code>JSON</code>值可以是以下六种：</p>
+<ul>
+<li>string</li>
+<li>number</li>
+<li>boolean</li>
+<li>null</li>
+<li>object</li>
+<li>array</li>
+</ul>
+<p>所以下面的数据格式是合法的<code>JSON</code>：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"person"</span>: &#123;</span><br><span class="line">        <span class="attr">"name"</span>: <span class="string">"ltaoo"</span>,</span><br><span class="line">        <span class="attr">"age"</span>: <span class="number">18</span>,</span><br><span class="line">        <span class="attr">"skills"</span>: [<span class="string">"javascript"</span>, <span class="string">"html"</span>, <span class="string">"css"</span>]</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"happy"</span>: <span class="literal">true</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="JavaScript-中的-JSON"><a href="#JavaScript-中的-JSON" class="headerlink" title="JavaScript 中的 JSON"></a>JavaScript 中的 JSON</h2><h3 id="传递的到底是什么？"><a href="#传递的到底是什么？" class="headerlink" title="传递的到底是什么？"></a>传递的到底是什么？</h3><p>在<code>JavaScript</code>中，如果在请求接口时要传递数据，我们往往会说“传一个<code>JSON</code>”，从上面已经知道<code>JSON</code>只是一个格式，那我们传递的到底是什么？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 一个简单的 post 请求</span></span><br><span class="line"><span class="keyword">const</span> body = &#123;</span><br><span class="line">    name: <span class="string">'ltaoo'</span>,</span><br><span class="line">    age: <span class="number">18</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">fetch(<span class="string">'https://easy-mock.com/mock/5a1d30028e6ddb24964c2d91/business/api/login'</span>, &#123;</span><br><span class="line">    method: <span class="string">'POST'</span>,</span><br><span class="line">    body,</span><br><span class="line">&#125;)</span><br><span class="line">    .then(<span class="function">(<span class="params">res</span>) =&gt;</span> res.json())</span><br><span class="line">    .then(<span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(data);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+<p>但实际上并没有将参数传递过去，即<code>Headers</code>中并不存在<code>Request Payload</code>，需要将<code>body</code>使用<code>JSON.stringify()</code>方法转换为一个字符串后，才能成功传递。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> body = &#123;</span><br><span class="line">    name: <span class="string">'ltaoo'</span>,</span><br><span class="line">    age: <span class="number">18</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">fetch(<span class="string">'https://easy-mock.com/mock/5a1d30028e6ddb24964c2d91/business/api/login'</span>, &#123;</span><br><span class="line">    method: <span class="string">'POST'</span>,</span><br><span class="line">    body: <span class="built_in">JSON</span>.stringify(body),</span><br><span class="line">&#125;)</span><br><span class="line">    .then(<span class="function">(<span class="params">res</span>) =&gt;</span> res.json())</span><br><span class="line">    .then(<span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(data);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><code>JSON.stringify()</code>方法是将一个JavaScript值(对象或者数组)转换为一个 JSON 字符串。</p>
+</blockquote>
+<p>所以实际传递的是字符串，更严格来说是“JSON 格式的字符串”。</p>
+<h3 id="JSON-对象"><a href="#JSON-对象" class="headerlink" title="JSON 对象"></a>JSON 对象</h3><p><code>JSON.stringify()</code>里面的<code>JSON</code>是什么？</p>
+<p>这是<code>JavaScript</code>中的内置对象，是实际存在的，但不同于之前所说的<code>JSON</code>。</p>
+<p>这是最容易让人混乱的地方了，如果我们的<code>JavaScript</code>中有这么一个对象，由于符合<code>JSON</code>格式，有些人称为”JSON 对象“，但这只是一个普通的对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> jsonObj = &#123;</span><br><span class="line">    <span class="string">"name"</span>: <span class="string">"ltaoo"</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h4 id="JSON-stringify"><a href="#JSON-stringify" class="headerlink" title="JSON.stringify"></a>JSON.stringify</h4><p>上面提到，实际传递的是字符串，所以不使用<code>JSON.stringify()</code>而是自己声明一个也是可以的，比如：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">fetch(<span class="string">'https://easy-mock.com/mock/5a1d30028e6ddb24964c2d91/business/api/login'</span>, &#123;</span><br><span class="line">    method: <span class="string">'POST'</span>,</span><br><span class="line">    body: <span class="string">'&#123; "name": "ltaoo" &#125;'</span>,</span><br><span class="line">&#125;)</span><br><span class="line">    .then(<span class="function">(<span class="params">res</span>) =&gt;</span> res.json())</span><br><span class="line">    .then(<span class="function">(<span class="params">data</span>) =&gt;</span> &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(data);</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+<p>当然这样很蠢。。。而且<code>stringify()</code>方法还有一些额外的”特效“：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> body = &#123;</span><br><span class="line">    name: <span class="string">'ltaoo'</span>,</span><br><span class="line">    skills: <span class="literal">undefined</span>,</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">JSON</span>.stringify(body));</span><br></pre></td></tr></table></figure>
+<p>你认为结果会是什么？</p>
+<ol>
+<li>报错，因为<code>undefined</code>不是合法的值</li>
+<li>成功，忽略不合法的值</li>
+<li>成功，将<code>undefined</code>转换为<code>null</code></li>
+<li>其他</li>
+</ol>
+<p>答案是2，最终打印的值是<code>{&quot;name&quot;:&quot;ltaoo&quot;}</code>，如果换个格式，结果是一样的吗？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> body = &#123;</span><br><span class="line">    name: <span class="string">'ltaoo'</span>,</span><br><span class="line">    skills: [<span class="literal">undefined</span>],</span><br><span class="line">&#125;;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">JSON</span>.stringify(body));</span><br><span class="line"><span class="comment">// 结果是 &#123;"name":"ltaoo"&#125; 还是 &#123;"name":"ltaoo", "skills": []&#125; ?</span></span><br></pre></td></tr></table></figure>
+<p>答案揭晓，是<code>{&quot;name&quot;:&quot;ltaoo&quot;,&quot;skills&quot;:[null]}</code>。</p>
+<p>我们都知道，<code>JavaScript</code>的数组不同于其他语言的数组，元素可以是不同类型的如<code>[1, true, &#39;name&#39;]</code>是合法的，使用<code>JSON.stringify()</code>会得到什么结果呢？</p>
+<h4 id="JSON-parse"><a href="#JSON-parse" class="headerlink" title="JSON.parse"></a>JSON.parse</h4><blockquote>
+<p>JSON.parse() 方法用来解析JSON字符串，构造由字符串描述的JavaScript值或对象。</p>
+</blockquote>
+<p>在实际的数据传递中并不常用，因为请求库（axios、isomorphic 等）帮我们做了处理。常见的使用场景是将自己生成的JSON 字符串转换回来，如<code>localStorage</code>存储信息。</p>
+<p>那可以用来判断某个字符串是否符合<code>JSON</code>格式呢？</p>
+<p>可以，而且经常会遇到解析失败导致的报错，类似于：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Uncaught SyntaxError: Unexpected token x in JSON at position x</span><br></pre></td></tr></table></figure>
+<p>如果接口请求得到的结果不符合<code>JSON</code>格式也会有这种报错。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><code>JSON</code>是日常开发中最常使用的，但仅限于“会用”，实际上<code>JSON</code>的用途已经不局限在“数据交换”，<code>NoSQL</code>、配置文件也有<code>JSON</code>的身影，深入了解是有必要的，毕竟看起来这么“简单”。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/json/" rel="tag"># json</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2017/12/17/痛苦的写作/" rel="next" title="“痛苦”的写作">
+                <i class="fa fa-chevron-left"></i> “痛苦”的写作
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2018/01/07/javascript2python01/" rel="prev" title="写给 JSer 的 python 学习手册 - 基础语法篇">
+                写给 JSer 的 python 学习手册 - 基础语法篇 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是-JSON"><span class="nav-number">1.</span> <span class="nav-text">什么是 JSON</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JSON-格式"><span class="nav-number">2.</span> <span class="nav-text">JSON 格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaScript-中的-JSON"><span class="nav-number">3.</span> <span class="nav-text">JavaScript 中的 JSON</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#传递的到底是什么？"><span class="nav-number">3.1.</span> <span class="nav-text">传递的到底是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JSON-对象"><span class="nav-number">3.2.</span> <span class="nav-text">JSON 对象</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#JSON-stringify"><span class="nav-number">3.2.1.</span> <span class="nav-text">JSON.stringify</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#JSON-parse"><span class="nav-number">3.2.2.</span> <span class="nav-text">JSON.parse</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

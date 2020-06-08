@@ -1,0 +1,697 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="python,ts video," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="cctalk 缓存视频后，实际缓存的是视频切片并加密的 ts 文件，将视频片段解密后，需要解决的问题就是如何合并视频片段。">
+<meta name="keywords" content="python,ts video">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python 按顺序合并 ts 文件">
+<meta property="og:url" content="http://yoursite.com/2018/10/22/python 按顺序合并 ts 文件/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="cctalk 缓存视频后，实际缓存的是视频切片并加密的 ts 文件，将视频片段解密后，需要解决的问题就是如何合并视频片段。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-10-22T07:55:47.352Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python 按顺序合并 ts 文件">
+<meta name="twitter:description" content="cctalk 缓存视频后，实际缓存的是视频切片并加密的 ts 文件，将视频片段解密后，需要解决的问题就是如何合并视频片段。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/10/22/python 按顺序合并 ts 文件/"/>
+
+
+
+
+
+  <title> python 按顺序合并 ts 文件 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2018/10/22/python 按顺序合并 ts 文件/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                python 按顺序合并 ts 文件
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-10-22T08:00:00+08:00">
+              2018-10-22
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2018-10-22T15:55:47+08:00">
+              2018-10-22
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Python/" itemprop="url" rel="index">
+                    <span itemprop="name">Python</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>cctalk 缓存视频后，实际缓存的是视频切片并加密的 ts 文件，将视频片段解密后，需要解决的问题就是如何合并视频片段。</p>
+<a id="more"></a>
+<p>每个 ts 文件都会包含时间信息，通过<code>ffmpeg</code>可以查看：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg -i 0a7599cc995bdc2b4d0ff70b443f76f2.ts</span><br></pre></td></tr></table></figure>
+<p>对应的输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">ffmpeg version 4.0.2 Copyright (c) 2000-2018 the FFmpeg developers</span><br><span class="line">  built with Apple LLVM version 9.1.0 (clang-902.0.39.2)</span><br><span class="line">  configuration: --prefix=/usr/<span class="built_in">local</span>/Cellar/ffmpeg/4.0.2 --<span class="built_in">enable</span>-shared --<span class="built_in">enable</span>-pthreads --<span class="built_in">enable</span>-version3 --<span class="built_in">enable</span>-hardcoded-tables --<span class="built_in">enable</span>-avresample --cc=clang --host-cflags= --host-ldflags= --<span class="built_in">enable</span>-gpl --<span class="built_in">enable</span>-libmp3lame --<span class="built_in">enable</span>-libx264 --<span class="built_in">enable</span>-libxvid --<span class="built_in">enable</span>-opencl --<span class="built_in">enable</span>-videotoolbox --<span class="built_in">disable</span>-lzma</span><br><span class="line">  libavutil      56. 14.100 / 56. 14.100</span><br><span class="line">  libavcodec     58. 18.100 / 58. 18.100</span><br><span class="line">  libavformat    58. 12.100 / 58. 12.100</span><br><span class="line">  libavdevice    58.  3.100 / 58.  3.100</span><br><span class="line">  libavfilter     7. 16.100 /  7. 16.100</span><br><span class="line">  libavresample   4.  0.  0 /  4.  0.  0</span><br><span class="line">  libswscale      5.  1.100 /  5.  1.100</span><br><span class="line">  libswresample   3.  1.100 /  3.  1.100</span><br><span class="line">  libpostproc    55.  1.100 / 55.  1.100</span><br><span class="line">Input <span class="comment">#0, mpegts, from '0a7599cc995bdc2b4d0ff70b443f76f2.ts':</span></span><br><span class="line">  Duration: 00:00:09.67, start: 7583.773333, bitrate: 562 kb/s</span><br><span class="line">  Program 1</span><br><span class="line">    Stream <span class="comment">#0:0[0x100]: Video: h264 (High) ([27][0][0][0] / 0x001B), yuv420p(progressive), 1920x1080 [SAR 1:1 DAR 16:9], 25 fps, 25 tbr, 90k tbn, 50 tbc</span></span><br><span class="line">    Stream <span class="comment">#0:1[0x101](eng): Audio: aac (LC) ([15][0][0][0] / 0x000F), 48000 Hz, stereo, fltp, 145 kb/s</span></span><br></pre></td></tr></table></figure>
+<p>内容非常多，我们只需要关心倒数第四行，<code>Duration: 00:00:09.67, start: 7583.773333, bitrate: 562 kb/s</code>，其中的<code>start</code>就是该视频的开始时间了。</p>
+<blockquote>
+<p>只有视频能正确输出这个时间的才能排序。</p>
+</blockquote>
+<p>所以我们的问题就变成了从终端获取信息，并且给视频设置有顺序的文件名。</p>
+<h2 id="读取终端输出"><a href="#读取终端输出" class="headerlink" title="读取终端输出"></a>读取终端输出</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> subprocess</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">extract_timestamp</span><span class="params">(video_path)</span>:</span></span><br><span class="line">    command = <span class="string">'ffmpeg -i '</span> + video_path</span><br><span class="line">    result = subprocess.Popen(command, shell=<span class="keyword">True</span>, stdin=subprocess.PIPE, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, close_fds=<span class="keyword">True</span>)</span><br><span class="line">    <span class="comment"># out 就是终端的输出</span></span><br><span class="line">    out, err = result.communicate()</span><br><span class="line"></span><br><span class="line">    re_result = re.search(<span class="string">'start: ([0-9]+)'</span>, out)</span><br><span class="line">    print(<span class="string">'regexp result is '</span>, re_result)</span><br><span class="line">    timestamp = re_result.group(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> timestamp</span><br></pre></td></tr></table></figure>
+<h2 id="获取正确顺序的文件名"><a href="#获取正确顺序的文件名" class="headerlink" title="获取正确顺序的文件名"></a>获取正确顺序的文件名</h2><p>我们最终是使用<code>cat *.ts &gt; index.ts</code>来完成合并的，该命令会单纯按照文件的排序来合并，所以需要有正确的顺序。</p>
+<p>这里的做法是根据视频的开始时间，直接将时间作为文件名。如有一个视频片段开始时间是 58:00，那么这个文件文件名就应该是 005800。从这里也能看出视频长度最好不超过 60 小时，因为超过 60 小时后文件名长度不一样，排序就会出现问题。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> datetime</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">seconds_to_str</span><span class="params">(seconds)</span>:</span></span><br><span class="line">    time = str(datetime.timedelta(seconds=seconds))</span><br><span class="line">    res = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> time.split(<span class="string">':'</span>):</span><br><span class="line">        res.append(prefix(i, num = <span class="number">2</span>))</span><br><span class="line">    <span class="keyword">return</span> <span class="string">''</span>.join(res)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">prefix</span><span class="params">(value, num = <span class="number">6</span>)</span>:</span></span><br><span class="line">  index_list = list(str(value))</span><br><span class="line">  <span class="keyword">if</span> num &gt; len(index_list):</span><br><span class="line">    res = (num - len(index_list)) * <span class="string">'0'</span> + str(value)</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line">  <span class="keyword">return</span> value</span><br></pre></td></tr></table></figure>
+<h2 id="更新文件名并合并"><a href="#更新文件名并合并" class="headerlink" title="更新文件名并合并"></a>更新文件名并合并</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> shutil</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sort_videos</span><span class="params">(path)</span>:</span></span><br><span class="line">    <span class="comment"># 原始视频文件夹</span></span><br><span class="line">    videos_path = <span class="string">'output'</span></span><br><span class="line">    <span class="comment"># 排序后视频文件夹</span></span><br><span class="line">    output_path = <span class="string">'sorted'</span></span><br><span class="line">    <span class="keyword">for</span> file <span class="keyword">in</span> os.listdir(os.path.join(path, videos_path)):</span><br><span class="line">        <span class="keyword">if</span> file == <span class="string">'.DS_Store'</span>:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        <span class="comment"># output dir</span></span><br><span class="line">        sorted_dir = os.path.join(path, output_path)</span><br><span class="line">        <span class="comment"># 确保文件夹必然存在</span></span><br><span class="line">        prepare_dir([sorted_dir])</span><br><span class="line">        file_path = os.path.join(path, videos_path, file)</span><br><span class="line">        print(<span class="string">'prepare process file is '</span> + file_path)</span><br><span class="line">        timestamp = extract_timestamp(file_path)</span><br><span class="line">        file_name = seconds_to_str(int(timestamp)) + <span class="string">'.ts'</span></span><br><span class="line">        new_file_path = os.path.join(sorted_dir, file_name)</span><br><span class="line">        print(<span class="string">'new file is '</span> + new_file_path)</span><br><span class="line">        <span class="comment"># 从视频原始文件夹「拷贝并重命名」到排序后视频文件夹中</span></span><br><span class="line">        shutil.copyfile(file_path, new_file_path)</span><br><span class="line"></span><br><span class="line">    print(<span class="string">'sort videos finish'</span>)</span><br><span class="line">    concat_command = <span class="string">'cat '</span> + os.path.join(sorted_dir, <span class="string">'*.ts'</span>) + <span class="string">' &gt; '</span> + os.path.join(path, <span class="string">'index.ts'</span>)</span><br><span class="line">    print(concat_command)</span><br><span class="line">    os.popen(concat_command)</span><br><span class="line">    <span class="comment"># 删除排序后视频文件夹</span></span><br><span class="line">    shutil.rmtree(sorted_dir)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">prepare_dir</span><span class="params">(dirs)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> dir <span class="keyword">in</span> dirs:</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> os.path.exists(dir):</span><br><span class="line">            os.mkdir(dir)</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/python/" rel="tag"># python</a>
+          
+            <a href="/blog/tags/ts-video/" rel="tag"># ts video</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2018/10/22/更新 macOS Mojave 后 vim 打不开/" rel="next" title="更新 macOS Mojave 后 vim 打不开">
+                <i class="fa fa-chevron-left"></i> 更新 macOS Mojave 后 vim 打不开
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2018/10/23/antd自定义表单的问题-2/" rel="prev" title="antd 自定义表单的问题 - 2">
+                antd 自定义表单的问题 - 2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#读取终端输出"><span class="nav-number">1.</span> <span class="nav-text">读取终端输出</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#获取正确顺序的文件名"><span class="nav-number">2.</span> <span class="nav-text">获取正确顺序的文件名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更新文件名并合并"><span class="nav-number">3.</span> <span class="nav-text">更新文件名并合并</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

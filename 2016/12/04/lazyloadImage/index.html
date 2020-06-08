@@ -1,0 +1,696 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="React-Naitve,Image," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="类似知乎或者微信，在文章详情页面，图片并非是一次性加载完成，而是在滑动到快看到图片时才开始加载，很明显原生 Image 组件并不支持这种特性，所以需要封装一层。">
+<meta name="keywords" content="React-Naitve,Image">
+<meta property="og:type" content="article">
+<meta property="og:title" content="尝试实现懒加载图片组件">
+<meta property="og:url" content="http://yoursite.com/2016/12/04/lazyloadImage/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="类似知乎或者微信，在文章详情页面，图片并非是一次性加载完成，而是在滑动到快看到图片时才开始加载，很明显原生 Image 组件并不支持这种特性，所以需要封装一层。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/blog/2016/12/04/lazyloadImage/lazyimg.png">
+<meta property="og:image" content="http://yoursite.com/blog/2016/12/04/lazyloadImage/lazyImg.gif">
+<meta property="og:updated_time" content="2017-02-08T14:44:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="尝试实现懒加载图片组件">
+<meta name="twitter:description" content="类似知乎或者微信，在文章详情页面，图片并非是一次性加载完成，而是在滑动到快看到图片时才开始加载，很明显原生 Image 组件并不支持这种特性，所以需要封装一层。">
+<meta name="twitter:image" content="http://yoursite.com/blog/2016/12/04/lazyloadImage/lazyimg.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/12/04/lazyloadImage/"/>
+
+
+
+
+
+  <title> 尝试实现懒加载图片组件 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2016/12/04/lazyloadImage/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                尝试实现懒加载图片组件
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-04T08:00:00+08:00">
+              2016-12-04
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2017-02-08T22:44:22+08:00">
+              2017-02-08
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/React/" itemprop="url" rel="index">
+                    <span itemprop="name">React</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>类似知乎或者微信，在文章详情页面，图片并非是一次性加载完成，而是在滑动到快看到图片时才开始加载，很明显原生 Image 组件并不支持这种特性，所以需要封装一层。<br><a id="more"></a></p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>首先图片组件必须放在 ScrollView 组件内。<br>图片组件在页面完成布局后，根据<code>onLayout</code>属性可以获取到这个组件在容器中的 x、y 值。<br>监听 ScrollView 滚动事件，<code>onScroll</code>会给出内容偏移量 contentOffset。当内容偏移量大于等于图片组件的 y 值减去屏幕高度时，就可以加载图片了。<br><img src="/blog/2016/12/04/lazyloadImage/lazyimg.png" alt=""></p>
+<h2 id="具体实现"><a href="#具体实现" class="headerlink" title="具体实现"></a>具体实现</h2><p>首先搭建好页面，为了填充内容复制了知乎上的一篇文章<a href="https://www.zhihu.com/question/26766601" target="_blank" rel="noopener">如何去阅读并学习一些优秀的开源框架的源码？</a>。。。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// imageLazyloadDemo.js</span></span><br><span class="line"><span class="keyword">import</span> React, &#123;Component&#125; <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">	StyleSheet,</span><br><span class="line">	View,</span><br><span class="line">	Text,</span><br><span class="line">	<span class="comment">// Image,</span></span><br><span class="line">	ScrollView,</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">'react-native'</span></span><br><span class="line"><span class="keyword">import</span> Image <span class="keyword">from</span> <span class="string">'../components/Image'</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">ImageDemo</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">	<span class="keyword">constructor</span>(props) &#123;</span><br><span class="line">		<span class="keyword">super</span>(props);</span><br><span class="line">		<span class="keyword">this</span>.state = &#123;</span><br><span class="line">			y: <span class="number">0</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">this</span>._onScroll = <span class="keyword">this</span>._onScroll.bind(<span class="keyword">this</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 滑动触发</span></span><br><span class="line">	_onScroll(e) &#123;</span><br><span class="line">		<span class="comment">// 获取滑动的距离</span></span><br><span class="line">		<span class="keyword">let</span> &#123;y&#125; = e.nativeEvent.contentOffset;</span><br><span class="line">		<span class="keyword">this</span>.setState(&#123;</span><br><span class="line">			y</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;</span><br><span class="line">	render() &#123;</span><br><span class="line">		<span class="keyword">return</span> (</span><br><span class="line">			&lt;ScrollView </span><br><span class="line">				style = &#123;styles.container&#125;</span><br><span class="line">				onScroll = &#123;<span class="keyword">this</span>._onScroll&#125;</span><br><span class="line">			&gt;</span><br><span class="line">				&lt;Text style = &#123;[styles.text, styles.title]&#125;&gt;假设这是文章详情页，存在很多文字和图片&lt;<span class="regexp">/Text&gt;</span></span><br><span class="line"><span class="regexp">				&lt;Text style = &#123;styles.text&#125;&gt;在我阅读的前端库、Python后台库的过程中，我们都是以造轮子为目的展开的。所以在最开始的时候，我需要一个可以工作，并且拥有我想要的功能的版本。&lt;/</span>Text&gt;</span><br><span class="line">				&lt;Text style = &#123;styles.text&#125;&gt;紧接着，我就可以开始去实践这个版本中的一些功能，并理解他们是怎么工作的。再用git大法展开之前修改的内容，可以使用IDE自带的Diff工具：&lt;<span class="regexp">/Text&gt;</span></span><br><span class="line"><span class="regexp">				&lt;Image</span></span><br><span class="line"><span class="regexp">					source = &#123;&#123;uri: 'https:/</span><span class="regexp">/pic4.zhimg.com/</span><span class="number">5</span>bc23b15e827a033d2b4966b6038d987_b.jpg<span class="string">'&#125;&#125;</span></span><br><span class="line"><span class="string">					y = &#123;this.state.y&#125;</span></span><br><span class="line"><span class="string">				/&gt;</span></span><br><span class="line"><span class="string">				&lt;Text style = &#123;styles.text&#125;&gt;或者类似于SourceTree这样的工具，来查看修改的内容。&lt;/Text&gt;</span></span><br><span class="line"><span class="string">				&lt;Text style = &#123;styles.text&#125;&gt;在我们理解了基本的核心功能后，我们就可以向后查看大、中版本的更新内容了。&lt;/Text&gt;</span></span><br><span class="line"><span class="string">				&lt;Text style = &#123;styles.text&#125;&gt;开始之前，我们希望大家对版本号管理有一些基本的认识。&lt;/Text&gt;</span></span><br><span class="line"><span class="string">				&lt;Text style = &#123;styles.text&#125;&gt;我最早阅读的开始软件是Linux，而下面则是Linux的Release过程：&lt;/Text&gt;</span></span><br><span class="line"><span class="string">				&lt;Image</span></span><br><span class="line"><span class="string">					source = &#123;&#123;uri: '</span>https:<span class="comment">//pic3.zhimg.com/f9d7c5343f3da040f891149a8993ed7e_b.png'&#125;&#125;</span></span><br><span class="line">					y = &#123;<span class="keyword">this</span>.state.y&#125;</span><br><span class="line">				/&gt;</span><br><span class="line">				&lt;Text style = &#123;styles.text&#125;&gt;表格源自一本书叫《Linux内核<span class="number">0.11</span>(<span class="number">0.95</span>)完全注释》，简单地再介绍一下：&lt;<span class="regexp">/Text&gt;</span></span><br><span class="line"><span class="regexp">				&lt;Text style = &#123;styles.text&#125;&gt;版本0.00是一个hello,world程序&lt;/</span>Text&gt;</span><br><span class="line">				&lt;Text style = &#123;styles.text&#125;&gt;版本<span class="number">0.01</span>包含了可以工作的代码&lt;<span class="regexp">/Text&gt;</span></span><br><span class="line"><span class="regexp">				&lt;Text style = &#123;styles.text&#125;&gt;版本0.11是基本可以正常的版本&lt;/</span>Text&gt;</span><br><span class="line">				&lt;Text style = &#123;styles.text&#125;&gt;<span class="number">1</span>．项目初版本时，版本号可以为 <span class="number">0.1</span> 或 <span class="number">0.1</span><span class="number">.0</span>, 也可以为 <span class="number">1.0</span> 或 <span class="number">1.0</span><span class="number">.0</span>，如果你为人很低调，我想你会选择那个主版本号为 <span class="number">0</span> 的方式；&lt;<span class="regexp">/Text&gt;</span></span><br><span class="line"><span class="regexp">				&lt;Image</span></span><br><span class="line"><span class="regexp">					source = &#123;&#123;uri: 'https:/</span><span class="regexp">/pic4.zhimg.com/</span><span class="number">6</span>a32830fab3b9105fecef3d4f830afe7_b.png<span class="string">'&#125;&#125;</span></span><br><span class="line"><span class="string">					y = &#123;this.state.y&#125;</span></span><br><span class="line"><span class="string">				/&gt;</span></span><br><span class="line"><span class="string">			&lt;/ScrollView&gt;</span></span><br><span class="line"><span class="string">		)</span></span><br><span class="line"><span class="string">	&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">const styles = StyleSheet.create(&#123;</span></span><br><span class="line"><span class="string">	container: &#123;</span></span><br><span class="line"><span class="string">		flex: 1,</span></span><br><span class="line">	    backgroundColor: '#F5FCFF',</span><br><span class="line">	    paddingHorizontal: <span class="number">10</span></span><br><span class="line">	&#125;,</span><br><span class="line">	text: &#123;</span><br><span class="line">		fontSize: <span class="number">16</span>,</span><br><span class="line">		marginVertical: <span class="number">10</span></span><br><span class="line">	&#125;,</span><br><span class="line">	title: &#123;</span><br><span class="line">		fontSize: <span class="number">20</span>,</span><br><span class="line">		marginTop: <span class="number">10</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>重点在<code>_onScroll</code>函数上，获取到每次滑动的内容偏移量 contentOffset.y，并通过 state 传递给 Image 组件。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;Image</span><br><span class="line">	source = &#123;&#123;<span class="attr">uri</span>: <span class="string">'https://pic4.zhimg.com/5bc23b15e827a033d2b4966b6038d987_b.jpg'</span>&#125;&#125;</span><br><span class="line">	y = &#123;<span class="keyword">this</span>.state.y&#125;</span><br><span class="line">/&gt;</span><br></pre></td></tr></table></figure></p>
+<p>这样 Image 组件就能够知道自己是否出现在可视范围内了。</p>
+<p>这里 Image 组件是一个封装后的组件：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// components/Image.js</span></span><br><span class="line"><span class="keyword">import</span> React, &#123;Component&#125; <span class="keyword">from</span> <span class="string">'react'</span></span><br><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">	StyleSheet,</span><br><span class="line">	View,</span><br><span class="line">	Image,</span><br><span class="line">	Text,</span><br><span class="line">	Dimensions,</span><br><span class="line">	InteractionManager</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">'react-native'</span></span><br><span class="line"><span class="comment">// 获取屏幕宽高</span></span><br><span class="line"><span class="keyword">const</span> screenWidth = Dimensions.get(<span class="string">'window'</span>).width</span><br><span class="line"><span class="keyword">const</span> screenHeight = Dimensions.get(<span class="string">'window'</span>).height</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">CustomImage</span> <span class="keyword">extends</span> <span class="title">Component</span> </span>&#123;</span><br><span class="line">	<span class="keyword">constructor</span>(props) &#123;</span><br><span class="line">		<span class="keyword">super</span>(props)</span><br><span class="line">		<span class="comment">// 先给图片一个默认宽高</span></span><br><span class="line">		<span class="keyword">this</span>.state = &#123;</span><br><span class="line">			width: screenWidth,</span><br><span class="line">			height: <span class="number">300</span>,</span><br><span class="line">			loaded: <span class="literal">false</span></span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">this</span>._onLayout = <span class="keyword">this</span>._onLayout.bind(<span class="keyword">this</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="comment">// 2、获取组件初始化位置</span></span><br><span class="line">	_onLayout(e, node) &#123;</span><br><span class="line">		<span class="keyword">let</span> &#123;y&#125; = e.nativeEvent.layout</span><br><span class="line">		alert(y)</span><br><span class="line">		<span class="keyword">this</span>.setState(&#123;</span><br><span class="line">			offsetY: y</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;	</span><br><span class="line">	<span class="comment">// 获取加载中、加载失败视图的函数</span></span><br><span class="line">	_renderLoad(text) &#123;</span><br><span class="line">		<span class="keyword">return</span>(</span><br><span class="line">			&lt;View </span><br><span class="line">				style = &#123;styles.loadContainer&#125;</span><br><span class="line">				onLayout = &#123;<span class="keyword">this</span>._onLayout&#125;</span><br><span class="line">			&gt;</span><br><span class="line">				&lt;Text </span><br><span class="line">					style = &#123;styles.loadText&#125;</span><br><span class="line">				&gt;&#123;text&#125;&lt;<span class="regexp">/Text&gt;</span></span><br><span class="line"><span class="regexp">			&lt;/</span>View&gt;</span><br><span class="line">		)</span><br><span class="line">	&#125;</span><br><span class="line">	render() &#123;</span><br><span class="line">		<span class="keyword">const</span> &#123;source&#125; = <span class="keyword">this</span>.props</span><br><span class="line">		<span class="keyword">if</span>(<span class="keyword">this</span>.state.loaded) &#123;</span><br><span class="line">			<span class="comment">// 如果真正的图片加载好</span></span><br><span class="line">			<span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">Image</span> </span></span></span><br><span class="line"><span class="xml">				source = &#123;source&#125;</span></span><br><span class="line"><span class="xml">				style = &#123;&#123;height: this.state.height&#125;&#125;</span></span><br><span class="line"><span class="xml">				resizeMode = &#123;'contain'&#125;</span></span><br><span class="line"><span class="xml">			/&gt;</span></span><br><span class="line"><span class="xml">		&#125;</span></span><br><span class="line"><span class="xml">		// 1、会先显示加载中视图</span></span><br><span class="line"><span class="xml">		return this._renderLoad('正在加载中...')</span></span><br><span class="line"><span class="xml">	&#125;</span></span><br><span class="line"><span class="xml">&#125;</span></span><br><span class="line"><span class="xml">const styles = StyleSheet.create(&#123;</span></span><br><span class="line"><span class="xml">	// 加载容器样式</span></span><br><span class="line"><span class="xml">	loadContainer: &#123;</span></span><br><span class="line"><span class="xml">		backgroundColor: '#eee',</span></span><br><span class="line"><span class="xml">		justifyContent: 'center',</span></span><br><span class="line"><span class="xml">		alignItems: 'center',</span></span><br><span class="line"><span class="xml">		height: 100,</span></span><br><span class="line"><span class="xml">		marginVertical: 10</span></span><br><span class="line"><span class="xml">	&#125;,</span></span><br><span class="line"><span class="xml">	// 加载样式</span></span><br><span class="line"><span class="xml">	loadText: &#123;</span></span><br><span class="line"><span class="xml">		fontSize: 20,</span></span><br><span class="line"><span class="xml">		color: '#ccc'</span></span><br><span class="line"><span class="xml">	&#125;</span></span><br><span class="line"><span class="xml">)</span></span><br></pre></td></tr></table></figure></p>
+<p>1、先加载 loading 视图。<br>2、获取到该 loading 视图在 ScrollView 容器内的位置，有用的是 loading 距内容顶部的距离 y。</p>
+<p>OK，然后可以开始计算了，如果传过来的 y + 屏幕高度 &gt;= loading 视图距内容顶部的距离 y，就可以获取远程图片了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// components/Image.js</span></span><br><span class="line"><span class="comment">//...</span></span><br><span class="line">	<span class="comment">// 从网络请求图片的方法</span></span><br><span class="line">	_fetchImg() &#123;</span><br><span class="line">		InteractionManager.runAfterInteractions(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">			<span class="keyword">const</span> &#123;source, style&#125; = <span class="keyword">this</span>.props</span><br><span class="line">			<span class="keyword">if</span>(source.uri) &#123;</span><br><span class="line">				<span class="comment">// 如果是网络图片 在页面还未加载前，获取图片宽高</span></span><br><span class="line">				Image.getSize(source.uri, (w, h) =&gt; &#123;</span><br><span class="line">					<span class="keyword">let</span> imgHeight = (h/w)*<span class="keyword">this</span>.state.width</span><br><span class="line">			      	<span class="keyword">this</span>.setState(&#123;</span><br><span class="line">			      		height: imgHeight,</span><br><span class="line">			      		loaded: <span class="literal">true</span></span><br><span class="line">			      	&#125;)</span><br><span class="line">			    &#125;, (err) =&gt; &#123;</span><br><span class="line">			    	<span class="comment">// 获取图片宽高或者下载图片失败</span></span><br><span class="line">			    	<span class="keyword">this</span>.setState(&#123;</span><br><span class="line">			    		loadFail: <span class="literal">true</span></span><br><span class="line">			    	&#125;)</span><br><span class="line">			    &#125;)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	render() &#123;</span><br><span class="line">		<span class="keyword">const</span> &#123;source, y&#125; = <span class="keyword">this</span>.props</span><br><span class="line">		<span class="comment">// 3、判断是否可以加载图片了</span></span><br><span class="line">		<span class="keyword">if</span>(y + screenHeight &gt;= <span class="keyword">this</span>.state.offsetY) &#123;</span><br><span class="line">			<span class="comment">// 请求图片</span></span><br><span class="line">			<span class="keyword">this</span>._fetchImg()</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">// 4、如果加载了远程图片，就会渲染这里</span></span><br><span class="line">		<span class="keyword">if</span>(<span class="keyword">this</span>.state.loaded) &#123;</span><br><span class="line">			<span class="comment">// 如果真正的图片加载好</span></span><br><span class="line">			<span class="keyword">return</span> <span class="xml"><span class="tag">&lt;<span class="name">Image</span> </span></span></span><br><span class="line"><span class="xml">				source = &#123;source&#125;</span></span><br><span class="line"><span class="xml">				style = &#123;&#123;height: this.state.height&#125;&#125;</span></span><br><span class="line"><span class="xml">				resizeMode = &#123;'contain'&#125;</span></span><br><span class="line"><span class="xml">			/&gt;</span></span><br><span class="line"><span class="xml">		&#125;</span></span><br><span class="line"><span class="xml">		// 1、会先显示加载中视图</span></span><br><span class="line"><span class="xml">		return this._renderLoad('正在加载中...')</span></span><br><span class="line"><span class="xml">	&#125;</span></span><br></pre></td></tr></table></figure>
+<p><img src="/blog/2016/12/04/lazyloadImage/lazyImg.gif" alt=""><br>看起来还不错。。。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>至此，完成了一个最最最简单的图片懒加载组件。<br>当然还可以继续做一些优化，比如当网络不好时，加载图片显示加载失败，点击可以重新加载等等。</p>
+<p>﻿</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/React-Naitve/" rel="tag"># React-Naitve</a>
+          
+            <a href="/blog/tags/Image/" rel="tag"># Image</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2016/11/12/customDirective/" rel="next" title="实现一个简单的 vue 无限加载指令">
+                <i class="fa fa-chevron-left"></i> 实现一个简单的 vue 无限加载指令
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2016/12/11/个人对nodejs的理解/" rel="prev" title="Nodejs 基础介绍">
+                Nodejs 基础介绍 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#具体实现"><span class="nav-number">2.</span> <span class="nav-text">具体实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

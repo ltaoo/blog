@@ -1,0 +1,702 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="架构,前端," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="工作了一段时间后，想在前端领域有更深入的学习，购入了这本《前端架构设计》（下称本书），看看前端架构是什么、怎么做、能带来什么好处。 下载后迫不及待的打开阅读，两小时后就扔一边再也没有打开过了。本书没有解决我的任何疑问，作者提出的架构，在我理解中更多是“工作流程”，  前端架构是一系列工具和流程的集合，旨在提升前端代码的">
+<meta name="keywords" content="架构,前端">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端有架构吗？- 《前端架构设计》读后感">
+<meta property="og:url" content="http://yoursite.com/2017/11/12/前端有架构吗/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="工作了一段时间后，想在前端领域有更深入的学习，购入了这本《前端架构设计》（下称本书），看看前端架构是什么、怎么做、能带来什么好处。 下载后迫不及待的打开阅读，两小时后就扔一边再也没有打开过了。本书没有解决我的任何疑问，作者提出的架构，在我理解中更多是“工作流程”，  前端架构是一系列工具和流程的集合，旨在提升前端代码的质量，并实现高效、可持续的工作流。  这是作者给前端架构下的定义，这些具体是指什">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-30T02:50:05.875Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端有架构吗？- 《前端架构设计》读后感">
+<meta name="twitter:description" content="工作了一段时间后，想在前端领域有更深入的学习，购入了这本《前端架构设计》（下称本书），看看前端架构是什么、怎么做、能带来什么好处。 下载后迫不及待的打开阅读，两小时后就扔一边再也没有打开过了。本书没有解决我的任何疑问，作者提出的架构，在我理解中更多是“工作流程”，  前端架构是一系列工具和流程的集合，旨在提升前端代码的质量，并实现高效、可持续的工作流。  这是作者给前端架构下的定义，这些具体是指什">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/11/12/前端有架构吗/"/>
+
+
+
+
+
+  <title> 前端有架构吗？- 《前端架构设计》读后感 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2017/11/12/前端有架构吗/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                前端有架构吗？- 《前端架构设计》读后感
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-12T08:00:00+08:00">
+              2017-11-12
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2017-12-30T10:50:05+08:00">
+              2017-12-30
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/随笔/" itemprop="url" rel="index">
+                    <span itemprop="name">随笔</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>工作了一段时间后，想在前端领域有更深入的学习，购入了这本《前端架构设计》（下称本书），看看前端架构是什么、怎么做、能带来什么好处。</p>
+<p>下载后迫不及待的打开阅读，两小时后就扔一边再也没有打开过了。本书没有解决我的任何疑问，作者提出的架构，在我理解中更多是“工作流程”，</p>
+<blockquote>
+<p>前端架构是一系列工具和流程的集合，旨在提升前端代码的质量，并实现高效、可持续的工作流。</p>
+</blockquote>
+<p>这是作者给前端架构下的定义，这些具体是指什么呢？下面分别从“代码”、“流程”、“测试”和“文档”四个部分——这是作者认为前端架构的核心——进行讨论。</p>
+<a id="more"></a>
+<h2 id="代码规范属于架构吗？"><a href="#代码规范属于架构吗？" class="headerlink" title="代码规范属于架构吗？"></a>代码规范属于架构吗？</h2><p>作为开发者，我们最关注的肯定是写的代码，<code>HTML</code>、<code>CSS</code>以及最重要的<code>JavaScript</code>。在项目日益复杂的今天，我们往往是团队合作，这就要求写出的代码必须有良好的可维护性。</p>
+<p>作者提出“为代码和资源设定一个期望”说明架构在代码层面的作用。并给出了<code>CSS</code>可以使用<code>BEM</code>等一些模块化理论；<code>JavaScript</code>需要做到良好的代码设计；以及公司or项目特有的约定。</p>
+<p>实际上，每个公司都会有编码规范，这应该是一种基础文化比如使用<code>BEM</code>还是<code>OOCSS</code>。又或者在项目中预设了一些代码规范，但这归属于“前端工程”更恰当而非“前端架构”。</p>
+<h2 id="流程属于架构吗？"><a href="#流程属于架构吗？" class="headerlink" title="流程属于架构吗？"></a>流程属于架构吗？</h2><p>同样的理由，前端工作流程，也是日常工作中应该遵守的约定，从启动项目到编写代码，从提测到 bugfix，这些都是明确写在工作流程文档中的，几乎不会有变化。</p>
+<h2 id="测试属于架构吗？"><a href="#测试属于架构吗？" class="headerlink" title="测试属于架构吗？"></a>测试属于架构吗？</h2><p>看到这里有一些要放弃了，虽然作者提到的知识点都是有价值的，但不应该出现在“架构”命名的书中。<br>测试包括单元测试与端测试，由于端测试产出比太小而很少使用，但无论单元测试异或端测试，都是为了代码质量，后端会将要求写单元测试归属在架构吗？</p>
+<blockquote>
+<p>作者这里提到一个视觉还原测试，比端测试还要夸张，会有人使用吗？</p>
+</blockquote>
+<h2 id="文档属于架构吗？"><a href="#文档属于架构吗？" class="headerlink" title="文档属于架构吗？"></a>文档属于架构吗？</h2><p>每个项目都需要完善的文档，这一观点非常赞同。无论是便于自己后续维护还是让后续维护者易于维护，文档的价值是非常大的。<br>为了解决人工文档维护可能不同步的问题，作者给出了一些现成的文档解决方案，都很有借鉴价值。<br>但仍无法将文档的维护归属在“架构”领域，实际上真正做到每个项目都有详尽的文档是一件非常困难的事情，导致很多项目没有文档，</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>作者一开始就提到：</p>
+<blockquote>
+<p>在后端开发领域，<strong>系统规划</strong>和<strong>可拓展性</strong>非常关键，因此软件架构师备受重视。</p>
+</blockquote>
+<p>是否前端关注这两点也就可以称为“前端架构”了呢？如果可以，作者提出的“流程”、“测试”以及”文档“，并没有过多涉及到这两方面，更多的是作为一个前端日常开发要做的。<br>所以，前端有架构吗？类似于后端的那种。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/架构/" rel="tag"># 架构</a>
+          
+            <a href="/blog/tags/前端/" rel="tag"># 前端</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2017/04/29/类名与组件化/" rel="next" title="类名与组件化">
+                <i class="fa fa-chevron-left"></i> 类名与组件化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2017/11/25/spring_kotlin_curd/" rel="prev" title="使用 Spring + kotlin 实现 CURD 应用">
+                使用 Spring + kotlin 实现 CURD 应用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#代码规范属于架构吗？"><span class="nav-number">1.</span> <span class="nav-text">代码规范属于架构吗？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#流程属于架构吗？"><span class="nav-number">2.</span> <span class="nav-text">流程属于架构吗？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试属于架构吗？"><span class="nav-number">3.</span> <span class="nav-text">测试属于架构吗？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文档属于架构吗？"><span class="nav-number">4.</span> <span class="nav-text">文档属于架构吗？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

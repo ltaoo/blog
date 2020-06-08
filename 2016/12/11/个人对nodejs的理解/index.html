@@ -1,0 +1,794 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="nodejs," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="给公司同事分享自己对于 Nodejs 的理解。">
+<meta name="keywords" content="nodejs">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nodejs 基础介绍">
+<meta property="og:url" content="http://yoursite.com/2016/12/11/个人对nodejs的理解/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="给公司同事分享自己对于 Nodejs 的理解。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/blog/2016/12/11/个人对nodejs的理解/dd5ace53-097f-452d-af74-9daf73c1aa6f.png">
+<meta property="og:image" content="http://yoursite.com/blog/2016/12/11/个人对nodejs的理解/da35f091-32ca-4f7b-97c7-f9f5530e82fa.jpg">
+<meta property="og:image" content="http://yoursite.com/blog/2016/12/11/个人对nodejs的理解/258e6282-20df-4f27-b2d5-3f712ecdaa06.png">
+<meta property="og:image" content="http://yoursite.com/blog/2016/12/11/个人对nodejs的理解/25a07b12-74b1-40b3-bd58-7228953881bd.png">
+<meta property="og:image" content="http://yoursite.com/blog/2016/12/11/个人对nodejs的理解/62826d68-5fd3-44ad-96de-95cad95b1de1.png">
+<meta property="og:image" content="http://yoursite.com/blog/2016/12/11/个人对nodejs的理解/4ff6254a-1ce0-48c9-965c-ab781c63a9ce.png">
+<meta property="og:image" content="http://yoursite.com/blog/2016/12/11/个人对nodejs的理解/4c089b3a-8033-4c85-8a7e-f105b1f19808.png">
+<meta property="og:updated_time" content="2017-02-08T14:43:55.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nodejs 基础介绍">
+<meta name="twitter:description" content="给公司同事分享自己对于 Nodejs 的理解。">
+<meta name="twitter:image" content="http://yoursite.com/blog/2016/12/11/个人对nodejs的理解/dd5ace53-097f-452d-af74-9daf73c1aa6f.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/12/11/个人对nodejs的理解/"/>
+
+
+
+
+
+  <title> Nodejs 基础介绍 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2016/12/11/个人对nodejs的理解/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Nodejs 基础介绍
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-12-11T08:00:00+08:00">
+              2016-12-11
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2017-02-08T22:43:55+08:00">
+              2017-02-08
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/随笔/" itemprop="url" rel="index">
+                    <span itemprop="name">随笔</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>给公司同事分享自己对于 Nodejs 的理解。<br><a id="more"></a></p>
+<h2 id="大纲"><a href="#大纲" class="headerlink" title="大纲"></a>大纲</h2><p><img src="/blog/2016/12/11/个人对nodejs的理解/dd5ace53-097f-452d-af74-9daf73c1aa6f.png" alt=""></p>
+<p>为什么说 Nodejs 是改变前端地位的发展呢。在 Nodejs 出现前，前端开发的工作范围被局限在浏览器环境，我们所有的代码，都只能运行在浏览器里面。</p>
+<p>而 Nodejs 的出现打破了这个限制。</p>
+<h2 id="Nodejs-是什么"><a href="#Nodejs-是什么" class="headerlink" title="Nodejs 是什么"></a>Nodejs 是什么</h2><p>而 Nodejs 简单来说是让 js 代码能够直接在操作系统上运行的一个软件。</p>
+<p>之前我们想测试一段 js 代码执行的效果，只能先新建一个<code>html</code>文件，在文件内的<code>&lt;script&gt;</code>标签内写我们的代码，再使用浏览器打开这个<code>html</code>文件。</p>
+<p>但是安装 Nodejs 后，我们可以直接新建一个<code>js</code>文件，使用 Nodejs 来执行这个<code>js</code>文件！</p>
+<p>比如我对<code>splice</code>方法记不太清，想要验证下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// spliceTest.js</span></span><br><span class="line"><span class="keyword">var</span> ary = [<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>];</span><br><span class="line"><span class="keyword">var</span> newAry = ary.splice(<span class="number">1</span>);</span><br><span class="line"><span class="built_in">console</span>.log(ary);</span><br><span class="line"><span class="built_in">console</span>.log(newAry);</span><br></pre></td></tr></table></figure></p>
+<p>然后可以直接使用<code>node</code>命令来运行一个<code>js</code>文件：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node spliceTest.js</span><br></pre></td></tr></table></figure></p>
+<p>然后就会在当前命令行窗口看到我们打印的结果！</p>
+<p>或者可以直接输入<code>node</code>进入交互模式，在该模式下输入的代码都会作为<code>js</code>代码执行。<br><img src="/blog/2016/12/11/个人对nodejs的理解/da35f091-32ca-4f7b-97c7-f9f5530e82fa.jpg" alt=""></p>
+<blockquote>
+<p>输入<code>.exit</code> 退出交互模式</p>
+</blockquote>
+<p>如果熟悉 python 可能看到这里很眼熟，python 同样可以直接使用<code>python xxx.py</code>来执行一个<code>py</code>文件，也可以输入<code>python</code>进入交互模式直接写<code>python</code>代码。</p>
+<p>Nodejs 和 python 我个人是认为可以算作同一类型的东西，同样是一个软件，能够解析各自的语法，实现很类似的功能。</p>
+<h2 id="Nodejs-和-JavaScript-有什么关系"><a href="#Nodejs-和-JavaScript-有什么关系" class="headerlink" title="Nodejs 和 JavaScript 有什么关系"></a>Nodejs 和 JavaScript 有什么关系</h2><p><img src="/blog/2016/12/11/个人对nodejs的理解/258e6282-20df-4f27-b2d5-3f712ecdaa06.png" alt=""></p>
+<p>之前一直都是说 “JavaScript”，其实并不是很严谨，严格来说 JavaScript 是 “ECMAScript 在浏览器环境的实现”，与之对应可以说，“Nodejs 是 ECMAScript 在服务器环境的实现”。</p>
+<p>那<code>ECMAScript</code>又是什么东西？</p>
+<p>其实<code>ECMAScript</code>就是语法，也可以说是标准。<code>forEach()</code>方法为什么能够遍历一个数组？这就是由<code>ECMAScript</code>规定的。</p>
+<p><strong>在浏览器环境的实现</strong>是什么意思呢？<br><img src="/blog/2016/12/11/个人对nodejs的理解/25a07b12-74b1-40b3-bd58-7228953881bd.png" alt=""></p>
+<p>写过前端代码的都知道，在浏览器中有两个很重要的对象，DOM 和 BOM，实际上前端大部分工作，都是在操作 DOM，用<code>ECMAScript</code>语法操作 DOM。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> con = <span class="built_in">document</span>.getElementById(<span class="string">'container'</span>);</span><br><span class="line">con.innerHTML = <span class="string">'&lt;p&gt;hello javascript&lt;/p&gt;'</span>;</span><br></pre></td></tr></table></figure></p>
+<p>这么一段代码要从两个方面来看。<br>第一，语法，为什么是<code>var</code>而不是其他的关键字声明一个变量，这就是<code>ECMAScript</code>规定的。<br>第二，DOM，<code>document</code>是什么？这个在<code>ECMAScript</code>里面并没有，所以不是语法的东西，那就是浏览器给我们的。</p>
+<p>与之对应，<strong>在服务器环境的实现</strong>就是指用<code>ECMAScript</code>语法，来操作服务器给我们的东西。而服务器给了我们什么呢？</p>
+<p><img src="/blog/2016/12/11/个人对nodejs的理解/62826d68-5fd3-44ad-96de-95cad95b1de1.png" alt=""></p>
+<p>很多很多的东西，fs、http、event 等等，具体的可以查看 <a href="http://nodejs.cn/doc/node/" target="_blank" rel="noopener">node 文档</a>。<br>下面代码是<code>fs</code>的作用。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// demo.txt</span><br><span class="line">hello nodejs</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// index.js</span></span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>)</span><br><span class="line">fs.readFile(<span class="string">'demo.txt'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) <span class="built_in">console</span>.log(err)</span><br><span class="line">    <span class="built_in">console</span>.log(res)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p><code>require</code>方法不存在<code>ECMAScript</code>语法标准内，所以可以知道这是<code>Nodejs</code>给我们的东西。<br>使用<code>node index.js</code>可以看到输出<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello nodejs</span><br></pre></td></tr></table></figure></p>
+<h2 id="构建工具（实战"><a href="#构建工具（实战" class="headerlink" title="构建工具（实战"></a>构建工具（实战</h2><p>终于讲到能够实际使用的东西了。举个栗子，在做前端页面时，header 和 footer 往往是相同的，我们有<code>index.html</code>、<code>login.html</code>、<code>register.html</code>、<code>detail.html</code>等等文件，这些文件都需要 header 和 footer，在每个<code>html</code>文件内复制一份吗，当然可以。</p>
+<p>“改一下 header 的结构”。？？！！！修改好一份，再一个一个替换其他页面，或者使用编辑器的批量替换功能。</p>
+<p>但是还有更简单的方式，就是“构建工具”。我可以开发出一个工具，输入一行代码，就自动帮我把<code>header.html</code>和<code>footer.html</code>的内容插入到<code>index.html</code>这些文件的指定位置。</p>
+<h3 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h3><p>是的，使用 js，更严谨的说是 nodejs。目录结构是这样的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">tool.js</span><br><span class="line">template</span><br><span class="line">├── footer.html</span><br><span class="line">├── header.html</span><br><span class="line">└── index.html</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">// template/header.html</span><br><span class="line"><span class="tag">&lt;<span class="name">nav</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">ul</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">li</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"#"</span>&gt;</span>主页<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"#"</span>&gt;</span>关于<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">"#"</span>&gt;</span>个人<span class="tag">&lt;/<span class="name">a</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">li</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">nav</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// template/footer.html</span><br><span class="line"><span class="tag">&lt;<span class="name">footer</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">p</span>&gt;</span>这是底部文本<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">footer</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// template/index.html</span><br><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"en"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">title</span>&gt;</span>Template Demo<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">  &#123;header&#125;</span><br><span class="line">  <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">"container"</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">p</span>&gt;</span>内容区域<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">  &#123;footer&#125;</span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>可以看到，我在<code>index.html</code>文件内写了<code>{header}</code>和<code>{footer}</code>，这是用来告诉我们的工具，把<code>header.html</code>文件内容放到<code>{header}</code>，把<code>footer.html</code>文件内容放到<code>{footer}</code>。</p>
+<h3 id="获取-index-html-文件内容"><a href="#获取-index-html-文件内容" class="headerlink" title="获取 index.html 文件内容"></a>获取 index.html 文件内容</h3><p>OK，那开始我们工具的 js 代码。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// tool.js</span></span><br><span class="line"><span class="comment">// 从 nodejs 中拿到 fs 这个对象，暂时只要知道 require 可以拿到 nodejs 给的对象就行。</span></span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="comment">// 调用 fs 对象上的 readFile 方法</span></span><br><span class="line"><span class="comment">// 这个方法能够获取到指定文件的内容</span></span><br><span class="line">fs.readFile(<span class="string">'./template/index.html'</span>, <span class="string">'utf8'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, res</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 如果读取文件发生错误，打印这个错误</span></span><br><span class="line">    <span class="keyword">if</span>(err) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(err);</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 如果没发生错误，就是读取成功，打印看看内容是什么</span></span><br><span class="line">        <span class="built_in">console</span>.log(res);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>OK，这是第一步，可以使用<code>node</code>命令看看有什么结果。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node tool.js</span><br></pre></td></tr></table></figure></p>
+<p>正常情况下，会输出<code>index.html</code>的内容。知道了文件内容，就可以知道哪里要插入其他文件。</p>
+<blockquote>
+<p>我们约定，<code>{xxx}</code>形式的文本会被解析，xxx 是文件名，只支持英文字母。我们会把<code>xxx.html</code>文件的内容替换<code>{xxx}</code>。</p>
+</blockquote>
+<h3 id="提取插入的文件名"><a href="#提取插入的文件名" class="headerlink" title="提取插入的文件名"></a>提取插入的文件名</h3><p>按照约定，也可以说是规则吧，我们从<code>index.html</code>文件内使用正则表达式分析出要插入什么文件。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// tool.js</span></span><br><span class="line"><span class="comment">// 从 nodejs 中拿到 fs 这个对象，暂时只要知道 require 可以拿到 nodejs 给的对象就行。</span></span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="comment">// 调用 fs 对象上的 readFile 方法</span></span><br><span class="line"><span class="comment">// 这个方法能够获取到指定文件的内容</span></span><br><span class="line">fs.readFile(<span class="string">'./template/index.html'</span>, <span class="string">'utf8'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, res</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 如果读取文件发生错误，打印这个错误</span></span><br><span class="line">    <span class="keyword">if</span>(err) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(err);</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 如果没发生错误，就是读取成功，打印看看内容是什么</span></span><br><span class="line">        <span class="comment">// console.log(res);</span></span><br><span class="line">        <span class="comment">// 二、提取插入的文件名</span></span><br><span class="line">        <span class="comment">// match() 是字符串方法，传入正则表达式，返回数组</span></span><br><span class="line">        <span class="keyword">var</span> files = res.match(<span class="regexp">/\&#123;[a-z]+\&#125;/g</span>);</span><br><span class="line">        <span class="built_in">console</span>.log(files);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p><code>/\{[a-z]+\}/g</code>是一个正则表达式，能够匹配到<code>{abcd}</code>这种形式的字符串。这些是属于语法，也就是<code>ECMAScript</code>的范畴。暂时不用去了解具体原理，知道这样写可以提取出我们想要的内容就可以。</p>
+</blockquote>
+<p>正常情况会打印<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[ &apos;&#123;header&#125;&apos;, &apos;&#123;footer&#125;&apos; ]</span><br></pre></td></tr></table></figure></p>
+<h3 id="获取指定文件名的内容"><a href="#获取指定文件名的内容" class="headerlink" title="获取指定文件名的内容"></a>获取指定文件名的内容</h3><p>OK，既然知道了文件名，那就可以和上面一样使用<code>fs.readFile</code>方法获取到文件内容。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// tool.js</span></span><br><span class="line"><span class="comment">// 从 nodejs 中拿到 fs 这个对象，暂时只要知道 require 可以拿到 nodejs 给的对象就行。</span></span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="comment">// 一、调用 fs 对象上的 readFile 方法</span></span><br><span class="line"><span class="comment">// 这个方法能够获取到指定文件的内容</span></span><br><span class="line">fs.readFile(<span class="string">'./template/index.html'</span>, <span class="string">'utf8'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) &#123;</span><br><span class="line">        <span class="comment">// 如果读取文件过程中发生错误，就打印错误</span></span><br><span class="line">        <span class="built_in">console</span>.log(err);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 不然就是读取成功</span></span><br><span class="line">        <span class="comment">// console.log(res);</span></span><br><span class="line">        <span class="comment">// 二、提取插入的文件名</span></span><br><span class="line">        <span class="keyword">var</span> files = res.match(<span class="regexp">/\&#123;[a-z]+\&#125;/g</span>);</span><br><span class="line">        <span class="built_in">console</span>.log(files);</span><br><span class="line">        <span class="comment">// 三、遍历 files 数组，获取每个文件的内容</span></span><br><span class="line">        files.forEach(<span class="function"><span class="keyword">function</span>(<span class="params">file</span>) </span>&#123;</span><br><span class="line">            <span class="comment">// file 是 &#123;header&#125; 形式的，我们要获取到内部的 header</span></span><br><span class="line">            <span class="keyword">let</span> fileName = file.match(<span class="regexp">/[a-z]+/g</span>)[<span class="number">0</span>];</span><br><span class="line">            fs.readFile(<span class="string">'./template/'</span>+fileName+<span class="string">'.html'</span>, <span class="string">'utf8'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, res</span>) </span>&#123;</span><br><span class="line">                <span class="keyword">if</span>(err) &#123;</span><br><span class="line">                    <span class="built_in">console</span>.log(err);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="built_in">console</span>.log(res)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p><code>/[a-z]+/g</code>会提取出所有的连续的英文字母。所以对<code>{header}</code>可以得到<code>header</code>，对<code>{footer}</code>可以得到<code>footer</code>。</p>
+</blockquote>
+<p>再次打印看看，可以看到输出了<code>header.html</code>和<code>footer.html</code>文件内容。</p>
+<h3 id="文件内容替换占位符"><a href="#文件内容替换占位符" class="headerlink" title="文件内容替换占位符"></a>文件内容替换占位符</h3><p>这是最后一步，既然获取到了文件内容，就可以把文件内容替换掉我们自己约定的<code>{xxx}</code>就好了。</p>
+<p>不过在这之前需要修改一个地方，我们总共调用了两次<code>fs.readFile</code>方法是吧，所以我们有了两个<code>res</code>变量，这就导致了我们第二个覆盖了第一个，所以我们要把第一个保存了我们<code>index.html</code>文件内容的变量<code>res</code>起另外一个名字。</p>
+<p>在第二步前面，我们这样做：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// tool.js</span></span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line"><span class="keyword">var</span> content = res;</span><br><span class="line"><span class="keyword">var</span> files = res.match(<span class="regexp">/\&#123;[a-z]+\&#125;/g</span>);</span><br><span class="line"><span class="comment">// ...</span></span><br></pre></td></tr></table></figure></p>
+<p>OK，修改好之后继续我们的替换。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">fs.readFile(<span class="string">'./template/'</span>+fileName+<span class="string">'.html'</span>, <span class="string">'utf8'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(err);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// console.log(res)</span></span><br><span class="line">        <span class="comment">// 返回一个正则表达式</span></span><br><span class="line">        <span class="keyword">var</span> regexp = <span class="keyword">new</span> <span class="built_in">RegExp</span>(file);</span><br><span class="line">        <span class="comment">// 使用文件内容替换&#123;xxx&#125;这样的字符串。</span></span><br><span class="line">        content = content.replace(regexp, res);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">console</span>.log(content)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>然后打印看看，可以看到打印了两次，第一次是将<code>{header}</code>替换掉了，第二次是将<code>footer</code>替换掉了。</p>
+<h3 id="生成文件"><a href="#生成文件" class="headerlink" title="生成文件"></a>生成文件</h3><p>虽然替换成功了，但是在<code>template</code>文件夹内的文件并没有发生改变，因为我们并没有将我们得到的结果写入到文件中，所以我们最后的步骤就是写入文件。最终代码：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// tool.js</span></span><br><span class="line"><span class="comment">// 从 nodejs 中拿到 fs 这个对象，暂时只要知道 require 可以拿到 nodejs 给的对象就行。</span></span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="comment">// 一、调用 fs 对象上的 readFile 方法</span></span><br><span class="line"><span class="comment">// 这个方法能够获取到指定文件的内容</span></span><br><span class="line">fs.readFile(<span class="string">'./template/index.html'</span>, <span class="string">'utf8'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) &#123;</span><br><span class="line">        <span class="comment">// 如果读取文件过程中发生错误，就打印错误</span></span><br><span class="line">        <span class="built_in">console</span>.log(err);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 不然就是读取成功</span></span><br><span class="line">        <span class="comment">// console.log(res);</span></span><br><span class="line">        <span class="comment">// 二、提取插入的文件名</span></span><br><span class="line">        <span class="keyword">var</span> content = res;</span><br><span class="line">        <span class="keyword">var</span> files = res.match(<span class="regexp">/\&#123;[a-z]+\&#125;/g</span>);</span><br><span class="line">        <span class="built_in">console</span>.log(files);</span><br><span class="line">        <span class="comment">// 三、遍历 files 数组，获取每个文件的内容</span></span><br><span class="line">        files.forEach(<span class="function"><span class="keyword">function</span>(<span class="params">file</span>) </span>&#123;</span><br><span class="line">            <span class="comment">// file 是 &#123;header&#125; 形式的，我们要获取到内部的 header</span></span><br><span class="line">            <span class="keyword">let</span> fileName = file.match(<span class="regexp">/[a-z]+/g</span>)[<span class="number">0</span>];</span><br><span class="line">            fs.readFile(<span class="string">'./template/'</span>+fileName+<span class="string">'.html'</span>, <span class="string">'utf8'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, res</span>) </span>&#123;</span><br><span class="line">                <span class="keyword">if</span>(err) &#123;</span><br><span class="line">                    <span class="built_in">console</span>.log(err);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// console.log(res)</span></span><br><span class="line">                    <span class="comment">// 返回一个正则表达式</span></span><br><span class="line">                    <span class="keyword">var</span> regexp = <span class="keyword">new</span> <span class="built_in">RegExp</span>(file);</span><br><span class="line">                    <span class="comment">// 使用文件内容替换&#123;xxx&#125;这样的字符串。</span></span><br><span class="line">                    content = content.replace(regexp, res);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// console.log(content)</span></span><br><span class="line">                <span class="comment">// 调用 fs 对象上的 writeFile 方法，第一个参数是要生成的文件名，第二个是要写入的内容，第三个是回调函数</span></span><br><span class="line">                fs.writeFile(<span class="string">'index.html'</span>, content, <span class="function"><span class="keyword">function</span> (<span class="params">err</span>) </span>&#123;</span><br><span class="line">                    <span class="keyword">if</span>(err) &#123;</span><br><span class="line">                        <span class="built_in">console</span>.log(err);</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="built_in">console</span>.log(<span class="string">'写入成功'</span>)</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;)</span><br><span class="line">            &#125;)</span><br><span class="line">        &#125;)</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>我们运行该文件，会打印两次<code>写入成功</code>，打开<code>tool.js</code>文件所在文件夹，会看到一个<code>index.html</code>文件，内容正是我们想要的。</p>
+<p>我们修改<code>template/footer.html</code>文件内容，再次运行<code>node tool.js</code>，再看看和<code>tool.js</code>同目录下（非<code>template</code>目录）的<code>index.html</code>文件内容是不是也改变了？</p>
+<blockquote>
+<p>实际使用中发现有时候生成的<code>index.html</code>文件内容不对，这是由于异步操作导致的，下次具体来讲什么是异步。</p>
+</blockquote>
+<h2 id="模块与模块化"><a href="#模块与模块化" class="headerlink" title="模块与模块化"></a>模块与模块化</h2><p>在写构建工具的时候，我们所有的操作，都是基于 fs 这个对象。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br></pre></td></tr></table></figure></p>
+<p><code>require</code>是 nodejs 自带的全局函数，用来“导入”模块。可以理解成在 nodejs 这个软件的目录下，有一个<code>fs.js</code>文件，这个文件定义了一个<code>fs</code>对象，这个对象上有很多操作文件的方法。我们使用<code>require</code>可以把这个文件的内容添加到当前的文件，就可以使用另一个文件的变量了。</p>
+<p>还是举个栗子。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sum.js</span></span><br><span class="line"><span class="keyword">var</span> add = <span class="function"><span class="keyword">function</span> (<span class="params">num1, num2</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> num1 + num2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>我写了这样一个文件，里面定义了一个<code>add</code>函数，作用是返回传过来的第一个和第二个参数的和。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// index.js</span></span><br><span class="line"><span class="keyword">var</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"></span><br><span class="line">fs.readFile(<span class="string">'./sum.js'</span>, <span class="string">'utf8'</span>, <span class="function"><span class="keyword">function</span> (<span class="params">err, res</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(err) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(err);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="built_in">eval</span>(res);</span><br><span class="line">        <span class="comment">// 现在就可以使用 add 函数了</span></span><br><span class="line">        <span class="keyword">var</span> result = add(<span class="number">3</span>, <span class="number">5</span>);</span><br><span class="line">        <span class="built_in">console</span>.log(result);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>使用<code>node index.js</code>运行，可以看到打印了<code>8</code>。</p>
+<p>这个栗子是想说明，基于 fs 模块，我们是可以获取到其他文件的内容，所以可以把代码根据功能来进行划分，算法归到一个文件夹，加法一个 js 文件，减法一个 js 文件，要用什么算法就导入什么算法，要对算法进行修改只要找到算法这个文件夹，找到对应的 js 文件进行修改就好了。</p>
+<p>所以模块可以方便代码的管理与维护。</p>
+<p>当然我们不可能像这个例子中这样获取另一个文件的内容，node 不仅提供了<code>require</code>导入，也提供了<code>module.exports</code>导出，所以上面的例子使用真正的“模块化机制”应该这样写：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// sum.js</span></span><br><span class="line"><span class="keyword">var</span> add = <span class="function"><span class="keyword">function</span> (<span class="params">num1, num2</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> num1 + num2;</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">module</span>.exports.add = add;</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// index.js</span></span><br><span class="line"><span class="keyword">var</span> sum = <span class="built_in">require</span>(<span class="string">'./sum.js'</span>);</span><br><span class="line"><span class="keyword">var</span> result = sum.add(<span class="number">3</span>, <span class="number">5</span>);</span><br><span class="line"><span class="built_in">console</span>.log(result);</span><br></pre></td></tr></table></figure>
+<p>很方便的获取另外一个文件定义好的方法。</p>
+<h2 id="打包"><a href="#打包" class="headerlink" title="打包"></a>打包</h2><p>之前说到，<code>require</code>是 nodejs 提供的函数，那是不是意味着在浏览器里面就不能用了，“是的，没错”。</p>
+<p>还是拿上面的例子，我不能在<code>index.html</code>文件内写<code>script</code>标签引入<code>index.js</code>文件，浏览器会报错，因为根本不存在<code>require()</code>这个函数。<br><img src="/blog/2016/12/11/个人对nodejs的理解/4ff6254a-1ce0-48c9-965c-ab781c63a9ce.png" alt=""></p>
+<p>所以我们需要自定义一个<code>require()</code>函数，定义了<code>require()</code>函数浏览器就不会报错了。</p>
+<p>当然自己写的话还要处理<code>module.exports</code>和依赖关系，所以使用别人写好的工具，比如<code>webpack</code>。</p>
+<h3 id="使用-webpack-打包"><a href="#使用-webpack-打包" class="headerlink" title="使用 webpack 打包"></a>使用 webpack 打包</h3><p>webpack 就和我们之前自己写的构建工具一样，在命令行里面输入一行代码，就可以得到新的文件。</p>
+<p>先全局安装<code>webpack</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -g webpack</span><br></pre></td></tr></table></figure></p>
+<p>然后使用<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">webpack ./index.js common.js</span><br></pre></td></tr></table></figure></p>
+<p>这行代码表示，我要打包<code>index.js</code>文件，生成一个<code>common.js</code>文件。运行后在当前目录就会生成<code>common.js</code>文件，在<code>index.html</code>中引入这个新生成的<code>common.js</code>文件，可以在浏览器控制台看到输出了<code>8</code>！</p>
+<blockquote>
+<p>感兴趣可以看看这个<code>common.js</code>是定义了一个怎么样的<code>require()</code>函数。</p>
+</blockquote>
+<p>这样就好了，我们可以把项目的代码进行组织，最后生成一个文件。<img src="/blog/2016/12/11/个人对nodejs的理解/4c089b3a-8033-4c85-8a7e-f105b1f19808.png" alt=""></p>
+<p>比如我们开发时使用的接口和正式上线的接口不一样，有两种做法</p>
+<ul>
+<li>在<code>html</code>文件引入多个 js 文件。</li>
+<li>将多个 js 文件打包，<code>html</code>只引入一个生成的 js 文件。</li>
+</ul>
+<p>很明显引入多个 js 文件会影响网页访问速度，所以最好还是打包成一个文件，而且按照功能来组织文件也是很方便维护的，轮播图功能在一个文件、获取数据接口在一个文件、无限加载功能在一个文件。</p>
+<p>当然如果每次修改代码都要手动执行一次<code>webpack ./index.js common.js</code>肯定也不行，所以这也是已经有解决办法了，只要再增加另一个模块<code>webapck-dev-server</code>即可。实现修改代码实时看到效果。</p>
+<h2 id="npm"><a href="#npm" class="headerlink" title="npm"></a>npm</h2><p>从上面的例子中，我们又发现了一个新东西<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm i -g webpack</span><br></pre></td></tr></table></figure></p>
+<p>这表示从 npmjs.com 下载了一个模块，这个模块就是很多 js 文件组成的，而且这个模块给出了一个<code>webpack</code>命令可以在命令行窗口中使用。</p>
+<p>这就属于命令行工具的开发了，我们之前的构建工具也是可以做成像这样有自己的专属命令的形式。</p>
+<p>感兴趣可以查看 <a href="http://www.ruanyifeng.com/blog/2015/05/command-line-with-node.html" target="_blank" rel="noopener">Node.js 命令行程序开发教程</a></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>nodejs 给了前端开发人员更多的能力，不再局限在浏览器中，我们可以写工具、写后端程序、写服务器运维脚本、爬虫甚至移动端应用等等。可以说，只要想做，用 js，或者说用 ECMAScript 都能够做到。</p>
+<h2 id="拓展阅读"><a href="#拓展阅读" class="headerlink" title="拓展阅读"></a>拓展阅读</h2><ul>
+<li><p><a href="http://javascript.ruanyifeng.com/nodejs/fs.html" target="_blank" rel="noopener">fs 模块</a></p>
+</li>
+<li><p><a href="http://webpackdoc.com/" target="_blank" rel="noopener">Webpack 中文指南</a></p>
+</li>
+<li><p><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/RegExp" target="_blank" rel="noopener">正则表达式</a></p>
+</li>
+<li><p><a href="https://www.zhihu.com/question/20351507" target="_blank" rel="noopener">模块规范 AMD 和 CMD 的区别有哪些？</a></p>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/nodejs/" rel="tag"># nodejs</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2016/12/04/lazyloadImage/" rel="next" title="尝试实现懒加载图片组件">
+                <i class="fa fa-chevron-left"></i> 尝试实现懒加载图片组件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2016/12/25/2016年终总结/" rel="prev" title="2016 年终总结">
+                2016 年终总结 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#大纲"><span class="nav-number">1.</span> <span class="nav-text">大纲</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nodejs-是什么"><span class="nav-number">2.</span> <span class="nav-text">Nodejs 是什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nodejs-和-JavaScript-有什么关系"><span class="nav-number">3.</span> <span class="nav-text">Nodejs 和 JavaScript 有什么关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构建工具（实战"><span class="nav-number">4.</span> <span class="nav-text">构建工具（实战</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#目录结构"><span class="nav-number">4.1.</span> <span class="nav-text">目录结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取-index-html-文件内容"><span class="nav-number">4.2.</span> <span class="nav-text">获取 index.html 文件内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#提取插入的文件名"><span class="nav-number">4.3.</span> <span class="nav-text">提取插入的文件名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取指定文件名的内容"><span class="nav-number">4.4.</span> <span class="nav-text">获取指定文件名的内容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#文件内容替换占位符"><span class="nav-number">4.5.</span> <span class="nav-text">文件内容替换占位符</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成文件"><span class="nav-number">4.6.</span> <span class="nav-text">生成文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模块与模块化"><span class="nav-number">5.</span> <span class="nav-text">模块与模块化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#打包"><span class="nav-number">6.</span> <span class="nav-text">打包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-webpack-打包"><span class="nav-number">6.1.</span> <span class="nav-text">使用 webpack 打包</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#npm"><span class="nav-number">7.</span> <span class="nav-text">npm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拓展阅读"><span class="nav-number">9.</span> <span class="nav-text">拓展阅读</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

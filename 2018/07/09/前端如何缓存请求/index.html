@@ -1,0 +1,745 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="JavaScript," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="缓存一直以来作为性能优化的一环被广泛使用，  数据库缓存 代理服务器缓存 CDN 缓存 浏览器缓存  等等，几乎在每一层，都有缓存存在。本篇博客讨论的不是上面这些缓存，而是由我们自己控制的缓存，具体来说是「请求」的缓存，如何优化请求的缓存让我们的应用更好。">
+<meta name="keywords" content="JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端如何缓存请求">
+<meta property="og:url" content="http://yoursite.com/2018/07/09/前端如何缓存请求/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="缓存一直以来作为性能优化的一环被广泛使用，  数据库缓存 代理服务器缓存 CDN 缓存 浏览器缓存  等等，几乎在每一层，都有缓存存在。本篇博客讨论的不是上面这些缓存，而是由我们自己控制的缓存，具体来说是「请求」的缓存，如何优化请求的缓存让我们的应用更好。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://oyy3cbpm3.bkt.clouddn.com/15307549145733.jpg">
+<meta property="og:image" content="http://oyy3cbpm3.bkt.clouddn.com/15311046013348.jpg">
+<meta property="og:updated_time" content="2018-09-03T11:43:44.570Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="前端如何缓存请求">
+<meta name="twitter:description" content="缓存一直以来作为性能优化的一环被广泛使用，  数据库缓存 代理服务器缓存 CDN 缓存 浏览器缓存  等等，几乎在每一层，都有缓存存在。本篇博客讨论的不是上面这些缓存，而是由我们自己控制的缓存，具体来说是「请求」的缓存，如何优化请求的缓存让我们的应用更好。">
+<meta name="twitter:image" content="http://oyy3cbpm3.bkt.clouddn.com/15307549145733.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/07/09/前端如何缓存请求/"/>
+
+
+
+
+
+  <title> 前端如何缓存请求 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2018/07/09/前端如何缓存请求/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                前端如何缓存请求
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-07-09T08:00:00+08:00">
+              2018-07-09
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2018-09-03T19:43:44+08:00">
+              2018-09-03
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>缓存一直以来作为性能优化的一环被广泛使用，</p>
+<ul>
+<li>数据库缓存</li>
+<li>代理服务器缓存</li>
+<li>CDN 缓存</li>
+<li>浏览器缓存</li>
+</ul>
+<p>等等，几乎在每一层，都有缓存存在。本篇博客讨论的不是上面这些缓存，而是由我们自己控制的缓存，具体来说是「请求」的缓存，如何优化请求的缓存让我们的应用更好。</p>
+<a id="more"></a>
+<h2 id="一、需要缓存吗？"><a href="#一、需要缓存吗？" class="headerlink" title="一、需要缓存吗？"></a>一、需要缓存吗？</h2><h3 id="1、减少不必要的请求"><a href="#1、减少不必要的请求" class="headerlink" title="1、减少不必要的请求"></a>1、减少不必要的请求</h3><p>在我们的应用中，会存在一些很少改动的数据，但这些数据又要从后端获取。<br>典型的如下拉框的内容，可以是行业、职业、角色等等，这类数据在很长一段时间内都是不会改变的，至少在应用的使用过程中是不会改变的，而我们却在每次打开页面或者是切换页面时，就重新向后端请求了一次，这类请求完全是没有必要的，通过对类请求的数据进行缓存，可以大大减小对服务器的压力。</p>
+<h3 id="2、更快的访问速度"><a href="#2、更快的访问速度" class="headerlink" title="2、更快的访问速度"></a>2、更快的访问速度</h3><p>在访问一些数据时，不再重新向后端请求，而是直接使用缓存中的数据，访问速度毫无疑问会更加快，用户体验也必然会更好。</p>
+<h2 id="二、哪些数据可以缓存？"><a href="#二、哪些数据可以缓存？" class="headerlink" title="二、哪些数据可以缓存？"></a>二、哪些数据可以缓存？</h2><p>在单页面应用中，所有数据来源都是接口请求，但并不是所有数据都需要，或者说能被缓存。</p>
+<blockquote>
+<p>讨论的都是<code>GET</code>请求，<code>PUT</code>、<code>POST</code>等绝对是不能被缓存的。</p>
+</blockquote>
+<p>判断标准是根据请求的频次，这里给出不同请求频次的定义，「高频」、「中频」、「低频」。</p>
+<ul>
+<li>高频：通过交互就可以请求的数据，如查询接口</li>
+<li>中频：页面切换时才会请求的数据，如页面数据</li>
+<li>低频：只有在应用初始化时才会请求，如获取当前登录用户信息</li>
+</ul>
+<p>具体的可以根据自己项目进行调整。</p>
+<p>举个例子，有如下页面</p>
+<p><img src="http://oyy3cbpm3.bkt.clouddn.com/15307549145733.jpg" alt=""></p>
+<p>页面展示「图书列表」，可以对该列表进行查询、切换页码、删除。根据上面的定义得出如下判断</p>
+<ul>
+<li>1、类别下拉框，只在访问页面时请求，用户交互不会触发重新请求，所以属于「中频」。</li>
+<li>2、获取图书列表，可以通过切换分页请求，所以属于「高频」。</li>
+<li>3、查询功能，同样可以通过点击请求，所以属于「高频」。</li>
+<li>4、当前登录用户名，在单页面应用中切换页面也不会重新请求，所以属于「低频」。</li>
+<li>5、删除功能，不缓存。</li>
+</ul>
+<p>在确定请求频次后，还要判断「该数据是否会被修改」，假设我们认为「获取图书列表」是高频所以缓存，确实能解决用户切换分页时频繁请求数据的问题，但如果用户<strong>删除了某条记录</strong>，在切换分页后会发现<strong>该数据还存在</strong>。</p>
+<p>所以当数据是可以被新增、删除、修改时，就不能缓存该数据了。</p>
+<blockquote>
+<p>或许可以设置一种机制，当接口存在这三种请求，缓存即过期，将重新请求。</p>
+</blockquote>
+<h2 id="三、内存还是-localstorage"><a href="#三、内存还是-localstorage" class="headerlink" title="三、内存还是 localstorage ?"></a>三、内存还是 localstorage ?</h2><p>在确定了哪些数据需要缓存后，如何将数据缓存呢？<br>由于要使用，当然保存在一个全局变量会方便很多，也就是保存在内存中。如果说保存在<code>localStorage</code>，每次使用时还是要读取到内存中，那干脆都保存到内存，<code>localStorage</code>作为持久化方案，保存一些低频、不会变化的数据，如「用户信息」，如果有的话。</p>
+<h2 id="四、具体代码如何写"><a href="#四、具体代码如何写" class="headerlink" title="四、具体代码如何写"></a>四、具体代码如何写</h2><p>能否实现对已有系统改造量最小，甚至做到无需修改呢？<br>在目前普通使用<code>redux</code>的情况下，从交互到展示数据的过程是这样的：</p>
+<p><img src="http://oyy3cbpm3.bkt.clouddn.com/15311046013348.jpg" alt=""></p>
+<p>在「请求数据」这里做比较好，一开始想到，一般我们使用<code>axios</code>请求数据，当请求需要缓存的接口时，就直接返回缓存好的，通过拦截器可以轻松做到。<br>但问题来了，如何标志哪些接口是需要缓存，哪些又是不需要的呢，通过<code>method</code>判断可以解决一部分，但还是不够完善。</p>
+<p>要解决这个问题，确实应该在请求前就处理好，如果不使用拦截器，我们可以自己做一次处理，以具体代码来说：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// api.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">fetch</span>(<span class="params">params</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> axios.get(<span class="string">'/api/books'</span>, &#123; params &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">fetchCategories</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> axios.get(<span class="string">'/api/categories'</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">delete</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> axios.delete(<span class="string">`/api/books/<span class="subst">$&#123;id&#125;</span>`</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>简单粗暴的做法，直接加一个缓存对象，一旦请求，就加入缓存，否则就请求。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> cache = &#123;&#125;;</span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">fetchCategories</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> url = <span class="string">'/api/categories'</span>;</span><br><span class="line">    <span class="keyword">if</span> (cache[url]) &#123;</span><br><span class="line">        <span class="keyword">return</span> cache[url];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">const</span> res = axios.get(url);</span><br><span class="line">    cache[url] = res;</span><br><span class="line">    <span class="keyword">return</span> res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>虽然简单粗暴，但这是核心逻辑，能够优化的就是如何优雅的写代码了。</p>
+<h3 id="1、现成的缓存库"><a href="#1、现成的缓存库" class="headerlink" title="1、现成的缓存库"></a>1、现成的缓存库</h3><p>这种需求肯定早有人想过，先来看一个已有的缓存库 <a href="https://github.com/sindresorhus/mem" target="_blank" rel="noopener">mem</a>，</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> mem = <span class="built_in">require</span>(<span class="string">'mem'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> i = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">const</span> counter = <span class="keyword">async</span> () =&gt; ++i;</span><br><span class="line"><span class="keyword">const</span> memoized = mem(counter);</span><br><span class="line"></span><br><span class="line">(<span class="keyword">async</span> () =&gt; &#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="keyword">await</span> memoized());</span><br><span class="line">	<span class="comment">//=&gt; 1</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// The return value didn't increase as it's cached</span></span><br><span class="line">	<span class="built_in">console</span>.log(<span class="keyword">await</span> memoized());</span><br><span class="line">	<span class="comment">//=&gt; 1</span></span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure>
+<p><code>counter</code>就是要被缓存的请求，第二次调用时，会返回之前的值，而不会再次调用该请求。</p>
+<p>换成我们的代码，就是这样：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> mem = <span class="built_in">require</span>(<span class="string">'mem'</span>);</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> fetchCategories = mem(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> axios.get(<span class="string">'/api/categories'</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h3 id="2、mem-在实际项目中的拓展"><a href="#2、mem-在实际项目中的拓展" class="headerlink" title="2、mem 在实际项目中的拓展"></a>2、mem 在实际项目中的拓展</h3><p>如果需求比较简单，目前应该就能够满足需求了。</p>
+<p>但其实还可以更一步优化，举例来说，虽然上面提到「图书列表」会被删除修改，所以不应该缓存，但如果用户在页码之间来回切换，请求的频率还是很高的，而且这种情况下是完全可以缓存的，所以，判断两次请求的时间间隔，如果小于 5s，就返回缓存的结果，否则就不缓存。</p>
+<p>当然这种需求<code>mem</code>的作者也考虑到了，就是过期时间，</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> mem = <span class="built_in">require</span>(<span class="string">'mem'</span>);</span><br><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> fetchCategories = mem(<span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> axios.get(<span class="string">'/api/categories'</span>);</span><br><span class="line">&#125;, &#123;</span><br><span class="line">    maxAge: <span class="number">5000</span>,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>表示设置缓存有效期是 5s，5s 内多次请求，都会返回缓存，5s 后会重新请求。</p>
+<p>上面写法不太直观，我们可以使用修饰器来简化，但这种方式对原有代码调整很大，因为装饰器只能用于类与类的方法，所以代码变成这样：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> mem <span class="keyword">from</span> <span class="string">'mem'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @param &#123;MemOption&#125; - mem 配置项</span></span><br><span class="line"><span class="comment"> * @return &#123;Function&#125; - 装饰器</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">m</span>(<span class="params">options</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="function">(<span class="params">target, name, descriptor</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> oldValue = descriptor.value;</span><br><span class="line">    descriptor.value = mem(oldValue, options);</span><br><span class="line">    <span class="keyword">return</span> descriptor;</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Api</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 使用装饰器简化写法</span></span><br><span class="line">    @m(&#123; <span class="attr">maxAge</span>: <span class="number">5000</span> &#125;)</span><br><span class="line">    fetchCategories() &#123;</span><br><span class="line">        <span class="keyword">return</span> axios.get(<span class="string">'/api/categories'</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="五、参考"><a href="#五、参考" class="headerlink" title="五、参考"></a>五、参考</h2><ul>
+<li><a href="http://www.alloyteam.com/2016/03/discussion-on-web-caching/" target="_blank" rel="noopener">浅谈 Web 缓存</a></li>
+<li><a href="https://tech.meituan.com/cache_about.html" target="_blank" rel="noopener">缓存那些事</a></li>
+<li><a href="http://es6.ruanyifeng.com/#docs/decorator#%E6%96%B9%E6%B3%95%E7%9A%84%E4%BF%AE%E9%A5%B0" target="_blank" rel="noopener">装饰器</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/JavaScript/" rel="tag"># JavaScript</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2018/04/09/前端权限方案/" rel="next" title="前端怎么做好权限控制">
+                <i class="fa fa-chevron-left"></i> 前端怎么做好权限控制
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2018/08/26/路由与菜单/" rel="prev" title="前端路由与菜单">
+                前端路由与菜单 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、需要缓存吗？"><span class="nav-number">1.</span> <span class="nav-text">一、需要缓存吗？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、减少不必要的请求"><span class="nav-number">1.1.</span> <span class="nav-text">1、减少不必要的请求</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、更快的访问速度"><span class="nav-number">1.2.</span> <span class="nav-text">2、更快的访问速度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、哪些数据可以缓存？"><span class="nav-number">2.</span> <span class="nav-text">二、哪些数据可以缓存？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、内存还是-localstorage"><span class="nav-number">3.</span> <span class="nav-text">三、内存还是 localstorage ?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、具体代码如何写"><span class="nav-number">4.</span> <span class="nav-text">四、具体代码如何写</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、现成的缓存库"><span class="nav-number">4.1.</span> <span class="nav-text">1、现成的缓存库</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、mem-在实际项目中的拓展"><span class="nav-number">4.2.</span> <span class="nav-text">2、mem 在实际项目中的拓展</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、参考"><span class="nav-number">5.</span> <span class="nav-text">五、参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

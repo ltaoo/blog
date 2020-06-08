@@ -1,0 +1,747 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="docker," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="借助 docker 可以不在开发电脑中安装环境，比如 nodejs，记录下如何实现。">
+<meta name="keywords" content="docker">
+<meta property="og:type" content="article">
+<meta property="og:title" content="完整记录在 windows7 下使用 docker 的过程">
+<meta property="og:url" content="http://yoursite.com/2017/01/13/完整记录在 windows7 下使用 docker 的过程/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="借助 docker 可以不在开发电脑中安装环境，比如 nodejs，记录下如何实现。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/blog/2017/01/13/完整记录在%20windows7%20下使用%20docker%20的过程/snipaste20170112_111810.png">
+<meta property="og:image" content="http://yoursite.com/blog/2017/01/13/完整记录在%20windows7%20下使用%20docker%20的过程/snipaste20170112_134831.png">
+<meta property="og:image" content="http://yoursite.com/blog/2017/01/13/完整记录在%20windows7%20下使用%20docker%20的过程/snipaste20170112_135118.png">
+<meta property="og:image" content="http://yoursite.com/blog/2017/01/13/完整记录在%20windows7%20下使用%20docker%20的过程/snipaste20170112_135227.png">
+<meta property="og:image" content="http://yoursite.com/blog/2017/01/13/完整记录在%20windows7%20下使用%20docker%20的过程/snipaste20170113_095830.png">
+<meta property="og:image" content="http://yoursite.com/blog/2017/01/13/完整记录在%20windows7%20下使用%20docker%20的过程/snipaste20170112_135354.png">
+<meta property="og:image" content="http://yoursite.com/blog/2017/01/13/完整记录在%20windows7%20下使用%20docker%20的过程/snipaste20170112_135913.png">
+<meta property="og:image" content="http://yoursite.com/blog/2017/01/13/完整记录在%20windows7%20下使用%20docker%20的过程/snipaste20170112_151603.png">
+<meta property="og:updated_time" content="2017-02-08T14:42:59.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="完整记录在 windows7 下使用 docker 的过程">
+<meta name="twitter:description" content="借助 docker 可以不在开发电脑中安装环境，比如 nodejs，记录下如何实现。">
+<meta name="twitter:image" content="http://yoursite.com/blog/2017/01/13/完整记录在%20windows7%20下使用%20docker%20的过程/snipaste20170112_111810.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/01/13/完整记录在 windows7 下使用 docker 的过程/"/>
+
+
+
+
+
+  <title> 完整记录在 windows7 下使用 docker 的过程 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2017/01/13/完整记录在 windows7 下使用 docker 的过程/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                完整记录在 windows7 下使用 docker 的过程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-13T08:00:00+08:00">
+              2017-01-13
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2017-02-08T22:42:59+08:00">
+              2017-02-08
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/工具/" itemprop="url" rel="index">
+                    <span itemprop="name">工具</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>借助 docker 可以不在开发电脑中安装环境，比如 nodejs，记录下如何实现。<br><a id="more"></a></p>
+<h2 id="下载安装"><a href="#下载安装" class="headerlink" title="下载安装"></a>下载安装</h2><p>根据自己的电脑系统，在 <a href="https://get.daocloud.io/#install-docker-for-mac-windows" target="_blank" rel="noopener">install-docker-for-mac-windows</a> 下载最新安装包并安装。</p>
+<p>选择好目录后下一步，提示需要安装什么组件：</p>
+<ul>
+<li>Docker Compose for Window 不知道什么用，勾选</li>
+<li>VirtualBox 虚拟机，如果电脑之前安装过 Oracle VM VirtualBox 可以不勾选</li>
+<li>Kitematic for Windows(Alpha) 使用图形界面来使用 docker，建议勾选</li>
+<li>Git for Windows 一个版本控制 + bash 命令终端，如果没有安装建议勾选</li>
+</ul>
+<p><img src="/blog/2017/01/13/完整记录在 windows7 下使用 docker 的过程/snipaste20170112_111810.png" alt="安装选项-1"></p>
+<p>继续下一步</p>
+<ul>
+<li>Create a desktop shortcut</li>
+<li>Add docker binaries to PATH</li>
+<li>Upgrade Boot2Dcoker VM</li>
+</ul>
+<p><img src="/blog/2017/01/13/完整记录在 windows7 下使用 docker 的过程/snipaste20170112_134831.png" alt="安装选项-2"></p>
+<p>三个选项全部勾选，下一步就开始安装软件到系统中，等待一会即可完成安装。</p>
+<h2 id="初始化虚拟机"><a href="#初始化虚拟机" class="headerlink" title="初始化虚拟机"></a>初始化虚拟机</h2><p>打开安装目录，不出意外目录结构是这样的：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">├──kitematic</span><br><span class="line">├──boot2docker.iso</span><br><span class="line">├──docker.exe</span><br><span class="line">├──docker-compose.exe</span><br><span class="line">├──docker-machine.exe</span><br><span class="line">├──docker-quickstart-terminal.ico</span><br><span class="line">├──start.sh</span><br><span class="line">├──unins000.dat</span><br><span class="line">└──unins000.exe</span><br></pre></td></tr></table></figure></p>
+<p>将<code>boot2docker.iso</code>拷贝至<code>C:\Users\用户名\.docker\machine\cache</code>目录下，双击打开<code>start.sh</code>文件。</p>
+<p><img src="/blog/2017/01/13/完整记录在 windows7 下使用 docker 的过程/snipaste20170112_135118.png" alt="初始化虚拟机"></p>
+<p>当看到该画面时表示虚拟机已经安装在<code>Virtual Box</code>里面，可以打开<code>Oracle VM VirtualBox</code>查看：<br><img src="/blog/2017/01/13/完整记录在 windows7 下使用 docker 的过程/snipaste20170112_135227.png" alt="虚拟机初始化完成"></p>
+<p>这一步完成后，我们需要了解一个概念，就是现在我们有了两个系统，一个 windows 系统即我们直接操作的<strong>图形界面系统</strong>，我们称为<strong>主机</strong>，在主机上安装了<code>VirtualBox</code>，该软件内有 linux 虚拟机，称为<strong>docker主机</strong>，在 docker 主机中我们之后还会创建 linux 系统，称为<strong>容器</strong>。</p>
+<p>可以通过终端显示的用户名@计算机名来区分<br><img src="/blog/2017/01/13/完整记录在 windows7 下使用 docker 的过程/snipaste20170113_095830.png" alt="三种系统"></p>
+<p>下面我们实现主机与 docker 主机共享文件夹。</p>
+<h2 id="主机与-docker-主机共享文件夹"><a href="#主机与-docker-主机共享文件夹" class="headerlink" title="主机与 docker 主机共享文件夹"></a>主机与 docker 主机共享文件夹</h2><p>假设我需要将<code>docker_study</code>作为共享文件夹，该文件目录如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">D:/docker_study</span><br><span class="line">        └──koa-template</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p><code>koa-template</code>是我已经写好的项目，可以在<code>docker_study</code>文件夹内执行<code>git clone https://github.com/ltaoo/koa-template.git</code>，会在<code>docker_study</code>文件夹生成<code>koa-template</code>文件夹。</p>
+</blockquote>
+<p>打开<code>Oracle VM VirtualBox</code>，选中“正在运行”状态的 default 虚拟机，进入 设置-&gt; 共享文件夹，添加共享文件夹，选中<code>docker_study</code>文件夹，勾选“自动挂载”、“固定分配”，确定。</p>
+<p><img src="/blog/2017/01/13/完整记录在 windows7 下使用 docker 的过程/snipaste20170112_135354.png" alt="设置共享文件夹-1"><br><img src="/blog/2017/01/13/完整记录在 windows7 下使用 docker 的过程/snipaste20170112_135913.png" alt="设置共享文件夹-2"></p>
+<p>在<code>default</code>上右键，重启该虚拟机。</p>
+<p>重启完成后，使用<code>git</code>作为终端来连接我们的 docker 主机<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-machine ssh default</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>如果提示该命令不存在，需要将 docker 的安装目录加入到环境变量中</p>
+</blockquote>
+<p>进入到 docker 主机中，也就是终端显示<code>docker@default:~$</code>的情况，输入命令<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mount</span><br></pre></td></tr></table></figure></p>
+<p>可以看到<code>docker_study</code>在虚拟机内的路径，进入该路径，查看是否读取到我们主机的文件与文件夹<br><img src="/blog/2017/01/13/完整记录在 windows7 下使用 docker 的过程/snipaste20170112_151603.png" alt="共享文件夹"></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入 docker_study 目录</span></span><br><span class="line"><span class="built_in">cd</span> /docker_study</span><br><span class="line"><span class="comment"># 查看该目录下的文件与文件夹</span></span><br><span class="line">ls</span><br></pre></td></tr></table></figure>
+<p>如果能够显示我们主机中的<code>koa-template</code>就表示配置共享文件夹成功。</p>
+<h2 id="创建容器"><a href="#创建容器" class="headerlink" title="创建容器"></a>创建容器</h2><p>确保终端是处于“docker 主机”内，先下载镜像：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull node</span><br></pre></td></tr></table></figure></p>
+<p>表示下载安装最新版本 node 的 linux 系统。</p>
+<blockquote>
+<p>如果提示 Cannot connect to the Docker daemon at unix:///var/run/docker.sock，使用<code>sudo nohup docker daemon -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock &amp;</code>命令，再按一下回车即可。这一命令建议先<a href="https://yq.aliyun.com/articles/29941" target="_blank" rel="noopener">配置加速器</a></p>
+</blockquote>
+<p>然后就可以使用该镜像生成容器了：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看镜像是否下载成功，看到 Repository 为 node 且 Tag 为 latest 表示成功，Created 不是下载镜像时间所以可能是几天前</span></span><br><span class="line">docker images</span><br><span class="line"><span class="comment"># 生成容器</span></span><br><span class="line">docker run --name koa -v /docker_study/koa-template:/app -p 3000:3000 -i -t node /bin/bash</span><br></pre></td></tr></table></figure></p>
+<p>这句命令，表示我们会生成一个名字为<code>koa</code>的容器，并且将 docker 主机内的 /docker_study/koa-tempate 文件夹映射(挂载)到容器中的 app 文件夹，该容器是使用刚刚下载的有最新版本 node 的镜像生成的，并且使用 /bin/bash 命令来访问该容器。</p>
+<p>执行完上面的命令，终端将会进入容器中，即终端显示<code>root@xxxxxxx:/#</code>这样的。<br>容器承载着我们的应用，我们先将应用运行起来：<br>进入项目目录安装依赖<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /app</span><br><span class="line">npm install --registry=https://registry.npm.taobao.org --no-bin-links</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>如果没有<code>--no-bin-links</code>会报错，参考<a href="https://github.com/npm/npm/issues/2380" target="_blank" rel="noopener">unknown symlink ‘../express/bin/express</a></p>
+</blockquote>
+<p>依赖安装完成后，就可以开启我们的服务<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">node start.js</span><br></pre></td></tr></table></figure></p>
+<p>在主机浏览器打开网址<code>http://192.168.99.100:3000/</code>即可访问，并且修改主机内<code>docker_study/koa-template/views/base.html</code>的内容，刷新网页能够看到改变！</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>作为一个个人开发者，使用 docker 最大的优点就是不用考虑配置环境了，想要学习新的语言直接运行一个容器就可以。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://segmentfault.com/a/1190000007955073" target="_blank" rel="noopener">Windows下运用Docker部署Node.js开发环境</a></li>
+<li><a href="https://github.com/npm/npm/issues/2380" target="_blank" rel="noopener">unknown symlink ‘../express/bin/express</a></li>
+<li><a href="https://yq.aliyun.com/articles/29941" target="_blank" rel="noopener">Docker 镜像加速器</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/docker/" rel="tag"># docker</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2017/01/07/Async 使用笔记/" rel="next" title="Async 使用笔记">
+                <i class="fa fa-chevron-left"></i> Async 使用笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2017/02/07/《你不知道的 JavaScript》读后感/" rel="prev" title="《你不知道的 JavaScript》读后感">
+                《你不知道的 JavaScript》读后感 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#下载安装"><span class="nav-number">1.</span> <span class="nav-text">下载安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化虚拟机"><span class="nav-number">2.</span> <span class="nav-text">初始化虚拟机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主机与-docker-主机共享文件夹"><span class="nav-number">3.</span> <span class="nav-text">主机与 docker 主机共享文件夹</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建容器"><span class="nav-number">4.</span> <span class="nav-text">创建容器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

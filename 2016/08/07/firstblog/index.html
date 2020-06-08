@@ -1,0 +1,743 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ubuntu,hexo," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="搭建博客并不是很困难，无论是 wordPress 还是别的什么开源博客系统，有很多选择，所以没有技术方面的难度。但是迟迟没有搭建自己的博客，完全是因为觉得要运营博客将会耗费很多时间，比如搭建好博客，就会想用美观的主题；折腾一段时间后，准备自己写主题；发现自己的产出太少，就想着翻译国外的文章等等。总之感觉会耗费很多时间，">
+<meta name="keywords" content="ubuntu,hexo">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在Ubuntu系统上搭建Hexo博客">
+<meta property="og:url" content="http://yoursite.com/2016/08/07/firstblog/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="搭建博客并不是很困难，无论是 wordPress 还是别的什么开源博客系统，有很多选择，所以没有技术方面的难度。但是迟迟没有搭建自己的博客，完全是因为觉得要运营博客将会耗费很多时间，比如搭建好博客，就会想用美观的主题；折腾一段时间后，准备自己写主题；发现自己的产出太少，就想着翻译国外的文章等等。总之感觉会耗费很多时间，每天下班后只有三个小时的时间，并不想全部花在博客上。但是，现实还是残酷的，考虑到">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-30T07:21:22.782Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="在Ubuntu系统上搭建Hexo博客">
+<meta name="twitter:description" content="搭建博客并不是很困难，无论是 wordPress 还是别的什么开源博客系统，有很多选择，所以没有技术方面的难度。但是迟迟没有搭建自己的博客，完全是因为觉得要运营博客将会耗费很多时间，比如搭建好博客，就会想用美观的主题；折腾一段时间后，准备自己写主题；发现自己的产出太少，就想着翻译国外的文章等等。总之感觉会耗费很多时间，每天下班后只有三个小时的时间，并不想全部花在博客上。但是，现实还是残酷的，考虑到">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/08/07/firstblog/"/>
+
+
+
+
+
+  <title> 在Ubuntu系统上搭建Hexo博客 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2016/08/07/firstblog/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                在Ubuntu系统上搭建Hexo博客
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-08-07T21:25:24+08:00">
+              2016-08-07
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2017-12-30T15:21:22+08:00">
+              2017-12-30
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/随笔/" itemprop="url" rel="index">
+                    <span itemprop="name">随笔</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>搭建博客并不是很困难，无论是 wordPress 还是别的什么开源博客系统，有很多选择，所以没有技术方面的难度。但是迟迟没有搭建自己的博客，完全是因为觉得要运营博客将会耗费很多时间，比如搭建好博客，就会想用美观的主题；折腾一段时间后，准备自己写主题；发现自己的产出太少，就想着翻译国外的文章等等。总之感觉会耗费很多时间，每天下班后只有三个小时的时间，并不想全部花在博客上。但是，现实还是残酷的，考虑到找工作的时候，如果有一个博客，面试官首先会通过博客来了解个人能力，可以节省面试双方的时间，而且有个人博客很明显可以加分啊。所以还是准备搭建一个个人博客。作为 Web前端，当然要用 Nodejs 相关的博客了，一番搜索后选择了 Hexo。<br><a id="more"></a></p>
+<h2 id="服务器"><a href="#服务器" class="headerlink" title="服务器"></a>服务器</h2><p>首先搜索了一些搭建 Hexo博客的教程，提到了使用 github 来存放博客文件。因为自己有阿里云服务器，所以将博客文件放置在阿里云上。服务器的操作系统为 Ubuntu 14。</p>
+<h3 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h3><p>使用 Hexo 需要 Nodejs环境。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt-get install nodejs</span><br><span class="line">apt-get install npm</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>npm 是 nodejs 的一个包管理工具，用来下载包，所以可以看到下面的命令都是 <code>npm</code>开头。</p>
+</blockquote>
+<p>如果是在自己的本地 Ubuntu 系统操作，需要在命令前面加上<code>sudo</code>，因为阿里云默认是使用<code>root</code>用户登录，不需要<code>sudo</code>。<br>通过查看版本来确认是否安装成功。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure></p>
+<p>出现版本号则表示安装成功。</p>
+<h3 id="工具安装"><a href="#工具安装" class="headerlink" title="工具安装"></a>工具安装</h3><ul>
+<li>hexo-cli，全局安装，用来初始化项目。<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-cli -g</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>同样，我们通过查看版本号来确认是否安装成功：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure></p>
+<h2 id="开始"><a href="#开始" class="headerlink" title="开始"></a>开始</h2><h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>找到一个可以存放项目的合适路径，使用<code>hexo-cli</code>初始化项目：</p>
+<blockquote>
+<p>有两种方式来初始化项目。1、先新建项目文件夹，在项目文件夹内执行<code>hexo init</code>命令。2、使用下面的方式。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo init &#123;projectName&#125;</span><br></pre></td></tr></table></figure>
+<p>然后可以看到在当前目录生成了{projectName}文件夹，文件夹下有很多文件与文件夹，<code>node_modules</code>为项目依赖，不用理会，具体看另外的文件。</p>
+<ul>
+<li>_config.yml</li>
+<li>package.json</li>
+<li>scaffolds</li>
+<li>source</li>
+<li>themes</li>
+</ul>
+<p>从名字就能很明显看出各自的作用。</p>
+<h3 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h3><p>安装项目依赖：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install</span><br></pre></td></tr></table></figure></p>
+<h3 id="开启网站"><a href="#开启网站" class="headerlink" title="开启网站"></a>开启网站</h3><p>开启服务：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure></p>
+<p>然后会提示：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">INFO  Start processing</span><br><span class="line">INFO  Hexo is running at http://localhost:4000/. Press Ctrl+C to stop.</span><br></pre></td></tr></table></figure></p>
+<p>服务在4000端口开启，访问<code>{服务器ip地址}:4000</code>即可查看网站。</p>
+<blockquote>
+<p>我的 ip 是139.129.17.174，那我需要通过 139.129.17.174:4000 即可访问网站。</p>
+</blockquote>
+<h3 id="常驻"><a href="#常驻" class="headerlink" title="常驻"></a>常驻</h3><p>关闭终端后发现网站也无法访问了，所以我们需要让该服务常驻。<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup hexo server &amp;</span><br></pre></td></tr></table></figure></p>
+<p>然后会显示：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">appending output to nohup.out</span><br></pre></td></tr></table></figure></p>
+<p>表示<code>hexo server</code>命令输出将保存至<code>nohup.out</code>文件。这时输入任意键，回车后退回到 shell窗口（即可以输入命令的窗口），使用<code>exit</code>来退出终端。</p>
+<h2 id="上传、更新文章"><a href="#上传、更新文章" class="headerlink" title="上传、更新文章"></a>上传、更新文章</h2><p>在后台运行网站服务时，修改<code>_config.yml</code>文件并不能即时更新，需要断开服务后重启服务。首先查找进程，然后关闭：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ps -ef</span><br><span class="line"><span class="comment"># 找到 hexo 对应的 PID number</span></span><br><span class="line"><span class="built_in">kill</span> &#123;PID number&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="上传文章"><a href="#上传文章" class="headerlink" title="上传文章"></a>上传文章</h3><p>新建文件有两种方式：</p>
+<ul>
+<li>1、命令行生成 md 文件，在 md 文件内编写文章</li>
+<li>2、直接上传已写好的 md 文件</li>
+</ul>
+<p>第一种方式会默认在头部添加<code>yml</code>信息。但由于我习惯在为知笔记中写笔记，将笔记整理后成为文章发布到博客上。这里采用第二种方式。直接使用 FTP软件将 md 文件上传至<code>source/_post</code>文件夹内，使用命令：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo g</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>g 应该是 generate 的简写。就好像 server 可以简写成 s。</p>
+</blockquote>
+<p>刷新网站后即可看到新文章。教程中提到可以在 md 文件头部加上一些文章信息，比如：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="bullet">-</span><span class="bullet">--</span> </span><br><span class="line"><span class="attr">title:</span> <span class="string">hello-world</span> <span class="string">//在此处添加你的标题。</span> </span><br><span class="line"><span class="attr">date:</span> <span class="number">2014</span><span class="bullet">-11</span><span class="bullet">-7</span> <span class="number">08</span><span class="string">:55:29</span> <span class="string">//在此处输入你编辑这篇文章的时间。</span> </span><br><span class="line"><span class="attr">categories:</span> <span class="string">Exercise</span> <span class="string">//在此处输入这篇文章的分类。</span> </span><br><span class="line"><span class="attr">toc:</span> <span class="literal">true</span> <span class="string">//在此处设定是否开启目录，需要主题支持。</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure></p>
+<p><code>title</code>字段自动成为主标题，即和<code>#hello-world</code>效果相同并且自动附带该文章链接。所以这篇文章的头部可以改成这样：<br><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">开通个人博客</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="string">搭建博客并不是很困难，无论是</span> <span class="string">wordPress</span> <span class="string">还是别的什么开源博客系......</span></span><br></pre></td></tr></table></figure></p>
+<p>很明显这样好很多。</p>
+<h3 id="更新文章"><a href="#更新文章" class="headerlink" title="更新文章"></a>更新文章</h3><p>教程中并没有提到更新文章，所以猜想直接替换同名 md 文件或者直接在 md 文件内修改即可完成更新。</p>
+<blockquote>
+<p>的确是这样，但是有一个问题，在服务开启的状态下，<code>title</code>字段为中文时导致整片文章内容为空。断开服务再重新开启即可正常显示。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>博客搭建很顺利，两个小时就折腾完毕（主要是搜索如何让服务常驻后台和如何关闭常驻服务）。但是很明显博客的样式、功能都很少，所以下一步是优化博客（好吧，我就知道会有这一步的）。</p>
+<p>上面提到在为知笔记中写，写好后每次都需要使用 FTP 工具上传至服务器。如果先在本地写好，push 到 github 上，再从服务器上更新以获得最新版本，工作量还是比较大，所以考虑使用通用的方式，即使用 github 保存网站文件。可以参考- <a href="https://xuanwo.org/2015/03/26/hexo-intor/" target="_blank" rel="noopener">史上最详细的Hexo博客搭建图文教程</a>完成该方式。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><p><a href="https://xuanwo.org/2015/03/26/hexo-intor/" target="_blank" rel="noopener">史上最详细的Hexo博客搭建图文教程</a></p>
+</li>
+<li><p><a href="https://github.com/hexojs/hexo" target="_blank" rel="noopener">Hexo</a></p>
+</li>
+<li><p><a href="http://www.cnblogs.com/allenblogs/archive/2011/05/19/2051136.html" target="_blank" rel="noopener">linux的nohup命令的用法。</a></p>
+</li>
+<li><p><a href="http://stackoverflow.com/questions/17385794/how-to-get-the-process-id-to-kill-a-nohup-process" target="_blank" rel="noopener">How to get the process ID to kill a nohup process?</a></p>
+</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/ubuntu/" rel="tag"># ubuntu</a>
+          
+            <a href="/blog/tags/hexo/" rel="tag"># hexo</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2016/08/07/immediately-invoked-function-expression/" rel="prev" title="自执行函数(IIFE)">
+                自执行函数(IIFE) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器"><span class="nav-number">1.</span> <span class="nav-text">服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#环境配置"><span class="nav-number">1.1.</span> <span class="nav-text">环境配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工具安装"><span class="nav-number">1.2.</span> <span class="nav-text">工具安装</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开始"><span class="nav-number">2.</span> <span class="nav-text">开始</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化"><span class="nav-number">2.1.</span> <span class="nav-text">初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#安装依赖"><span class="nav-number">2.2.</span> <span class="nav-text">安装依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#开启网站"><span class="nav-number">2.3.</span> <span class="nav-text">开启网站</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#常驻"><span class="nav-number">2.4.</span> <span class="nav-text">常驻</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#上传、更新文章"><span class="nav-number">3.</span> <span class="nav-text">上传、更新文章</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#上传文章"><span class="nav-number">3.1.</span> <span class="nav-text">上传文章</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更新文章"><span class="nav-number">3.2.</span> <span class="nav-text">更新文章</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">5.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

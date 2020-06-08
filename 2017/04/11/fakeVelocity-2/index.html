@@ -1,0 +1,704 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="动画," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="separateValue这次我们先来讨论如何正确分离属性值与单位，假设要实现下面的动画，点击动画按钮，同时改变透明度、宽度以及旋转角度。">
+<meta name="keywords" content="动画">
+<meta property="og:type" content="article">
+<meta property="og:title" content="模仿 velocity.js 实现 DOM 动画类库（二）">
+<meta property="og:url" content="http://yoursite.com/2017/04/11/fakeVelocity-2/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="separateValue这次我们先来讨论如何正确分离属性值与单位，假设要实现下面的动画，点击动画按钮，同时改变透明度、宽度以及旋转角度。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-30T07:20:10.459Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="模仿 velocity.js 实现 DOM 动画类库（二）">
+<meta name="twitter:description" content="separateValue这次我们先来讨论如何正确分离属性值与单位，假设要实现下面的动画，点击动画按钮，同时改变透明度、宽度以及旋转角度。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/04/11/fakeVelocity-2/"/>
+
+
+
+
+
+  <title> 模仿 velocity.js 实现 DOM 动画类库（二） | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2017/04/11/fakeVelocity-2/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                模仿 velocity.js 实现 DOM 动画类库（二）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-11T08:00:00+08:00">
+              2017-04-11
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2017-12-30T15:20:10+08:00">
+              2017-12-30
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="separateValue"><a href="#separateValue" class="headerlink" title="separateValue"></a>separateValue</h2><p>这次我们先来讨论如何正确分离属性值与单位，假设要实现下面的动画，<br>点击动画按钮，同时改变透明度、宽度以及旋转角度。<br><a id="more"></a></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">"zh"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"UTF-8"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>测试<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"./src/fakeVelocity.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">style</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="css">        <span class="selector-id">#demo</span> &#123;</span></span><br><span class="line"><span class="undefined">            width: 300px;</span></span><br><span class="line"><span class="undefined">            height: 180px;</span></span><br><span class="line"><span class="undefined">            background-color: red;</span></span><br><span class="line"><span class="undefined">            transform: rotate(30deg)</span></span><br><span class="line"><span class="undefined">        &#125;</span></span><br><span class="line"><span class="undefined">    </span><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"demo"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"run"</span>&gt;</span>点击执行动画<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="javascript">        <span class="built_in">window</span>.onload = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">            <span class="built_in">document</span>.querySelector(<span class="string">'#run'</span>).onclick = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span></span><br><span class="line"><span class="javascript">                <span class="keyword">const</span> animateEl = <span class="keyword">new</span> Animation(<span class="built_in">document</span>.querySelector(<span class="string">'#demo'</span>))</span></span><br><span class="line"><span class="undefined">                animateEl.animation(&#123;</span></span><br><span class="line"><span class="undefined">                    opacity: 0.5,</span></span><br><span class="line"><span class="javascript">                    width: <span class="string">'300px'</span>,</span></span><br><span class="line"><span class="javascript">                    rotateZ: <span class="string">'90deg'</span></span></span><br><span class="line"><span class="undefined">                &#125;)</span></span><br><span class="line"><span class="undefined">            &#125;</span></span><br><span class="line"><span class="undefined">        &#125;</span></span><br><span class="line"><span class="undefined">    </span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>由于在<code>velocity</code>中旋转不是使用<code>transform</code>而必须使用<code>rotateZ</code>，少了<code>Z</code>也不行。</p>
+</blockquote>
+<p>由于<code>rotateZ</code>这样的动画存在，所以不能单纯从值中提取出单位，还要根据属性名来获取，比如<code>rotateZ</code>是无法获取到开始值的，所以就额外处理一次，使用<code>getUnitType</code>返回预期的值。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">separateValue</span> (<span class="params">property, value</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> unitType,</span><br><span class="line">        numericValue</span><br><span class="line">    <span class="comment">// replace 是字符串的方法，如果是数值类型则没有 replace 方法，所以先将 value 转为字符串</span></span><br><span class="line">    numericValue = value.toString().replace(<span class="regexp">/[%A-z]+$/</span>, <span class="function"><span class="keyword">function</span>(<span class="params">match</span>) </span>&#123;</span><br><span class="line">    	<span class="comment">// 将匹配到的字母作为单位</span></span><br><span class="line">        unitType = match</span><br><span class="line">        <span class="comment">// 将属性值中的字母都去掉，保留数字</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果没有获取到单位，就根据属性来获取</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">getUnitType</span> (<span class="params">property</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="regexp">/^(rotate|skew)/i</span>.test(property)) &#123;</span><br><span class="line">            <span class="comment">// 这两个属性值单位是 deg ，有点特殊</span></span><br><span class="line">            <span class="keyword">return</span> <span class="string">"deg"</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="regexp">/(^(scale|scaleX|scaleY|scaleZ|opacity|alpha|fillOpacity|flexGrow|flexHeight|zIndex|fontWeight)$)|color/i</span>.test(property)) &#123;</span><br><span class="line">            <span class="comment">// 这些属性值都是没有单位的</span></span><br><span class="line">            <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 如果都没有匹配到，就默认是 px</span></span><br><span class="line">            <span class="keyword">return</span> <span class="string">"px"</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!unitType) &#123;</span><br><span class="line">        unitType = getUnitType(property)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> [ numericValue, unitType ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="多个属性值变化"><a href="#多个属性值变化" class="headerlink" title="多个属性值变化"></a>多个属性值变化</h2><p>之前使用全局变量保存<code>property</code>、<code>startValue</code>、<code>endValue</code>和<code>unitType</code>，如果要改变多个属性，就必须使用到对象了，对象上每一个属性都有这些值。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> propertiesContainer = &#123;&#125;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> property <span class="keyword">in</span> propertiesMap) &#123;</span><br><span class="line">    <span class="comment">// 拿到开始值与开始单位</span></span><br><span class="line">    <span class="keyword">const</span> startSeparatedValue = separateValue(property, getPropertyValue(element, property))</span><br><span class="line">    <span class="keyword">const</span> startValue = <span class="built_in">parseFloat</span>(startSeparatedValue[<span class="number">0</span>])</span><br><span class="line">    <span class="keyword">const</span> startValueUnitType = startSeparatedValue[<span class="number">1</span>]</span><br><span class="line">    <span class="comment">// 结束值与结束单位</span></span><br><span class="line">    <span class="keyword">const</span> endSeparatedValue = separateValue(property, propertiesMap[property])</span><br><span class="line">    <span class="keyword">const</span> endValue = <span class="built_in">parseFloat</span>(endSeparatedValue[<span class="number">0</span>]) || <span class="number">0</span></span><br><span class="line">    <span class="keyword">const</span> endValueUnitType = endSeparatedValue[<span class="number">1</span>]</span><br><span class="line">	<span class="comment">// 将结果保存到对象中</span></span><br><span class="line">	propertiesContainer[property] = &#123;</span><br><span class="line">        startValue,</span><br><span class="line">        endValue,</span><br><span class="line">        unitType: endValueUnitType</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接下来就简单了，只要在<code>tick</code>函数内遍历<code>propertiesContainer</code>获取不同属性的开始值与结束值计算得到当前值即可。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 核心动画函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">tick</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 当前时间</span></span><br><span class="line">    <span class="keyword">let</span> timeCurrent = (<span class="keyword">new</span> <span class="built_in">Date</span>).getTime()</span><br><span class="line">    <span class="comment">// 遍历要执行动画的 element 元素，这里暂时只支持一个元素</span></span><br><span class="line">    <span class="comment">// 当前值</span></span><br><span class="line">    <span class="comment">// 如果 timeStart 是 undefined ，表示这是动画的第一次执行</span></span><br><span class="line">    <span class="keyword">if</span> (!timeStart) &#123;</span><br><span class="line">        timeStart = timeCurrent - <span class="number">16</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 检测动画是否执行完毕</span></span><br><span class="line">    <span class="keyword">const</span> percentComplete = <span class="built_in">Math</span>.min((timeCurrent - timeStart) / opts.duration, <span class="number">1</span>) </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 遍历要改变的属性值并一一改变</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> property <span class="keyword">in</span> propertiesContainer) &#123;</span><br><span class="line">        <span class="comment">// 拿到该属性当前值，一开始是 startValue</span></span><br><span class="line">        <span class="keyword">const</span> tween = propertiesContainer[property]</span><br><span class="line">        <span class="comment">// 如果动画执行完成</span></span><br><span class="line">        <span class="keyword">if</span> (percentComplete === <span class="number">1</span>) &#123;</span><br><span class="line">            currentValue = tween.endValue</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            currentValue = <span class="built_in">parseFloat</span>(tween.startValue) + ((tween.endValue - tween.startValue) * Animation.easing[<span class="string">'swing'</span>](percentComplete))</span><br><span class="line">            tween.currentValue = currentValue</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 改变 dom 的属性值</span></span><br><span class="line">        setPropertyValue(element, property, currentValue + tween.unitType)</span><br><span class="line">        <span class="comment">// 终止调用 tick</span></span><br><span class="line">        <span class="keyword">if</span> (percentComplete === <span class="number">1</span>) &#123;</span><br><span class="line">            isTicking = <span class="literal">false</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (isTicking) &#123;</span><br><span class="line">            requestAnimationFrame(tick)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>透明度与宽度能够正确处理，但是角度却没有正确处理，因为并没有对<code>rotateZ</code>做特殊处理，实际并不能够直接给 DOM 设置<code>rotateZ</code>属性而需要设置<code>transform</code>属性。</p>
+<h3 id="改变角度"><a href="#改变角度" class="headerlink" title="改变角度"></a>改变角度</h3><p>在调用<code>setPropertyValue</code>时，传入了<code>(element, &#39;rotateZ&#39;, &#39;xxdeg&#39;)</code>，为了职责分明，不在调用该函数前将<code>rotateZ</code>改变为<code>transform</code>，而是在<code>setPropertyValue</code>函数内部根据属性来判断究竟该怎么设置元素的属性值。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">setPropertyValue</span>(<span class="params">element, property, value</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">let</span> propertyName = property</span><br><span class="line">	<span class="keyword">if</span> (normalization[property]) &#123;</span><br><span class="line">		<span class="comment">// 如果在 normalization 这个对象内，就表示这个属性是需要经过处理的</span></span><br><span class="line">		propertyName = <span class="string">'transform'</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>有哪些属性是使用<code>transform</code>设置的呢，在源码 499 行附近</p>
+<ul>
+<li>rotate(X|Y|Z)</li>
+<li>scale(X|Y|Z)</li>
+<li>skew(X|Y)</li>
+<li>translate(X|Y|Z)</li>
+</ul>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">setPropertyValue</span> (<span class="params">element, property, value</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> propertyName = property</span><br><span class="line">    <span class="comment">/********************</span></span><br><span class="line"><span class="comment">      声明需要额外处理的属性</span></span><br><span class="line"><span class="comment">    *********************/</span></span><br><span class="line">    <span class="keyword">const</span> transformProperties = [ <span class="string">"translateX"</span>, <span class="string">"translateY"</span>, <span class="string">"translateZ"</span>, <span class="string">"scale"</span>, <span class="string">"scaleX"</span>, <span class="string">"scaleY"</span>, <span class="string">"scaleZ"</span>, <span class="string">"skewX"</span>, <span class="string">"skewY"</span>, <span class="string">"rotateX"</span>, <span class="string">"rotateY"</span>, <span class="string">"rotateZ"</span> ]</span><br><span class="line">    <span class="keyword">const</span> Normalizations = &#123;</span><br><span class="line">        registered: &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>, len = transformProperties.length; i &lt; len; i++) &#123;</span><br><span class="line">        <span class="keyword">const</span> transformName = transformProperties[i]</span><br><span class="line">        Normalizations.registered[transformName] = <span class="function"><span class="keyword">function</span> (<span class="params">propertyValue</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> transformName + <span class="string">'('</span> + propertyValue + <span class="string">')'</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> propertyValue = value</span><br><span class="line">    <span class="comment">// 判断是否需要额外处理</span></span><br><span class="line">    <span class="keyword">if</span> (Normalizations.registered[property]) &#123;</span><br><span class="line">        propertyName = <span class="string">'transform'</span></span><br><span class="line">        propertyValue = Normalizations.registered[property](value)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">console</span>.log(propertyName, propertyValue)</span><br><span class="line">    element.style[propertyName] = propertyValue</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>能够正确动画，但是却很卡。。不过只需要将判断是否终止动画<code>tick</code>的判断拿到<code>for..in</code>循环外即可。</p>
+<h2 id="最终代码"><a href="#最终代码" class="headerlink" title="最终代码"></a>最终代码</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br></pre></td><td class="code"><pre><span class="line">;(<span class="function"><span class="keyword">function</span> (<span class="params">window</span>) </span>&#123;</span><br><span class="line">    <span class="comment">/********************</span></span><br><span class="line"><span class="comment">      声明需要额外处理的属性</span></span><br><span class="line"><span class="comment">    *********************/</span></span><br><span class="line">    <span class="keyword">const</span> transformProperties = [ <span class="string">"translateX"</span>, <span class="string">"translateY"</span>, <span class="string">"translateZ"</span>, <span class="string">"scale"</span>, <span class="string">"scaleX"</span>, <span class="string">"scaleY"</span>, <span class="string">"scaleZ"</span>, <span class="string">"skewX"</span>, <span class="string">"skewY"</span>, <span class="string">"rotateX"</span>, <span class="string">"rotateY"</span>, <span class="string">"rotateZ"</span> ]</span><br><span class="line">    <span class="keyword">const</span> Normalizations = &#123;</span><br><span class="line">        registered: &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果这个属性是需要额外处理的</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>, len = transformProperties.length; i &lt; len; i++) &#123;</span><br><span class="line">        <span class="keyword">const</span> transformName = transformProperties[i]</span><br><span class="line">        Normalizations.registered[transformName] = <span class="function"><span class="keyword">function</span> (<span class="params">propertyValue</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> transformName + <span class="string">'('</span> + propertyValue + <span class="string">')'</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 获取指定 dom 的指定属性值</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">getPropertyValue</span> (<span class="params">element, property</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">window</span>.getComputedStyle(element, <span class="literal">null</span>).getPropertyValue(property)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 给指定 dom 设置值</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">setPropertyValue</span> (<span class="params">element, property, value</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">let</span> propertyName = property</span><br><span class="line">        <span class="keyword">let</span> propertyValue = value</span><br><span class="line">        <span class="comment">// 判断是否需要额外处理</span></span><br><span class="line">        <span class="keyword">if</span> (Normalizations.registered[property]) &#123;</span><br><span class="line">            propertyName = <span class="string">'transform'</span></span><br><span class="line">            propertyValue = Normalizations.registered[property](value)</span><br><span class="line">        &#125;</span><br><span class="line">        element.style[propertyName] = propertyValue</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 分割值与单位</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">separateValue</span> (<span class="params">property, value</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 只处理两种简单的情况，没有单位和单位为 px</span></span><br><span class="line">        <span class="keyword">let</span> unitType,</span><br><span class="line">            numericValue</span><br><span class="line">        <span class="comment">// replace 是字符串的方法，如果是数值类型则没有 replace 方法</span></span><br><span class="line">        numericValue = value.toString().replace(<span class="regexp">/[%A-z]+$/</span>, <span class="function"><span class="keyword">function</span>(<span class="params">match</span>) </span>&#123;</span><br><span class="line">            unitType = match</span><br><span class="line">            <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line">        &#125;)</span><br><span class="line">        <span class="comment">// 如果没有获取到单位，就根据属性来获取</span></span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">getUnitType</span> (<span class="params">property</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="regexp">/^(rotate|skew)/i</span>.test(property)) &#123;</span><br><span class="line">                <span class="comment">// 这两个属性值单位是 deg ，有点特殊</span></span><br><span class="line">                <span class="keyword">return</span> <span class="string">"deg"</span></span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="regexp">/(^(scale|scaleX|scaleY|scaleZ|opacity|alpha|fillOpacity|flexGrow|flexHeight|zIndex|fontWeight)$)|color/i</span>.test(property)) &#123;</span><br><span class="line">                <span class="comment">// 这些属性值都是没有单位的</span></span><br><span class="line">                <span class="keyword">return</span> <span class="string">""</span></span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 如果都没有匹配到，就默认是 px</span></span><br><span class="line">                <span class="keyword">return</span> <span class="string">"px"</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!unitType) &#123;</span><br><span class="line">            unitType = getUnitType(property)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> [ numericValue, unitType ]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">/* ========================</span></span><br><span class="line"><span class="comment">     * 构造函数</span></span><br><span class="line"><span class="comment">    =========================*/</span></span><br><span class="line">    <span class="function"><span class="keyword">function</span> <span class="title">Animation</span> (<span class="params">element</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.element = element</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// easing 缓动函数</span></span><br><span class="line">    Animation.easing = &#123;</span><br><span class="line">        swing: <span class="function"><span class="keyword">function</span> (<span class="params">a</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">.5</span> - <span class="built_in">Math</span>.cos(a * <span class="built_in">Math</span>.PI) / <span class="number">2</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 暴露的动画接口</span></span><br><span class="line">    Animation.prototype.animation = <span class="function"><span class="keyword">function</span> (<span class="params">propertiesMap</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">const</span> element = <span class="keyword">this</span>.element</span><br><span class="line">        <span class="comment">// 默认参数</span></span><br><span class="line">        <span class="keyword">const</span> opts = &#123;</span><br><span class="line">            duration: <span class="number">400</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 保存要改变的属性集合</span></span><br><span class="line">        <span class="keyword">let</span> propertiesContainer = &#123;&#125;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">let</span> property <span class="keyword">in</span> propertiesMap) &#123;</span><br><span class="line">            <span class="comment">// 拿到开始值</span></span><br><span class="line">            <span class="keyword">const</span> startSeparatedValue = separateValue(property, getPropertyValue(element, property))</span><br><span class="line">            <span class="keyword">const</span> startValue = <span class="built_in">parseFloat</span>(startSeparatedValue[<span class="number">0</span>]) || <span class="number">0</span></span><br><span class="line">            <span class="keyword">const</span> startValueUnitType = startSeparatedValue[<span class="number">1</span>]</span><br><span class="line">            <span class="comment">// 结束值</span></span><br><span class="line">            <span class="keyword">const</span> endSeparatedValue = separateValue(property, propertiesMap[property])</span><br><span class="line">            <span class="keyword">const</span> endValue = <span class="built_in">parseFloat</span>(endSeparatedValue[<span class="number">0</span>]) || <span class="number">0</span></span><br><span class="line">            <span class="keyword">const</span> endValueUnitType = endSeparatedValue[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">            propertiesContainer[property] = &#123;</span><br><span class="line">                startValue,</span><br><span class="line">                endValue,</span><br><span class="line">                unitType: endValueUnitType</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">let</span> timeStart</span><br><span class="line">        <span class="comment">// 终止动画标志</span></span><br><span class="line">        <span class="keyword">let</span> isTicking = <span class="literal">true</span></span><br><span class="line">        <span class="comment">// 核心动画函数</span></span><br><span class="line">        <span class="function"><span class="keyword">function</span> <span class="title">tick</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="comment">// 当前时间</span></span><br><span class="line">            <span class="keyword">let</span> timeCurrent = (<span class="keyword">new</span> <span class="built_in">Date</span>).getTime()</span><br><span class="line">            <span class="comment">// 遍历要执行动画的 element 元素，这里暂时只支持一个元素</span></span><br><span class="line">            <span class="comment">// 当前值</span></span><br><span class="line">            <span class="comment">// 如果 timeStart 是 undefined ，表示这是动画的第一次执行</span></span><br><span class="line">            <span class="keyword">if</span> (!timeStart) &#123;</span><br><span class="line">                timeStart = timeCurrent - <span class="number">16</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 检测动画是否执行完毕</span></span><br><span class="line">            <span class="keyword">const</span> percentComplete = <span class="built_in">Math</span>.min((timeCurrent - timeStart) / opts.duration, <span class="number">1</span>) </span><br><span class="line">            <span class="comment">// 遍历要改变的属性值并一一改变</span></span><br><span class="line">            <span class="keyword">for</span>(<span class="keyword">let</span> property <span class="keyword">in</span> propertiesContainer) &#123;</span><br><span class="line">                <span class="comment">// 拿到该属性当前值，一开始是 startValue</span></span><br><span class="line">                <span class="keyword">const</span> tween = propertiesContainer[property]</span><br><span class="line">                <span class="comment">// 如果动画执行完成</span></span><br><span class="line">                <span class="keyword">if</span> (percentComplete === <span class="number">1</span>) &#123;</span><br><span class="line">                    currentValue = tween.endValue</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    currentValue = <span class="built_in">parseFloat</span>(tween.startValue) + ((tween.endValue - tween.startValue) * Animation.easing[<span class="string">'swing'</span>](percentComplete))</span><br><span class="line">                    tween.currentValue = currentValue</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">// 改变 dom 的属性值</span></span><br><span class="line">                setPropertyValue(element, property, currentValue + tween.unitType)</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 终止调用 tick</span></span><br><span class="line">            <span class="keyword">if</span> (percentComplete === <span class="number">1</span>) &#123;</span><br><span class="line">                isTicking = <span class="literal">false</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (isTicking) &#123;</span><br><span class="line">                requestAnimationFrame(tick)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        tick()</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 暴露至全局</span></span><br><span class="line">    <span class="built_in">window</span>.Animation = Animation</span><br><span class="line">&#125;)(<span class="built_in">window</span>)</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这次主要是实现了分割值与单位，同时简单的实现了同时改变多个属性的动画。仍存在很大缺陷，下篇笔记主要解决颜色值的改变与开始值结束值单位不一致这两个问题。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/动画/" rel="tag"># 动画</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2017/04/10/fakeVelocity-1/" rel="next" title="模仿 velocity.js 实现 DOM 动画类库（一）">
+                <i class="fa fa-chevron-left"></i> 模仿 velocity.js 实现 DOM 动画类库（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2017/04/11/this指向问题深究/" rel="prev" title="this 指向问题深究">
+                this 指向问题深究 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#separateValue"><span class="nav-number">1.</span> <span class="nav-text">separateValue</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多个属性值变化"><span class="nav-number">2.</span> <span class="nav-text">多个属性值变化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#改变角度"><span class="nav-number">2.1.</span> <span class="nav-text">改变角度</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最终代码"><span class="nav-number">3.</span> <span class="nav-text">最终代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

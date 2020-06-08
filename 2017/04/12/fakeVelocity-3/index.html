@@ -1,0 +1,695 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="动画," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="先来解决开始值与结束值单位不一致的问题。 单位转换原理分析假设动画元素初始宽度为300px，现在需要将其改变为50%，这就肯定需要将单位与值进行转换了，计算300px是百分之多少，或者计算50%是多少像素，这都和父容器宽度有关，所以首先是要获取到父容器了。 但是，velocity并没有获取父容器的宽度，而是将动画元素的">
+<meta name="keywords" content="动画">
+<meta property="og:type" content="article">
+<meta property="og:title" content="模仿 velocity.js 实现 DOM 动画类库（三）">
+<meta property="og:url" content="http://yoursite.com/2017/04/12/fakeVelocity-3/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="先来解决开始值与结束值单位不一致的问题。 单位转换原理分析假设动画元素初始宽度为300px，现在需要将其改变为50%，这就肯定需要将单位与值进行转换了，计算300px是百分之多少，或者计算50%是多少像素，这都和父容器宽度有关，所以首先是要获取到父容器了。 但是，velocity并没有获取父容器的宽度，而是将动画元素的宽度设为10%，再获取到宽度则为父容器宽度的10%，再除以10就得到比率。 用实">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-12-30T07:20:07.335Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="模仿 velocity.js 实现 DOM 动画类库（三）">
+<meta name="twitter:description" content="先来解决开始值与结束值单位不一致的问题。 单位转换原理分析假设动画元素初始宽度为300px，现在需要将其改变为50%，这就肯定需要将单位与值进行转换了，计算300px是百分之多少，或者计算50%是多少像素，这都和父容器宽度有关，所以首先是要获取到父容器了。 但是，velocity并没有获取父容器的宽度，而是将动画元素的宽度设为10%，再获取到宽度则为父容器宽度的10%，再除以10就得到比率。 用实">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/04/12/fakeVelocity-3/"/>
+
+
+
+
+
+  <title> 模仿 velocity.js 实现 DOM 动画类库（三） | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2017/04/12/fakeVelocity-3/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                模仿 velocity.js 实现 DOM 动画类库（三）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-12T08:00:00+08:00">
+              2017-04-12
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2017-12-30T15:20:07+08:00">
+              2017-12-30
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>先来解决开始值与结束值单位不一致的问题。</p>
+<h2 id="单位转换"><a href="#单位转换" class="headerlink" title="单位转换"></a>单位转换</h2><h3 id="原理分析"><a href="#原理分析" class="headerlink" title="原理分析"></a>原理分析</h3><p>假设动画元素初始宽度为<code>300px</code>，现在需要将其改变为<code>50%</code>，这就肯定需要将单位与值进行转换了，计算<code>300px</code>是百分之多少，或者计算<code>50%</code>是多少像素，这都和父容器宽度有关，所以首先是要获取到父容器了。</p>
+<p>但是，<code>velocity</code>并没有获取父容器的宽度，而是将动画元素的宽度设为<code>10%</code>，再获取到宽度则为父容器宽度的<code>10%</code>，再除以<code>10</code>就得到比率。</p>
+<p>用实际例子来说明，假设父容器宽度为<code>1314px</code>，动画元素宽度为<code>300px</code>，首先是将动画元素宽度设为<code>10%</code>后使用<code>getComputedStyle</code>得到宽度为<code>131.4px</code>，再除以<code>10</code>就得到<code>13.14</code>，最后<code>300/1/13.14</code>得到<code>300px</code>占父容器的百分比。</p>
+<p>而这个值，恰恰是<code>300/1314/100</code>也能够计算得到的结果。</p>
+<a id="more"></a>
+<h3 id="实际代码"><a href="#实际代码" class="headerlink" title="实际代码"></a>实际代码</h3><p>OK，现在开始写代码，上面的原理对应的代码就是：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 计算换算比率</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">calculateUnitRatios</span> (<span class="params">element, property</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">const</span> measurement = <span class="number">10</span></span><br><span class="line">    setPropertyValue(element, property, measurement + <span class="string">'%'</span>)</span><br><span class="line">    <span class="keyword">return</span> (<span class="built_in">parseFloat</span>(getPropertyValue(element, property)) || <span class="number">1</span>) / measurement</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在什么时候调用这个函数呢？</p>
+<p>在获取到开始值与结束值的单位后，就可以判断两个单位是否相同，如果不同则计算换算比率：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 保存要改变的属性集合</span></span><br><span class="line"><span class="keyword">let</span> propertiesContainer = &#123;&#125;</span><br><span class="line"><span class="keyword">for</span>(<span class="keyword">let</span> property <span class="keyword">in</span> propertiesMap) &#123;</span><br><span class="line">    <span class="comment">// 拿到开始值</span></span><br><span class="line">    <span class="keyword">const</span> startSeparatedValue = separateValue(property, getPropertyValue(element, property))</span><br><span class="line">    <span class="keyword">let</span> startValue = <span class="built_in">parseFloat</span>(startSeparatedValue[<span class="number">0</span>]) || <span class="number">0</span></span><br><span class="line">    <span class="keyword">const</span> startValueUnitType = startSeparatedValue[<span class="number">1</span>]</span><br><span class="line">    <span class="comment">// 结束值</span></span><br><span class="line">    <span class="keyword">const</span> endSeparatedValue = separateValue(property, propertiesMap[property])</span><br><span class="line">    <span class="keyword">const</span> endValue = <span class="built_in">parseFloat</span>(endSeparatedValue[<span class="number">0</span>]) || <span class="number">0</span></span><br><span class="line">    <span class="keyword">const</span> endValueUnitType = endSeparatedValue[<span class="number">1</span>]</span><br><span class="line">	<span class="comment">// 判断两个单位是否一致</span></span><br><span class="line">    <span class="keyword">if</span> (startValueUnitType !== endValueUnitType) &#123;</span><br><span class="line">        <span class="keyword">const</span> ratios = calculateUnitRatios(element, property)</span><br><span class="line">        startValue *= <span class="number">1</span> / ratios</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    propertiesContainer[property] = &#123;</span><br><span class="line">        startValue,</span><br><span class="line">        endValue,</span><br><span class="line">        <span class="comment">// 单位用结束值的单位，因为将开始值转换为了结束值相同单位的数值</span></span><br><span class="line">        unitType: endValueUnitType</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h2><p>由于颜色动画比较复杂，所以暂时不实现颜色动画，先来增加生命周期，也就是回调函数，当动画开始前、执行中、结束后分别调用用户自定义的函数。</p>
+<h3 id="动画开始前"><a href="#动画开始前" class="headerlink" title="动画开始前"></a>动画开始前</h3><p>只要在<code>tick()</code>前（步骤4）判断配置项中是否存在<code>begin</code>字段，如果存在就调用。</p>
+<p>动画开始中与动画结束都是同理，只是调用位置不同。</p>
+<h2 id="常用动画选项"><a href="#常用动画选项" class="headerlink" title="常用动画选项"></a>常用动画选项</h2><p><code>jQuery</code>存在预先设置好的动画函数，比如滑动<code>slideDown</code>显示被隐藏的元素，<code>slideUp</code>隐藏显示的元素等。</p>
+<p>其实原理很简单，就是调用我们已经声明好的<code>animation</code>函数，将高度变为<code>0</code>或者恢复高度即可。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/动画/" rel="tag"># 动画</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2017/04/11/this指向问题深究/" rel="next" title="this 指向问题深究">
+                <i class="fa fa-chevron-left"></i> this 指向问题深究
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2017/04/16/fakeSea-1/" rel="prev" title="模仿 sea.js 实现 CMD 模块加载器（一）">
+                模仿 sea.js 实现 CMD 模块加载器（一） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#单位转换"><span class="nav-number">1.</span> <span class="nav-text">单位转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原理分析"><span class="nav-number">1.1.</span> <span class="nav-text">原理分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实际代码"><span class="nav-number">1.2.</span> <span class="nav-text">实际代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生命周期"><span class="nav-number">2.</span> <span class="nav-text">生命周期</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#动画开始前"><span class="nav-number">2.1.</span> <span class="nav-text">动画开始前</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常用动画选项"><span class="nav-number">3.</span> <span class="nav-text">常用动画选项</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

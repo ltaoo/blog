@@ -1,0 +1,719 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="vue," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="在Vue.js中，数据的变化会引起 DOM 的改变，是否能理解为 DOM 订阅了数据的改变事件，每当数据改变时，就发布广播，DOM 得以知道数据改变？ 具体如何实现呢？尝试以自己对数据绑定的理解，先实现一个“看起来”能够监听数据的实例，而不是一开始就阅读 Vue 的源码（不过如果没先阅读过，也不知道自己看不懂…），再将">
+<meta name="keywords" content="vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据监听 - 1">
+<meta property="og:url" content="http://yoursite.com/2016/09/04/my-vue-1/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="在Vue.js中，数据的变化会引起 DOM 的改变，是否能理解为 DOM 订阅了数据的改变事件，每当数据改变时，就发布广播，DOM 得以知道数据改变？ 具体如何实现呢？尝试以自己对数据绑定的理解，先实现一个“看起来”能够监听数据的实例，而不是一开始就阅读 Vue 的源码（不过如果没先阅读过，也不知道自己看不懂…），再将该实例进行优化。 虽然不直接阅读源码，但首先需要对 Vue 的使用方式了解。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-02-08T13:00:51.162Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据监听 - 1">
+<meta name="twitter:description" content="在Vue.js中，数据的变化会引起 DOM 的改变，是否能理解为 DOM 订阅了数据的改变事件，每当数据改变时，就发布广播，DOM 得以知道数据改变？ 具体如何实现呢？尝试以自己对数据绑定的理解，先实现一个“看起来”能够监听数据的实例，而不是一开始就阅读 Vue 的源码（不过如果没先阅读过，也不知道自己看不懂…），再将该实例进行优化。 虽然不直接阅读源码，但首先需要对 Vue 的使用方式了解。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/09/04/my-vue-1/"/>
+
+
+
+
+
+  <title> 数据监听 - 1 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2016/09/04/my-vue-1/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                数据监听 - 1
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-09-04T20:47:18+08:00">
+              2016-09-04
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2020-02-08T21:00:51+08:00">
+              2020-02-08
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在Vue.js中，数据的变化会引起 DOM 的改变，是否能理解为 DOM 订阅了数据的改变事件，每当数据改变时，就发布广播，DOM 得以知道数据改变？</p>
+<p>具体如何实现呢？尝试以自己对数据绑定的理解，先实现一个“看起来”能够监听数据的实例，而不是一开始就阅读 Vue 的源码（不过如果没先阅读过，也不知道自己看不懂…），再将该实例进行优化。</p>
+<p>虽然不直接阅读源码，但首先需要对 Vue 的使用方式了解。<br><a id="more"></a></p>
+<p>Vue 实例的 <code>$data</code>属性放置了全部的数据，所以对该属性的监听就可以实现我们需要的效果？</p>
+<p>那问题在于，如何知道<code>$data</code>改变了？或者说如何判断何时发布广播告诉订阅者数据改变了？</p>
+<h2 id="实例化-Vue-对象"><a href="#实例化-Vue-对象" class="headerlink" title="实例化 Vue 对象"></a>实例化 Vue 对象</h2><p>一个 viewModel 其实就是一个 Vue 实例。当初始化 Vue 实例时<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">    el: <span class="string">'#app'</span>,</span><br><span class="line">    data: &#123;</span><br><span class="line">        web: <span class="string">'my web'</span>,</span><br><span class="line">        books: [<span class="string">'first'</span>, <span class="string">'second'</span>]</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>对<code>data</code>属性进行遍历，<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> keys = <span class="built_in">Object</span>.keys(data);<span class="comment">// ['books', 'web']</span></span><br></pre></td></tr></table></figure></p>
+<p>然后复制到 Vue 实例的<code>$data</code>上？ </p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">keys.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">key</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 表示给 Vue 实例的 $data 属性添加属性</span></span><br><span class="line">    <span class="built_in">Object</span>.defineProperty(vm.$data, key, &#123;</span><br><span class="line">        set: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="comment">// 设置值，这里要手动把值进行替换</span></span><br><span class="line">            data[key] = newValue;</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">'I set value'</span>)</span><br><span class="line">        &#125;,</span><br><span class="line">        get: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="built_in">console</span>.log(<span class="string">'I get value'</span>)</span><br><span class="line">            <span class="keyword">return</span> options.data[key];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>然后<code>$data</code>属性会变成这样：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    web: <span class="string">'my web'</span>,</span><br><span class="line">    books: [<span class="string">'first'</span>, <span class="string">'second'</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="测试是否有效"><a href="#测试是否有效" class="headerlink" title="测试是否有效"></a>测试是否有效</h2><p>我们似乎已经完成了数据的监听，测试下当赋值时是否会触发相应的 <code>console.log</code>。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vm.$data.web = <span class="string">'your web'</span>;<span class="comment">// console.log('I set value')</span></span><br><span class="line"><span class="keyword">var</span> list = vm.$data.books;<span class="comment">// console.log('I get value')</span></span><br></pre></td></tr></table></figure></p>
+<p>看起来似乎可以了。</p>
+<h2 id="实现的代码"><a href="#实现的代码" class="headerlink" title="实现的代码"></a>实现的代码</h2><p>先交代一下现在的目录结构：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">- index.html</span><br><span class="line">- src</span><br><span class="line">    - index.js</span><br><span class="line">    - scripts</span><br><span class="line">        - viewModel.js</span><br></pre></td></tr></table></figure></p>
+<p>使用 gulp 将 src 文件夹内的 js 文件合并打包，index.html 文件将会引用最后的打包文件。scripts 文件夹内存放我们将要实现的 Vue.js。而 index.js 就是我们用来写业务的 js 文件。</p>
+<p>上面的代码以es6 语法来写：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ./scripts/viewModel.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Vue</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> (options) &#123;</span><br><span class="line">    <span class="keyword">this</span>.data = options.data;</span><br><span class="line">    <span class="keyword">this</span>.$data = &#123;&#125;;</span><br><span class="line">    <span class="keyword">this</span>.init();</span><br><span class="line">  &#125;</span><br><span class="line">  init() &#123;</span><br><span class="line">    <span class="keyword">var</span> keys = <span class="built_in">Object</span>.keys(<span class="keyword">this</span>.data);</span><br><span class="line">    <span class="comment">// 下面使用箭头函数就可以避免写这一句</span></span><br><span class="line">    <span class="keyword">var</span> vue = <span class="keyword">this</span>;</span><br><span class="line">    <span class="comment">// copy property</span></span><br><span class="line">    keys.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">key</span>) </span>&#123;</span><br><span class="line">      <span class="built_in">Object</span>.defineProperty(vue.$data, key, &#123;</span><br><span class="line">        set: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">          <span class="comment">// 设置值，这里要手动把值进行替换</span></span><br><span class="line">          vue.data[key] = newValue;</span><br><span class="line">          <span class="built_in">console</span>.log(<span class="string">'I set value'</span>);</span><br><span class="line">        &#125;,</span><br><span class="line">        get: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">          <span class="built_in">console</span>.log(<span class="string">'I get value'</span>)</span><br><span class="line">          <span class="keyword">return</span> vue.data[key];</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// index.js</span></span><br><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'./scripts/viewModel.js'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  data: &#123;</span><br><span class="line">    web: <span class="string">'my web'</span>,</span><br><span class="line">    books: [<span class="string">'first'</span>, <span class="string">'second'</span>]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">vm.$data.web = <span class="string">'your web'</span>;</span><br><span class="line"><span class="built_in">console</span>.log(vm.$data.books);</span><br></pre></td></tr></table></figure></p>
+<p>可以看到浏览器控制台输出我们预期的结果。我们成功“订阅”了数据变化事件。</p>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><p>不过很明显，如果我们传入的 data 是这样的：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  data: &#123;</span><br><span class="line">    web: &#123;</span><br><span class="line">        name: <span class="string">'my web'</span>,</span><br><span class="line">        url: <span class="string">'localhost'</span></span><br><span class="line">    &#125;,</span><br><span class="line">    books: [<span class="string">'first'</span>, <span class="string">'second'</span>]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">vm.$data.web.name = <span class="string">'your web'</span>;</span><br></pre></td></tr></table></figure></p>
+<p>在控制台输出两条<code>I get value</code>，可能是因为用<code>.</code>来获得了<code>name</code>（触发了 web 属性的 get）吧，暂时不清楚。</p>
+<p>但是可以肯定的是<code>name</code>属性是没有我们自己设置的<code>set</code> 和 <code>get</code> 的，所以我们需要对对象类型的值做遍历，每一个属性都加上<code>set</code>和<code>get</code>。</p>
+<p>如果是数组或者字符串类型呢，数值类型呢？</p>
+<p>数组一般而言会用到数组的方法来改变值，比如<code>push</code>、<code>shift</code>等，所以可以通过修改这些方法来实现订阅。</p>
+<h2 id="渲染页面"><a href="#渲染页面" class="headerlink" title="渲染页面"></a>渲染页面</h2><p>OK，我们实现了“订阅”后，只在控制台打印一条信息显然对我们没有什么帮助，我们需要能够在数据发生改变后也改变 DOM。所以这就要求数据和 DOM 是有关系的，通过某种手段，将数据和视图建立联系。</p>
+<p>所以很明显，我们要把<code>get</code>和<code>set</code>中的<code>console.log</code>替换成有实际意义（渲染dom）的函数。</p>
+<p>假设我们的<code>index.html</code>是这样的：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">h2</span> <span class="attr">v-bind</span>=<span class="string">"web"</span>&gt;</span><span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">ul</span> <span class="attr">v-bind</span>=<span class="string">"books"</span>&gt;</span><span class="tag">&lt;/<span class="name">ul</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p><code>id = &quot;app&quot;</code>可以简化程序。。。方便我们查找绑定数据的区域。</p>
+<p>那我们首先需要查找到需要渲染变量的标签：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 硬编码获取根节点。。。之后优化就是和 Vue 一样传入 el ，根据该值来获取根节点</span></span><br><span class="line"><span class="keyword">var</span> app = <span class="built_in">document</span>.getElementById(<span class="string">'app'</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(app.hasChildNodes()) &#123;</span><br><span class="line">    <span class="comment">// 如果 app 有子元素</span></span><br><span class="line">    app.childNodes.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">node</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">var</span> key = node.getAttribute(<span class="string">'v-bind'</span>);<span class="comment">// 获取到 v-bind 对应的值</span></span><br><span class="line">        <span class="keyword">if</span>(key &amp;&amp; <span class="keyword">typeof</span> vm.$data[key] === <span class="string">'object'</span>) &#123;</span><br><span class="line">            <span class="comment">// 这里只考虑数组和字符串两种，如果是数组</span></span><br><span class="line">            <span class="keyword">var</span> content = <span class="string">''</span>;</span><br><span class="line">            <span class="comment">// 从 $data 中取出值，拼装成 html 插入节点</span></span><br><span class="line">            vm.$data[key].forEach(<span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</span><br><span class="line">                content += <span class="string">'&lt;li&gt;'</span> + value + <span class="string">'&lt;/li&gt;'</span>;</span><br><span class="line">            &#125;)</span><br><span class="line">            node.innerHTML = content;</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(key &amp;&amp; <span class="keyword">typeof</span> vm.$data[key] === <span class="string">'string'</span>) &#123;</span><br><span class="line">            <span class="comment">// 如果是字符串</span></span><br><span class="line">            node.innerHTML = vm.$data[key];</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>为了一开始页面就显示数据，这部分肯定要在初始化时就执行一次，然后数据改变时也要执行一次。</p>
+<p>OK，我们的代码变成了这样：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ./srcipts/viewModel.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Vue</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> (options) &#123;</span><br><span class="line">    <span class="keyword">this</span>.data = options.data;</span><br><span class="line">    <span class="keyword">this</span>.$data = &#123;&#125;;</span><br><span class="line">    <span class="keyword">this</span>.init();</span><br><span class="line">    <span class="comment">// 实例化 Vue 的时候就渲染页面</span></span><br><span class="line">    <span class="keyword">this</span>.render();</span><br><span class="line">  &#125;</span><br><span class="line">  init() &#123;</span><br><span class="line">    <span class="keyword">var</span> keys = <span class="built_in">Object</span>.keys(<span class="keyword">this</span>.data);</span><br><span class="line">    <span class="keyword">var</span> vue = <span class="keyword">this</span>;</span><br><span class="line">    <span class="comment">// copy property</span></span><br><span class="line">    keys.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">key</span>) </span>&#123;</span><br><span class="line">      <span class="built_in">Object</span>.defineProperty(vue.$data, key, &#123;</span><br><span class="line">        set: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">          <span class="comment">// 设置值，这里要手动把值进行替换</span></span><br><span class="line">          vue.data[key] = newValue;</span><br><span class="line">          <span class="built_in">console</span>.log(<span class="string">'I set value'</span>);</span><br><span class="line">        &#125;,</span><br><span class="line">        get: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">          <span class="built_in">console</span>.log(<span class="string">'I get value'</span>)</span><br><span class="line">          <span class="keyword">return</span> vue.data[key];</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  render() &#123;</span><br><span class="line">    <span class="keyword">var</span> app = <span class="built_in">document</span>.getElementById(<span class="string">'app'</span>);</span><br><span class="line">    <span class="keyword">var</span> vue = <span class="keyword">this</span>;</span><br><span class="line">    <span class="keyword">if</span>(app.hasChildNodes()) &#123;</span><br><span class="line">      <span class="comment">// 如果 app 有子元素</span></span><br><span class="line">      app.childNodes.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">node</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// console.log(node);</span></span><br><span class="line">        <span class="keyword">var</span> key = node.getAttribute(<span class="string">'v-bind'</span>);</span><br><span class="line">        <span class="keyword">if</span>(key &amp;&amp; <span class="keyword">typeof</span> vue.$data[key] === <span class="string">'object'</span>) &#123;</span><br><span class="line">          <span class="comment">// 这里只考虑数组和字符串两种，如果是数组</span></span><br><span class="line">          <span class="keyword">var</span> content = <span class="string">''</span>;</span><br><span class="line">          vue.$data[key].forEach(<span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</span><br><span class="line">            content += <span class="string">'&lt;li&gt;'</span> + value + <span class="string">'&lt;/li&gt;'</span>;</span><br><span class="line">          &#125;)</span><br><span class="line">          node.innerHTML = content;</span><br><span class="line">        &#125;<span class="keyword">else</span> <span class="keyword">if</span>(key &amp;&amp; <span class="keyword">typeof</span> vue.$data[key] === <span class="string">'string'</span>) &#123;</span><br><span class="line">          <span class="comment">// 如果是字符串</span></span><br><span class="line">          node.innerHTML = vue.$data[key];</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>但是实际运行时，却提示“getAttribute”不存在，将<code>node</code>打印出来，发现是一个“文本节点”，也就是我们<code>index.html</code>中的换行。。。。所以将<code>index.html</code>中的换行去掉：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span><span class="tag">&lt;<span class="name">h2</span> <span class="attr">v-bind</span>=<span class="string">"web"</span>&gt;</span><span class="tag">&lt;/<span class="name">h2</span>&gt;</span><span class="tag">&lt;<span class="name">ul</span> <span class="attr">v-bind</span>=<span class="string">"books"</span>&gt;</span><span class="tag">&lt;/<span class="name">ul</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>然后页面就成功显示我们的数据了。</p>
+<h3 id="数据绑定测试"><a href="#数据绑定测试" class="headerlink" title="数据绑定测试"></a>数据绑定测试</h3><p>显然我们需要把<code>render</code>函数放到数据的<code>set</code>中去，每次修改数据，就重新渲染整个页面。</p>
+<p>而怎么样才能触发数据改变呢？当然不能在代码里修改，所以只能通过事件，比如click、input等。这里增加一个输入框与一个按钮，点击按钮将输入框内的数据赋值给<code>$data.web</code>属性。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// index.js</span></span><br><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'./scripts/viewModel.js'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  data: &#123;</span><br><span class="line">    web: <span class="string">'my web'</span>,</span><br><span class="line">    books: [<span class="string">'first'</span>, <span class="string">'second'</span>]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> btn = <span class="built_in">document</span>.getElementById(<span class="string">'btn'</span>);</span><br><span class="line"></span><br><span class="line">btn.onclick = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> web = <span class="built_in">document</span>.getElementById(<span class="string">'name'</span>).value;</span><br><span class="line">  <span class="comment">// 仅仅是赋值操作，并没有改变 dom</span></span><br><span class="line">  vm.$data.web = web;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ./scripts/viewModle.js</span></span><br><span class="line">init() &#123;</span><br><span class="line">    <span class="keyword">var</span> keys = <span class="built_in">Object</span>.keys(<span class="keyword">this</span>.data);</span><br><span class="line">    <span class="keyword">var</span> vue = <span class="keyword">this</span>;</span><br><span class="line">    <span class="comment">// copy property</span></span><br><span class="line">    keys.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">key</span>) </span>&#123;</span><br><span class="line">      <span class="built_in">Object</span>.defineProperty(vue.$data, key, &#123;</span><br><span class="line">        set: <span class="function"><span class="keyword">function</span> (<span class="params">newValue</span>) </span>&#123;</span><br><span class="line">          <span class="comment">// 设置值，这里要手动把值进行替换</span></span><br><span class="line">          vue.data[key] = newValue;</span><br><span class="line">          <span class="comment">// 增加渲染页面</span></span><br><span class="line">          vue.render();</span><br><span class="line">          <span class="comment">// console.log('I set value');</span></span><br><span class="line">        &#125;,</span><br><span class="line">        get: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">          <span class="comment">// console.log('I get value')</span></span><br><span class="line">          <span class="keyword">return</span> vue.data[key];</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- index.html --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"app"</span>&gt;</span><span class="tag">&lt;<span class="name">h2</span> <span class="attr">v-bind</span>=<span class="string">"web"</span>&gt;</span><span class="tag">&lt;/<span class="name">h2</span>&gt;</span><span class="tag">&lt;<span class="name">ul</span> <span class="attr">v-bind</span>=<span class="string">"books"</span>&gt;</span><span class="tag">&lt;/<span class="name">ul</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">"text"</span> <span class="attr">id</span>=<span class="string">"name"</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">button</span> <span class="attr">id</span>=<span class="string">"btn"</span>&gt;</span>update<span class="tag">&lt;/<span class="name">button</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="问题-1"><a href="#问题-1" class="headerlink" title="问题"></a>问题</h3><p>很明显有一个问题，即当数据改变时，整个页面都会重新渲染（赋值）但是<code>web</code>值的改变不应该让<code>books</code>也重新渲染，如果页面一旦节点多起来，这应该对性能会影响很大？</p>
+<blockquote>
+<p>当然，上面的功能不用绑定也能实现；点击按钮获取值并将查找 dom ，将获取到的新值替代原先的值；而我们现在实现的，是将查找 dom 并赋值的操作先写好，可以多次调用。本质上的确是一样的，但是如果先写好了查找 dom 并赋值的函数，就可以简化我们之后的工作。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>数据绑定的模式，很明显是将 DOM 方面的工作交给框架（Vue）来处理，我们只需要关心数据的改变，框架会自动去处理 DOM，这将大大简化我们的工作。</p>
+<p>因为问题很多，所以接下来将对我们的代码进行优化（重写）。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/vue/" rel="tag"># vue</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2016/09/04/my-vue-3/" rel="next" title="数据监听 -3">
+                <i class="fa fa-chevron-left"></i> 数据监听 -3
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2016/09/04/my-vue-2/" rel="prev" title="数据监听 - 2">
+                数据监听 - 2 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#实例化-Vue-对象"><span class="nav-number">1.</span> <span class="nav-text">实例化 Vue 对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试是否有效"><span class="nav-number">2.</span> <span class="nav-text">测试是否有效</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现的代码"><span class="nav-number">3.</span> <span class="nav-text">实现的代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">3.1.</span> <span class="nav-text">问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#渲染页面"><span class="nav-number">4.</span> <span class="nav-text">渲染页面</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据绑定测试"><span class="nav-number">4.1.</span> <span class="nav-text">数据绑定测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题-1"><span class="nav-number">4.2.</span> <span class="nav-text">问题</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

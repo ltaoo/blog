@@ -1,0 +1,729 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="three.js,obj,mtl," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Three.js 虽然内置了一些模型，但在实际业务中往往需要导入外部模型，导入的模型可以视为自定义模型。 首先要知道的是模型本质上来说是「三维坐标的集合」，最简单的一个模型可以用三个坐标和连接这三个坐标的「面」来表示。">
+<meta name="keywords" content="three.js,obj,mtl">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Three.js 渲染自定义模型">
+<meta property="og:url" content="http://yoursite.com/2020/01/02/three.js 渲染自定义模型/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="Three.js 虽然内置了一些模型，但在实际业务中往往需要导入外部模型，导入的模型可以视为自定义模型。 首先要知道的是模型本质上来说是「三维坐标的集合」，最简单的一个模型可以用三个坐标和连接这三个坐标的「面」来表示。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/blog/2020/01/02/three.js%20渲染自定义模型/image-20200102162447524.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/01/02/three.js%20渲染自定义模型/image-20200102162959641.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/01/02/three.js%20渲染自定义模型/image-20200102163622488.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/01/02/three.js%20渲染自定义模型/image-20200102150210912.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/01/02/three.js%20渲染自定义模型/image-20200102152933444.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/01/02/three.js%20渲染自定义模型/image-20200102154500201.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/01/02/three.js%20渲染自定义模型/image-20200102160336959.png">
+<meta property="og:updated_time" content="2020-01-04T12:40:52.272Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Three.js 渲染自定义模型">
+<meta name="twitter:description" content="Three.js 虽然内置了一些模型，但在实际业务中往往需要导入外部模型，导入的模型可以视为自定义模型。 首先要知道的是模型本质上来说是「三维坐标的集合」，最简单的一个模型可以用三个坐标和连接这三个坐标的「面」来表示。">
+<meta name="twitter:image" content="http://yoursite.com/blog/2020/01/02/three.js%20渲染自定义模型/image-20200102162447524.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/01/02/three.js 渲染自定义模型/"/>
+
+
+
+
+
+  <title> Three.js 渲染自定义模型 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2020/01/02/three.js 渲染自定义模型/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Three.js 渲染自定义模型
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-02T08:00:00+08:00">
+              2020-01-02
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2020-01-04T20:40:52+08:00">
+              2020-01-04
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/THREE/" itemprop="url" rel="index">
+                    <span itemprop="name">THREE</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><code>Three.js</code> 虽然内置了一些模型，但在实际业务中往往需要导入外部模型，导入的模型可以视为自定义模型。</p>
+<p>首先要知道的是模型本质上来说是「三维坐标的集合」，最简单的一个模型可以用三个坐标和连接这三个坐标的「面」来表示。<br><a id="more"></a></p>
+<h2 id="模型就是数字"><a href="#模型就是数字" class="headerlink" title="模型就是数字"></a>模型就是数字</h2><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> vertices = [</span><br><span class="line">    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">    [<span class="number">0</span>, <span class="number">100</span>, <span class="number">0</span>],</span><br><span class="line">    [<span class="number">100</span>, <span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">];</span><br><span class="line"><span class="keyword">const</span> faces = [</span><br><span class="line">    [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>],</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>这段代码表示有三个坐标分别为 <code>0, 0,0</code>、<code>0, 100, 0</code> 和 <code>100, 0, 0</code>，并且这三个点在 <code>vertices</code> 数组中的下标依次为 <code>0</code>、<code>1</code>、<code>2</code>，依次连接我们就可以得到一个三角形「面」，所以 <code>[0, 1, 2]</code> 表示的就是这个三角形的面。</p>
+<p><img src="/blog/2020/01/02/three.js 渲染自定义模型/image-20200102162447524.png" alt="image-20200102162447524"></p>
+<p>当然现在只有三个点所以很简单，但如果再多一个点，哪几个点连接才能变成我们期望的那个形状呢，所以 <code>faces</code> 的意义就在这里，模型有几个面，这个面是由哪三个点连接而成的。</p>
+<p><img src="/blog/2020/01/02/three.js 渲染自定义模型/image-20200102162959641.png" alt="image-20200102162959641"></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> vertices = [</span><br><span class="line">    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>],    <span class="comment">// 0</span></span><br><span class="line">    [<span class="number">0</span>, <span class="number">100</span>, <span class="number">0</span>],  <span class="comment">// 1</span></span><br><span class="line">    [<span class="number">100</span>, <span class="number">0</span>, <span class="number">0</span>],  <span class="comment">// 2</span></span><br><span class="line">    [<span class="number">100</span>, <span class="number">100</span>, <span class="number">0</span>],<span class="comment">// 3</span></span><br><span class="line">];</span><br><span class="line"><span class="keyword">const</span> faces = [</span><br><span class="line">    [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>],</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>所以看到的三角形是</p>
+<p><img src="/blog/2020/01/02/three.js 渲染自定义模型/image-20200102163622488.png" alt="image-20200102163622488"></p>
+<p>并且，直角在右上角的面可以用 <code>[1, 3, 2]</code> 表示；直角在左上角的可以用 <code>[0, 1, 3]</code> 表示；直角在右下角的可以用 <code>[0, 2, 3]</code> 表示；</p>
+<p>可能在这里有疑问，这不是一个平面吗，不是模型呀，模型应该是立体的。</p>
+<p>其实模型就是多个面组合在一起，又因为面其实就是点，所以开始才说「模型就是三维坐标的集合」。如果想生成一个普遍意义上的模型，可以再增加 1 个三维坐标，和已有的三个坐标组成四个面。</p>
+<p><img src="/blog/2020/01/02/three.js 渲染自定义模型/image-20200102150210912.png" alt="image-20200102150210912"></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> vertices = [</span><br><span class="line">    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>],    <span class="comment">// 0</span></span><br><span class="line">    [<span class="number">0</span>, <span class="number">100</span>, <span class="number">0</span>],  <span class="comment">// 1</span></span><br><span class="line">    [<span class="number">100</span>, <span class="number">0</span>, <span class="number">0</span>],  <span class="comment">// 2</span></span><br><span class="line">    [<span class="number">0</span>, <span class="number">0</span>, <span class="number">100</span>],  <span class="comment">// 3</span></span><br><span class="line">];</span><br><span class="line"><span class="keyword">const</span> faces = [</span><br><span class="line">    [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>],</span><br><span class="line">    [<span class="number">0</span>, <span class="number">1</span>, <span class="number">3</span>],</span><br><span class="line">    [<span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>],</span><br><span class="line">    [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</span><br><span class="line">];</span><br><span class="line"></span><br><span class="line"><span class="comment">// three.js 代码</span></span><br><span class="line"><span class="keyword">const</span> geometry = <span class="keyword">new</span> THREE.Geometry();</span><br><span class="line">geometry.vertices = [</span><br><span class="line">    <span class="keyword">new</span> THREE.Vector3(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>),</span><br><span class="line">    <span class="keyword">new</span> THREE.Vector3(<span class="number">0</span>, <span class="number">100</span>, <span class="number">0</span>),</span><br><span class="line">    <span class="keyword">new</span> THREE.Vector3(<span class="number">100</span>, <span class="number">0</span>, <span class="number">0</span>),</span><br><span class="line">    <span class="keyword">new</span> THREE.Vector3(<span class="number">0</span>, <span class="number">0</span>, <span class="number">100</span>),</span><br><span class="line">];</span><br><span class="line">geometry.faces = [</span><br><span class="line">    <span class="keyword">new</span> THREE.Face3(<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>),</span><br><span class="line">    <span class="keyword">new</span> THREE.Face3(<span class="number">0</span>, <span class="number">1</span>, <span class="number">3</span>),</span><br><span class="line">    <span class="keyword">new</span> THREE.Face3(<span class="number">0</span>, <span class="number">2</span>, <span class="number">3</span>),</span><br><span class="line">    <span class="keyword">new</span> THREE.Face3(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>),</span><br><span class="line">];</span><br><span class="line"><span class="keyword">const</span> material = <span class="keyword">new</span> THREE.MeshBasicMaterial(&#123;</span><br><span class="line">    side: THREE.DoubleSide,</span><br><span class="line">    color: <span class="string">'red'</span>,</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> mesh = <span class="keyword">new</span> THREE.Mesh(geometry, material);</span><br></pre></td></tr></table></figure>
+<p>这是我理解的模型的本质。</p>
+<h2 id="手写-obj-文件渲染模型"><a href="#手写-obj-文件渲染模型" class="headerlink" title="手写 obj 文件渲染模型"></a>手写 obj 文件渲染模型</h2><p>再以 <code>obj</code> 格式的模型文件来说明，我们可以手写一个 <code>obj</code> 文件导入到任意支持 <code>obj</code> 格式的软件中，也能渲染出我们预期的模型，仍然拿上面的例子说明。</p>
+<p>使用记事本创建一个文本，写入下面内容后将后缀保存为 <code>example.obj</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">o Mesh</span><br><span class="line">v 0 0 0</span><br><span class="line">v 0 100 0</span><br><span class="line">v 100 0 0</span><br><span class="line">v 0 0 100</span><br><span class="line"></span><br><span class="line">f 1 2 3</span><br><span class="line">f 1 2 4</span><br><span class="line">f 1 3 4</span><br><span class="line">f 2 3 4</span><br></pre></td></tr></table></figure>
+<p>第一行 <code>o Mesh</code> 表示开始一个模型，名字为 <code>Mesh</code>；第二至第五行 <code>v</code> 开头表示四个三维坐标；第七至十行 <code>f</code> 开头表示四个面，这里需要注意的是<strong>下标不是从 0 开始，而是从 1 开始</strong>。</p>
+<p>使用 <code>blender</code> 导入该文件，能正确渲染我们预期的模型。</p>
+<h2 id="给自定义模型贴图"><a href="#给自定义模型贴图" class="headerlink" title="给自定义模型贴图"></a>给自定义模型贴图</h2><p>贴图的本质就是把面上的点对应到贴图上，现在有这样一张贴图</p>
+<p><img src="/blog/2020/01/02/three.js 渲染自定义模型/image-20200102152933444.png" alt="image-20200102152933444"></p>
+<p>需要把这三个三角形贴到之前的模型的三个等边直角三角形上，只要修改 <code>geometry.faceVertexUvs[0]</code> 即可，对应的值是<strong>每个面顶点在贴图上的相对位置</strong>。有点难描述，<code>geometry</code> 第一个面是 <code>0, 1, 2</code> ，我们想给这个面贴上绿色的这个三角形，其实就是把 <code>0, 1, 2</code> 这三个点「放到」贴图上</p>
+<p><img src="/blog/2020/01/02/three.js 渲染自定义模型/image-20200102154500201.png" alt="image-20200102154500201"></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">geometry.faceVertexUvs[<span class="number">0</span>] = [</span><br><span class="line">  <span class="comment">// 第一个面上三个点对应贴图上的相对位置  </span></span><br><span class="line">  [</span><br><span class="line">      <span class="comment">// 0 这个点，即 0, 0, 0 对应贴图上 0, 0.5 这个点</span></span><br><span class="line">      [<span class="number">0</span>, <span class="number">0.5</span>],</span><br><span class="line">      <span class="comment">// 1 这个点，即 0, 100, 0 对应贴图上 0, 1 这个点</span></span><br><span class="line">      [<span class="number">0</span>, <span class="number">1</span>],</span><br><span class="line">      <span class="comment">// 2 这个点，即 100, 0, 0 对应贴图上 0.5, 0.5 这个点</span></span><br><span class="line">      [<span class="number">0.5</span>, <span class="number">0.5</span>],</span><br><span class="line">  ],</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
+<p>这里还是用 <code>blender</code> 来展示效果，当 <code>blender</code> 加载 <code>example.obj</code> 文件时，会加载相同目录下的同名 <code>mtl</code> 文件，所以再创建一个 <code>example.mtl</code> 文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">newmtl material</span><br><span class="line">Ns 323.999994</span><br><span class="line">Ka 1.000000 1.000000 1.000000</span><br><span class="line">Kd 0.800000 0.800000 0.800000</span><br><span class="line">Ks 0.500000 0.500000 0.500000</span><br><span class="line">Ke 0.0 0.0 0.0</span><br><span class="line">Ni 1.450000</span><br><span class="line">d 1.000000</span><br><span class="line">illum 2</span><br><span class="line">map_Kd texture.png</span><br></pre></td></tr></table></figure>
+<p>最后一行 <code>map_Kd texture.png</code> 指定了贴图文件路径，可以使用网络地址和绝对路径；以及修改 <code>example.obj</code> 文件，指定「相对位置」和面上的点和相对位置的对应关系。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># 这行必须，指定贴图文件</span><br><span class="line">mtllib example.mtl</span><br><span class="line">o Mesh</span><br><span class="line">v 0 0 0</span><br><span class="line">v 0 100 0</span><br><span class="line">v 100 0 0</span><br><span class="line">v 0 0 100</span><br><span class="line"># 新增的「相对位置」</span><br><span class="line">vt 0 0.5</span><br><span class="line">vt 0 1</span><br><span class="line">vt 0.5 0.5</span><br><span class="line"># 使用贴图，这行也是必须的</span><br><span class="line">usemtl material</span><br><span class="line"># 指定 v 和 vt 的对应关系</span><br><span class="line">f 1/1 2/2 3/3</span><br><span class="line">f 1 2 4</span><br><span class="line">f 1 3 4</span><br><span class="line">f 2 3 4</span><br></pre></td></tr></table></figure>
+<p>将 <code>example.obj</code>、<code>example.mtl</code> 和 <code>texture.png</code> 放在同一目录下，使用 <code>blender</code> 重新导入 <code>example.obj</code>，点击上方 <code>Shading</code> 菜单，即可看到贴图后的效果。</p>
+<p><img src="/blog/2020/01/02/three.js 渲染自定义模型/image-20200102160336959.png" alt="image-20200102160336959"></p>
+<blockquote>
+<p>这是后下方的视角。</p>
+</blockquote>
+<p>要给其他面贴图同理。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>虽然上面的例子很简单，但理解了这个例子，再复杂的模型也是一样的原理。并且知道了模型的本质，也能帮助理解模型的变换，甚至可以实现 <code>three.js</code> 不提供的更复杂的功能。</p>
+<p>刚开始使用 <code>three.js</code> 时，three.js<code>就像一个黑盒一样，输入一个</code>obj` 文件，输出一个渲染好的模型，这中间发生了什么一直不清楚，遇到问题也不知道怎么解决，甚至于定位问题都做不到，不过后来慢慢摸索，总算是理解了一部分，材质那部分到现在还不是很理解，需要再花些时间去探索。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/three-js/" rel="tag"># three.js</a>
+          
+            <a href="/blog/tags/obj/" rel="tag"># obj</a>
+          
+            <a href="/blog/tags/mtl/" rel="tag"># mtl</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/12/04/easy-rotate-in-canvas/" rel="next" title="怎么简单地在 canvas 中完成旋转">
+                <i class="fa fa-chevron-left"></i> 怎么简单地在 canvas 中完成旋转
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2020/01/05/cache-control-in-nodejs/" rel="prev" title="nodejs 中的 Cache-Control">
+                nodejs 中的 Cache-Control <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#模型就是数字"><span class="nav-number">1.</span> <span class="nav-text">模型就是数字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#手写-obj-文件渲染模型"><span class="nav-number">2.</span> <span class="nav-text">手写 obj 文件渲染模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#给自定义模型贴图"><span class="nav-number">3.</span> <span class="nav-text">给自定义模型贴图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,733 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="nodejs,http,cache-control," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="我一直对前端需要「熟悉」浏览器缓存是持疑问态度的，因为前端无法控制缓存，即无法通过代码或者某种方式来指定某些资源是否需要缓存。举个例子，我们的 index.html 文件中引入了 bundle.js 这个文件，我们希望在每次刷新页面时，都不要使用缓存，每次都去服务器获取最新的 bundle.js 文件。要实现这个需求，">
+<meta name="keywords" content="nodejs,http,cache-control">
+<meta property="og:type" content="article">
+<meta property="og:title" content="nodejs 中的 Cache-Control">
+<meta property="og:url" content="http://yoursite.com/2020/01/05/cache-control-in-nodejs/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="我一直对前端需要「熟悉」浏览器缓存是持疑问态度的，因为前端无法控制缓存，即无法通过代码或者某种方式来指定某些资源是否需要缓存。举个例子，我们的 index.html 文件中引入了 bundle.js 这个文件，我们希望在每次刷新页面时，都不要使用缓存，每次都去服务器获取最新的 bundle.js 文件。要实现这个需求，只从前端的角度来思考，怎么做？或许有人会说 meta 标签支持指定 Cache-">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/blog/2020/01/05/cache-control-in-nodejs/增加%20cache-control%20后的请求.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/01/05/cache-control-in-nodejs/正常请求.png">
+<meta property="og:image" content="http://yoursite.com/blog/2020/01/05/cache-control-in-nodejs/expires-request.png">
+<meta property="og:updated_time" content="2020-01-05T15:32:54.105Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="nodejs 中的 Cache-Control">
+<meta name="twitter:description" content="我一直对前端需要「熟悉」浏览器缓存是持疑问态度的，因为前端无法控制缓存，即无法通过代码或者某种方式来指定某些资源是否需要缓存。举个例子，我们的 index.html 文件中引入了 bundle.js 这个文件，我们希望在每次刷新页面时，都不要使用缓存，每次都去服务器获取最新的 bundle.js 文件。要实现这个需求，只从前端的角度来思考，怎么做？或许有人会说 meta 标签支持指定 Cache-">
+<meta name="twitter:image" content="http://yoursite.com/blog/2020/01/05/cache-control-in-nodejs/增加%20cache-control%20后的请求.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2020/01/05/cache-control-in-nodejs/"/>
+
+
+
+
+
+  <title> nodejs 中的 Cache-Control | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2020/01/05/cache-control-in-nodejs/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                nodejs 中的 Cache-Control
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2020-01-05T08:00:00+08:00">
+              2020-01-05
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2020-01-05T23:32:54+08:00">
+              2020-01-05
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/node/" itemprop="url" rel="index">
+                    <span itemprop="name">node</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>我一直对前端需要「熟悉」浏览器缓存是持疑问态度的，因为前端无法控制缓存，即无法通过代码或者某种方式来指定某些资源是否需要缓存。<br>举个例子，我们的 <code>index.html</code> 文件中引入了 <code>bundle.js</code> 这个文件，我们希望在每次刷新页面时，都不要使用缓存，每次都去服务器获取最新的 <code>bundle.js</code> 文件。<br>要实现这个需求，只从前端的角度来思考，怎么做？<br>或许有人会说 <code>meta</code> 标签支持指定 <code>Cache-Control</code>，但这是针对全站资源，如果只是针对特定的资源如 <code>bundle.js</code> 获取最新的，其他资源照样使用缓存。<br>似乎是无法实现的。那什么角色应该了解这些内容呢？<br><a id="more"></a></p>
+<p>应该是后端，或者说写 <code>node</code> 应用的开发，因为是否缓存是服务端来决定的。<br>前端只需要知道这么一个东西，能在需要时查询到解决方案就行了，并不需要特意去学习这些知识，原因前面也说了，前端的实际业务场景中根本用不上。</p>
+<h2 id="服务端处理请求响应资源"><a href="#服务端处理请求响应资源" class="headerlink" title="服务端处理请求响应资源"></a>服务端处理请求响应资源</h2><p>浏览器，或者说客户端吧，所有的请求都是到达服务端，服务端再返回资源，再返回资源时，可以额外再返回一些信息用来告诉浏览器这个资源要不要缓存、缓存多久。</p>
+<h3 id="nodejs-实现服务器"><a href="#nodejs-实现服务器" class="headerlink" title="nodejs 实现服务器"></a>nodejs 实现服务器</h3><p><a href="https://codesandbox.io/s/wizardly-mahavira-og20m" target="_blank" rel="noopener">https://codesandbox.io/s/wizardly-mahavira-og20m</a><br><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> http = <span class="built_in">require</span>(<span class="string">'http'</span>);</span><br><span class="line"><span class="keyword">const</span> fs = <span class="built_in">require</span>(<span class="string">'fs'</span>);</span><br><span class="line"><span class="keyword">const</span> path = <span class="built_in">require</span>(<span class="string">'path'</span>);</span><br><span class="line"><span class="keyword">const</span> server = http.createServer(<span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; method, url &#125; = req;</span><br><span class="line">    <span class="keyword">if</span> (method === <span class="string">'GET'</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (url === <span class="string">'/'</span>) &#123;</span><br><span class="line">            res.writeHead(<span class="number">200</span>, &#123;</span><br><span class="line">                <span class="string">'Content-Type'</span>: <span class="string">'text/html'</span></span><br><span class="line">            &#125;);</span><br><span class="line">            res.write(<span class="string">`</span></span><br><span class="line"><span class="string">&lt;img src="/example.png" /&gt;</span></span><br><span class="line"><span class="string">            `</span>);</span><br><span class="line">            res.end();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (url === <span class="string">'/example.png'</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> filepath = path.resolve(__dirname, url.slice(<span class="number">1</span>));</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="keyword">const</span> imgContent = fs.readFileSync(filepath);</span><br><span class="line">                res.writeHead(<span class="number">200</span>, &#123;</span><br><span class="line">                    <span class="string">'Content-Type'</span>: <span class="string">'image/png'</span></span><br><span class="line">                &#125;);</span><br><span class="line">                res.write(imgContent);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (err) &#123;</span><br><span class="line">                res.writeHead(<span class="number">404</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            res.end();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    res.writeHead(<span class="number">404</span>);</span><br><span class="line">    res.end();</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> PORT = <span class="number">8080</span>;</span><br><span class="line">server.listen(PORT, () =&gt; &#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">`Server is listening at port <span class="subst">$&#123;PORT&#125;</span>`</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>打开浏览器访问 <a href="https://og20m.sse.codesandbox.io/" target="_blank" rel="noopener">https://og20m.sse.codesandbox.io/</a> 并打开控制台，会看到加载了一张 <code>example.png</code> 图片，并且无论怎么刷新，每次请求都会从服务端请求最新的图片，而不会出现 <code>200(from memory cache)</code> 或者 <code>304</code>。</p>
+<blockquote>
+<p>这里不能直接在浏览器里访问图片，即不能直接访问 <a href="https://og20m.sse.codesandbox.io/example.png" target="_blank" rel="noopener">https://og20m.sse.codesandbox.io/example.png</a> 来测试是否使用缓存，因为每次都是新请求，具体为什么可能要看浏览器怎么处理这种直接访问图片的情况了。</p>
+</blockquote>
+<h3 id="使用-cache-control-或-expires-实现强缓存"><a href="#使用-cache-control-或-expires-实现强缓存" class="headerlink" title="使用 cache-control 或 expires 实现强缓存"></a>使用 cache-control 或 expires 实现强缓存</h3><p>强缓存就是客户端在发出请求前，自己就能判断这次请求是否使用缓存，而不会向服务器发出实际请求。<br>实现强缓存可以用 <code>cache-control</code> 或者 <code>expires</code>，但大部分情况都是两者一起使用，因为 <code>cache-control</code> 是 <code>http1.1</code> 规范内的，如果浏览器无法识别 <code>cache-control</code> 头，还可以用 <code>expires</code>。<br>要使用 <code>cache-control</code> 也很简单，在响应头内增加该字段即可</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 省略重复内容</span></span><br><span class="line">                res.writeHead(<span class="number">200</span>, &#123;</span><br><span class="line">                    <span class="string">'Content-Type'</span>: <span class="string">'image/png'</span>,</span><br><span class="line">                    <span class="string">'Cache-Control'</span>: <span class="string">'max-age=30'</span>,</span><br><span class="line">                &#125;);</span><br></pre></td></tr></table></figure>
+<p>这样写表示缓存时间为 30 秒，30 秒内的重复请求都不会处理，让浏览器用缓存。再来看看增加该字段后请求有什么变化。</p>
+<p><img src="/blog/2020/01/05/cache-control-in-nodejs/增加 cache-control 后的请求.png" alt="增加 cache-control 后的请求"></p>
+<p>可以看到 <code>Size</code> 显示 <code>memory cache</code>，<code>Time</code> 更是变成了 0。超过 30 秒后刷新，会重新请求服务器，再看看这次的请求</p>
+<p><img src="/blog/2020/01/05/cache-control-in-nodejs/正常请求.png" alt="正常请求"></p>
+<p><code>expires</code> 也是类似，把 <code>cahce-control</code> 删除，增加 <code>Expires</code> 字段</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 省略重复内容</span></span><br><span class="line">                res.writeHead(<span class="number">200</span>, &#123;</span><br><span class="line">                    <span class="string">'Content-Type'</span>: <span class="string">'image/png'</span>,</span><br><span class="line">                    <span class="string">'Expires'</span>: <span class="keyword">new</span> <span class="built_in">Date</span>(<span class="built_in">Date</span>.now() + <span class="number">30000</span>).toGMTString(),</span><br><span class="line">                &#125;);</span><br></pre></td></tr></table></figure>
+<p>结果和上面一样，只是 <code>response headers</code> 有点不同</p>
+<p><img src="/blog/2020/01/05/cache-control-in-nodejs/expires-request.png" alt="使用 Expires 后的响应头"></p>
+<h3 id="协商缓存"><a href="#协商缓存" class="headerlink" title="协商缓存"></a>协商缓存</h3><p>与强缓存相对的就是所谓的协商缓存了，从名字也能看出来，「协商」，表示要和服务器通信后才能决定是否使用缓存。最容易理解的协商缓存实现方式是增加 <code>ETag</code> 字段，该字段简单来说是一个（文件路径 + 最后修改时间）再经过处理后得到的字符串。</p>
+<p>这样生成的 <code>ETag</code> 就能表达唯一性了</p>
+<ul>
+<li>2020-01-05 22:00:00 修改的 bundle.js</li>
+<li>2020-01-05 23:00:00 修改的 bundle.js</li>
+</ul>
+<p>这两个文件的 <code>ETag</code> 是不同的，浏览器第一次请求 <code>bundle.js</code> 时假设返回的 <code>ETag</code> 是 <code>bundle220000</code>，在 22:00:00 至 22:59:59 这段时间内每次浏览器请求，都会重新计算 <code>bundle.js</code> 的 <code>ETag</code> 一直等于 <code>bundle220000</code>，并和请求时传过来的 <code>ETag</code> 判断是否一致，如果一致就只返回响应头，不返回响应体。<br>用代码来简单说明</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在响应时增加 ETag 字段</span></span><br><span class="line">                res.writeHead(<span class="number">200</span>, &#123;</span><br><span class="line">                    <span class="string">'Content-Type'</span>: <span class="string">'image/png'</span>,</span><br><span class="line">                    <span class="string">'ETag'</span>: computeETag(filepath),</span><br><span class="line">                &#125;);</span><br></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在请求时获取 If-None-Match 字段和要请求的资源计算 ETag 比对并处理</span></span><br><span class="line"><span class="keyword">const</span> server = http.createServer(<span class="function">(<span class="params">req, res</span>) =&gt;</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> &#123; method, url, headers &#125; = req;</span><br><span class="line">    <span class="keyword">if</span> (method === <span class="string">'GET'</span>) &#123;</span><br><span class="line">        <span class="comment">// 省略</span></span><br><span class="line">         <span class="keyword">if</span> (url === <span class="string">'/example.png'</span>) &#123;</span><br><span class="line">            <span class="keyword">const</span> filepath = path.resolve(__dirname, url.slice(<span class="number">1</span>));</span><br><span class="line">            <span class="keyword">if</span> (computeETag(filepath) === headers[<span class="string">'if-none-match'</span>]) &#123;</span><br><span class="line">                res.writeHead(<span class="number">304</span>, <span class="string">'Not Modified'</span>, &#123;</span><br><span class="line">                    <span class="string">'Content-Type'</span>: <span class="string">'image/png'</span>,</span><br><span class="line">                &#125;);</span><br><span class="line">                res.end();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 省略</span></span><br><span class="line">         &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 省略</span></span><br><span class="line">&#125;);</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">computeETag</span>(<span class="params">filepath</span>) </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> filepath;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>省去了读取文件，速度会稍微快一些吧。除了 <code>ETag</code>，<code>last-Modified</code> 也是用作协商缓存的，原理类似，只是不用拿到资源路径和最后修改时间再做处理，直接用最后修改时间就行。</p>
+<ul>
+<li>1、如果 headers[‘if-modified-since’] === getLastModifiedTime(url) 跳 2 否则跳 3</li>
+<li>2、返回 304 状态码和响应头</li>
+<li>3、读取文件内容并返回 200 状态码和响应头</li>
+</ul>
+<h2 id="cahce-control"><a href="#cahce-control" class="headerlink" title="cahce-control"></a>cahce-control</h2><p>前面只提到了 <code>cache-control</code> 设置 <code>max-age</code> 的场景，但除了 <code>max-age</code>，响应头还可以设置其他值，如 <code>no-cache</code> 和 <code>no-store</code>。</p>
+<p>如果想浏览器每次请求都请求最新的内容，那么 <code>cache-control</code> 需要设置成 <code>no-store</code>；<code>no-cache</code> 和 <code>max-age=0</code> 意义是相同的，即浏览器会向服务器发送请求，服务器如果认为可以使用缓存，那么浏览器就会「跳过获取响应体」，不知道服务器要如何处理这种情况。</p>
+<h2 id="api-请求的缓存"><a href="#api-请求的缓存" class="headerlink" title="api 请求的缓存"></a>api 请求的缓存</h2><p><code>api</code> 请求和响应，本质上和静态资源的请求响应是没有区别的，所以是否可以缓存 <code>api</code> 请求呢？之前有考虑过这类场景，将 <code>api</code> 请求人为地分类</p>
+<ul>
+<li>1、永远不会变化的</li>
+<li>2、变化频率小，可能一天内不会发生变化的</li>
+<li>3、变化频率大，每次请求都可能不同</li>
+</ul>
+<p>第一类就和静态资源比如图片一样，一张图片永远都不会发生变化，所以 <code>ETag</code> 是永远不会变的，即使 <code>cache-control</code> 设置的时间超过了，也只是走协商缓存，当然大部分情况都是设置一个超长的 <code>max-age</code>。<br>第二类变化频率小，比如搜索组织内成员，如果是公司组织，变化频率是非常小的，也能够容忍不会立即更新，所以可以设置一定时间内走缓存。<br>第三类就不用说了，完全不能走缓存。</p>
+<p><code>api</code> 请求还适用于缓存的场景是数据量非常大的情况，这时即使响应内容会频繁变化，但可以应用协商缓存，即对响应内容计算唯一值，一样走 <code>ETag</code> 的逻辑，是可以省去传输大量数据的时间的，虽然服务器一样要从数据库读这个数据，还要做额外的计算，但流量应该是能减少。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control" target="_blank" rel="noopener">Cache-Control</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/nodejs/" rel="tag"># nodejs</a>
+          
+            <a href="/blog/tags/http/" rel="tag"># http</a>
+          
+            <a href="/blog/tags/cache-control/" rel="tag"># cache-control</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2020/01/02/three.js 渲染自定义模型/" rel="next" title="Three.js 渲染自定义模型">
+                <i class="fa fa-chevron-left"></i> Three.js 渲染自定义模型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2020/02/08/react 中的位运算/" rel="prev" title="React 源码中的位运算">
+                React 源码中的位运算 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#服务端处理请求响应资源"><span class="nav-number">1.</span> <span class="nav-text">服务端处理请求响应资源</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#nodejs-实现服务器"><span class="nav-number">1.1.</span> <span class="nav-text">nodejs 实现服务器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-cache-control-或-expires-实现强缓存"><span class="nav-number">1.2.</span> <span class="nav-text">使用 cache-control 或 expires 实现强缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#协商缓存"><span class="nav-number">1.3.</span> <span class="nav-text">协商缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cahce-control"><span class="nav-number">2.</span> <span class="nav-text">cahce-control</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#api-请求的缓存"><span class="nav-number">3.</span> <span class="nav-text">api 请求的缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,738 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="vue," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="之前代码存在很多问题，最大的问题是，实现的并不是一个严格意义上的观察者模式（发布-订阅模式），因为默认订阅了所有数据，且不能取消订阅。在《JavaScript设计模式与开发实践》中，使用售楼处的例子来类比观察者模式： 售楼处属于发布者，小明（需要购房的人）是订阅者，小明向售楼处订阅了房子开售的信息，售楼处就把小明的信息">
+<meta name="keywords" content="vue">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据监听 - 2">
+<meta property="og:url" content="http://yoursite.com/2016/09/04/my-vue-2/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="之前代码存在很多问题，最大的问题是，实现的并不是一个严格意义上的观察者模式（发布-订阅模式），因为默认订阅了所有数据，且不能取消订阅。在《JavaScript设计模式与开发实践》中，使用售楼处的例子来类比观察者模式： 售楼处属于发布者，小明（需要购房的人）是订阅者，小明向售楼处订阅了房子开售的信息，售楼处就把小明的信息写入记录表，当房子开售时，售楼处遍历记录表通知到小明（和其他记录表上的人）。 把">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/blog/2016/09/04/my-vue-2/2272c6cd-d709-4b89-8d02-6e1ad5fbb377.png">
+<meta property="og:image" content="http://yoursite.com/blog/2016/09/04/my-vue-2/8f552cd7-e849-4142-9ce8-4a90a48c7f2f.png">
+<meta property="og:updated_time" content="2020-02-08T13:00:55.888Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="数据监听 - 2">
+<meta name="twitter:description" content="之前代码存在很多问题，最大的问题是，实现的并不是一个严格意义上的观察者模式（发布-订阅模式），因为默认订阅了所有数据，且不能取消订阅。在《JavaScript设计模式与开发实践》中，使用售楼处的例子来类比观察者模式： 售楼处属于发布者，小明（需要购房的人）是订阅者，小明向售楼处订阅了房子开售的信息，售楼处就把小明的信息写入记录表，当房子开售时，售楼处遍历记录表通知到小明（和其他记录表上的人）。 把">
+<meta name="twitter:image" content="http://yoursite.com/blog/2016/09/04/my-vue-2/2272c6cd-d709-4b89-8d02-6e1ad5fbb377.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2016/09/04/my-vue-2/"/>
+
+
+
+
+
+  <title> 数据监听 - 2 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2016/09/04/my-vue-2/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                数据监听 - 2
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2016-09-04T20:47:24+08:00">
+              2016-09-04
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2020-02-08T21:00:55+08:00">
+              2020-02-08
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/Vue/" itemprop="url" rel="index">
+                    <span itemprop="name">Vue</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>之前代码存在很多问题，最大的问题是，实现的并不是一个严格意义上的观察者模式（发布-订阅模式），因为默认订阅了所有数据，且不能取消订阅。<br>在《JavaScript设计模式与开发实践》中，使用售楼处的例子来类比观察者模式：</p>
+<p>售楼处属于发布者，小明（需要购房的人）是订阅者，小明向售楼处订阅了房子开售的信息，售楼处就把小明的信息写入记录表，当房子开售时，售楼处遍历记录表通知到小明（和其他记录表上的人）。</p>
+<p>把这个例子和 vue 的实现类比：</p>
+<p>创建实例时，发布者（售楼处）会把渲染函数（购房者）添加到发布列表（记录表）中，数据变化（房子开售）时，发布者（售楼处）会调用渲染函数（通知购房者）。</p>
+<blockquote>
+<p>而且不同的数据可以类比于不同户型的房子。不同的数据（不同户型的房子）改变（发售）时，可以通知不同的渲染函数（购买者）。</p>
+</blockquote>
+<a id="more"></a>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">    data: &#123;</span><br><span class="line">        web: <span class="string">'my web'</span>,</span><br><span class="line">        books: [<span class="string">'first'</span>, <span class="string">'second'</span>],</span><br><span class="line">        person: &#123;</span><br><span class="line">            name: <span class="string">'ltaoo'</span>,</span><br><span class="line">            age: <span class="number">23</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>我们写下这样一段代码后，Vue 做了什么呢？</p>
+<h2 id="实现-watcher-observer-？"><a href="#实现-watcher-observer-？" class="headerlink" title="实现 watcher/observer ？"></a>实现 watcher/observer ？</h2><p>参考文章来对我们之前的代码进行修改，文章中对传进来的数据对象进行修改，而不是之前的复制。我们传入 data，对 data 的属性遍历：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// data 是上面的 data，&#123;web: 'my web'....&#125;</span></span><br><span class="line"><span class="built_in">Object</span>.keys(data).forEach(<span class="function"><span class="keyword">function</span>(<span class="params">key</span>) </span>&#123;</span><br><span class="line">    <span class="comment">//key = 'web'/'books'/'person'</span></span><br><span class="line">    <span class="built_in">Object</span>.defineProperty(data, key, &#123;</span><br><span class="line">        enumerable: <span class="literal">true</span>,</span><br><span class="line">        configurable: <span class="literal">true</span>,</span><br><span class="line">        get: <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> data[key]</span><br><span class="line">        &#125;,</span><br><span class="line">        set: <span class="function"><span class="keyword">function</span> (<span class="params">newVal</span>) </span>&#123;</span><br><span class="line">            <span class="comment">// 如果我们设置的值也是对象，也要对该对象添加get和set，就是调用自身，所以这是一个递归函数</span></span><br><span class="line">            <span class="keyword">if</span>(<span class="keyword">typeof</span> newVal === <span class="string">'object'</span>) &#123;</span><br><span class="line">                <span class="comment">// 将传入的值变成新值</span></span><br><span class="line">                data[key] = newVal</span><br><span class="line">                <span class="comment">// 还需要调用自身，call myself</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>为了让代码清晰，分为<code>useForEachAddSetAndGet</code>函数，用来使用 forEach 循环执行<code>addSetAndGet</code>函数，<code>watch</code>函数（暴露给外部的函数，可以给对象属性添加 get 和 set 的方法）实例化 Watcher 对象。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ./scripts/watch.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Watcher</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> (value) &#123;</span><br><span class="line">    <span class="comment">// value 即 data</span></span><br><span class="line">    <span class="keyword">this</span>.value = value</span><br><span class="line">    <span class="keyword">this</span>.useForEachAddSetAndGet(value)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 遍历对象的属性</span></span><br><span class="line">  useForEachAddSetAndGet (value) &#123;</span><br><span class="line">    <span class="built_in">Object</span>.keys(value).forEach(<span class="function"><span class="keyword">function</span> (<span class="params">key</span>) </span>&#123;</span><br><span class="line">      addSetAndGet(value, key, value[key])</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// add properties</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">addSetAndGet</span>(<span class="params">obj, key, val</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// 这一句就是判断 值 是否也是 对象，如果是就调用自身来添加 get 和 set</span></span><br><span class="line">  watch(val)</span><br><span class="line">  <span class="built_in">Object</span>.defineProperty(obj, key, &#123;</span><br><span class="line">    enumerable: <span class="literal">true</span>,</span><br><span class="line">    configurable: <span class="literal">true</span>,</span><br><span class="line">    get: <span class="function"><span class="params">()</span>=&gt;</span>&#123;</span><br><span class="line">      <span class="built_in">console</span>.log(<span class="string">'get value: '</span>, val)</span><br><span class="line">      <span class="keyword">return</span> val</span><br><span class="line">    &#125;,</span><br><span class="line">    set: <span class="function"><span class="params">newVal</span>=&gt;</span>&#123;</span><br><span class="line">      <span class="comment">// 如果是赋一样的值，直接退出</span></span><br><span class="line">      <span class="keyword">if</span> (newVal === val) &#123;</span><br><span class="line">        <span class="keyword">return</span></span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// 将新值替代旧值</span></span><br><span class="line">      val = newVal</span><br><span class="line">      <span class="comment">// 这里是对新值做判断，如果新值也是对象，就调用自身来添加 get 和 set</span></span><br><span class="line">      watch(newVal)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 对传进来的值做判断，如果是对象，就添加 get 和 set</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">watch</span>(<span class="params">value, vm</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">if</span>(!value || <span class="keyword">typeof</span> value !== <span class="string">'object'</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> Watcher(value)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ./srcipts/viewModel.js</span></span><br><span class="line">init() &#123;</span><br><span class="line">    <span class="keyword">var</span> watcher = <span class="keyword">new</span> Watcher(<span class="keyword">this</span>.data)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>根据实际情况来解读上面的代码。<code>new Vue</code>后，将<code>data</code>传入 Watcher 来添加 set 和 get：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// forEach 读取每个键执行下面的函数。。以person为例</span></span><br><span class="line">addSetAndGet(data, <span class="string">'person'</span>, &#123;<span class="attr">name</span>:<span class="string">'ltaoo'</span>， age: <span class="string">'23'</span>&#125;)&#123;</span><br><span class="line">    <span class="comment">// 这一次执行是给 person 添加 get 和 set</span></span><br><span class="line">    <span class="comment">// get 简单，返回&#123;name: 'ltaoo', age: 23&#125;即可</span></span><br><span class="line">    <span class="comment">// set，默认接收一个参数，为要赋的新值</span></span><br><span class="line">    set: <span class="function"><span class="keyword">function</span> (<span class="params">newVal</span>) </span>&#123;</span><br><span class="line">        val = newVal</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 好像也OK，但是这样&#123;name: 'ltaoo', age: 23&#125;就没有添加 set 和 get</span></span><br><span class="line">    <span class="comment">// 所以还要对值执行 watch 函数来添加 set 和 get</span></span><br><span class="line">    watch(val)</span><br><span class="line">    <span class="comment">// OK，这样获取值的时候，比如vm.data.person.name 也能触发 console.log 了</span></span><br><span class="line">    <span class="comment">// 并且触发的顺序是，先触发person 上的 get，再触发 name上的get</span></span><br><span class="line">    <span class="comment">//但是如果新值也是一个对象，而我们的 set 并没有对新值做处理，所以还要对新值也执行 watch</span></span><br><span class="line">    set: <span class="function"><span class="keyword">function</span> (<span class="params">newVal</span>) </span>&#123;</span><br><span class="line">        val = newVal</span><br><span class="line">        watch(newVal)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 这样就OK了！</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="广播"><a href="#广播" class="headerlink" title="广播"></a>广播</h2><p>但是页面上没有数据了，因为我们并没有将 render 函数放到 set 中。如果还是直接放在 set 中，万一用户不想监听数据了，不可能修改源代码，所以我们需要拿出来，通过其他方式来实现相同的效果。</p>
+<p>不过即使是用其他方式，也还是需要放一个函数到 set 中，利用这个函数来告诉订阅者（现在还没有）数据改变了。命名为 <code>notify()</code> 函数。</p>
+<p>回想一下售楼处的例子，当房子开售时，会读取记录表来发送信息。所以在这里，是当数据改变时，<code>notify()</code>会读取订阅者数组来执行对应的函数。先大概根据这个逻辑来写这个函数：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">notify</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 获取订阅者列表</span></span><br><span class="line">    listeners.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">fn</span>) </span>&#123;</span><br><span class="line">        fn.call()</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p><code>listener</code>是一个全局的数组，放着订阅者。问题是怎么将订阅者放到这个数组中？订阅者又是什么？这样吗？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">addToListeners(<span class="string">'web'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'I watch "web" change'</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>可以实现不同属性的变化触发不同的处理函数（不像之前都是触发<code>render</code>）。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">addToListeners</span>(<span class="params">name, cb</span>) </span>&#123;</span><br><span class="line">    listeners.push(cb)</span><br><span class="line">    <span class="comment">// 感觉不对啊，使用数组的话，只能保存一个值，那即使'web'改变，会触发所有的回调函数，所以需要使用对象</span></span><br><span class="line">    listeners[name] = cb</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// notify() 也需要改变</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">notify</span>(<span class="params">key</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 可以获取到 key 参数，得知这是什么属性改变</span></span><br><span class="line">    listeners[key].call()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Dep 就是售楼处（发布对象），因为是售楼处将购房人的信息写入记录表，也是由售楼处来通知购房人<br>整理一下,<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ./scripts/dep.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Dep</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> () &#123;</span><br><span class="line">    <span class="comment">// 这个是售楼处的记录表</span></span><br><span class="line">    <span class="keyword">this</span>.listeners = &#123;&#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 这里就是写入记录表</span></span><br><span class="line">  addToListeners (name, cb) &#123;</span><br><span class="line">    <span class="keyword">this</span>.listeners[name] = cb</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 购房者不想买房了，该方法可以删掉购房者</span></span><br><span class="line">  removeListener (name) &#123;</span><br><span class="line">    <span class="keyword">delete</span> <span class="keyword">this</span>.listeners[name]</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 该方法就是通知购房者</span></span><br><span class="line">  notify(name) &#123;</span><br><span class="line">    <span class="comment">// console.log(this.listeners)</span></span><br><span class="line">    <span class="built_in">Object</span>.keys(<span class="keyword">this</span>.listeners).forEach(<span class="function">(<span class="params">key</span>)=&gt;</span>&#123;</span><br><span class="line">      <span class="keyword">if</span>(key &amp;&amp; key === name) &#123;</span><br><span class="line">        <span class="keyword">this</span>.listeners[key].call()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>现在问题是，在什么地方使用<code>Dep</code>，由于<code>this.listeners</code>需要全局唯一，就只能实例化一次<code>Dep</code>，而在<code>watch.js</code>中，会调用多次<code>Watcher</code>，所以就只能在<code>viewModel.js</code>中实例化<code>Dep</code>了。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ./scripts/watch.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Watcher</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> (value, dep) &#123;</span><br><span class="line">    <span class="comment">// 将传入options 的 data</span></span><br><span class="line">    <span class="keyword">this</span>.value = value</span><br><span class="line">    <span class="keyword">this</span>.dep = dep</span><br><span class="line">    <span class="comment">// console.log(this.dep)</span></span><br><span class="line">    <span class="keyword">this</span>.useForEachAddSetAndGet(<span class="keyword">this</span>.value)</span><br><span class="line">    <span class="comment">// 查看下什么属性被加入到订阅列表中了</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.dep.listeners)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 遍历对象的属性</span></span><br><span class="line">  useForEachAddSetAndGet (value) &#123;</span><br><span class="line">    <span class="keyword">var</span> watcher = <span class="keyword">this</span></span><br><span class="line">    <span class="comment">//console.log(this.dep)</span></span><br><span class="line">    <span class="built_in">Object</span>.keys(value).forEach(<span class="function"><span class="keyword">function</span> (<span class="params">key</span>) </span>&#123;</span><br><span class="line">      <span class="comment">// 添加 set 和 get</span></span><br><span class="line">      watcher.addSetAndGet(value, key, value[key])</span><br><span class="line">      <span class="comment">// console.log('add ', key)</span></span><br><span class="line">      <span class="comment">// 添加了 get 和 set ，再把这个属性写到 listeners 中，知道是什么属性被订阅了</span></span><br><span class="line">      watcher.dep.addToListeners(key, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">        <span class="comment">// 这里是回调函数，即 key 改变的时候会执行这里</span></span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">'set '</span>, key)</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 给 key 加 set 和 get</span></span><br><span class="line">  addSetAndGet(obj, key, val) &#123;</span><br><span class="line">    <span class="keyword">if</span>(val.constructor == <span class="built_in">Object</span>) &#123;</span><br><span class="line">      <span class="comment">// 如果 val 也是对象，就也要调用一次 useForEachAddSetAndGet()</span></span><br><span class="line">      <span class="keyword">this</span>.useForEachAddSetAndGet(val)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">Object</span>.defineProperty(obj, key, &#123;</span><br><span class="line">      enumerable: <span class="literal">true</span>,</span><br><span class="line">      configurable: <span class="literal">true</span>,</span><br><span class="line">      get: <span class="function"><span class="params">()</span>=&gt;</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> val</span><br><span class="line">      &#125;,</span><br><span class="line">      set: <span class="function"><span class="params">newVal</span>=&gt;</span>&#123;</span><br><span class="line">        <span class="comment">// 如果是赋一样的值，直接退出</span></span><br><span class="line">        <span class="keyword">if</span> (newVal === val) &#123;</span><br><span class="line">          <span class="keyword">return</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 将新值替代旧值</span></span><br><span class="line">        val = newVal</span><br><span class="line">        <span class="keyword">if</span>(val.constructor == <span class="built_in">Object</span>) &#123;</span><br><span class="line">          <span class="comment">// 如果 newVal 也是对象，就也要调用一次 useForEachAddSetAndGet()</span></span><br><span class="line">          <span class="keyword">this</span>.useForEachAddSetAndGet(newVal)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 广播</span></span><br><span class="line">        <span class="keyword">this</span>.dep.notify(key)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ./scripts/viewModel.js 只列出修改的部分</span></span><br><span class="line"><span class="keyword">import</span> Dep <span class="keyword">from</span> <span class="string">'./dep.js'</span></span><br><span class="line"><span class="keyword">constructor</span> (options) &#123;</span><br><span class="line">    <span class="keyword">this</span>.data = options.data;</span><br><span class="line">    <span class="keyword">this</span>.$data = &#123;&#125;;</span><br><span class="line">    <span class="keyword">this</span>.dep = <span class="keyword">new</span> Dep()</span><br><span class="line">    <span class="keyword">this</span>.watcher = <span class="keyword">new</span> Watcher(<span class="keyword">this</span>.data, <span class="keyword">this</span>.dep)</span><br><span class="line">    <span class="comment">// this.render();</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>可以在<code>index.js</code>中测试是否成功：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> vm = <span class="keyword">new</span> Vue(&#123;</span><br><span class="line">  data: &#123;</span><br><span class="line">    web: <span class="string">'my web'</span>,</span><br><span class="line">    books: [<span class="string">'first'</span>, <span class="string">'second'</span>],</span><br><span class="line">    person: &#123;</span><br><span class="line">      name: <span class="string">'ltaoo'</span>,</span><br><span class="line">      age: <span class="number">23</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">var</span> person = vm.data.person</span><br><span class="line">person.name = <span class="string">'ltooo'</span></span><br><span class="line"><span class="comment">// 移除对 name 的订阅</span></span><br><span class="line">vm.watcher.dep.removeListener(<span class="string">'name'</span>)</span><br><span class="line">person.name = <span class="string">'loooo'</span> <span class="comment">// 这里不会触发console.log</span></span><br><span class="line">vm.watcher.dep.addToListeners(<span class="string">'name'</span>, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'这是很特殊的处理'</span>)</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">person.name = <span class="string">'ooooo'</span> <span class="comment">// 这里触发console.log('这是很特殊的处理')</span></span><br></pre></td></tr></table></figure></p>
+<p>浏览器控制台只打印一次 <code>set name</code>，打印一次<code>这是很特殊的处理</code>，表示成功！</p>
+<h2 id="render-模块"><a href="#render-模块" class="headerlink" title="render 模块"></a>render 模块</h2><p>为了能让<code>render()</code>函数可以被其他模块调用，将 render()写成一个单独的模块，所以代码是这样的：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ./script/viewModel.js</span></span><br><span class="line"><span class="keyword">import</span> &#123; render &#125; <span class="keyword">from</span> <span class="string">'./render.js'</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Vue</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> (options) &#123;</span><br><span class="line">    <span class="keyword">this</span>.data = options.data;</span><br><span class="line">    <span class="keyword">this</span>.$data = &#123;&#125;;</span><br><span class="line">    <span class="keyword">this</span>.dep = <span class="keyword">new</span> Dep()</span><br><span class="line">    <span class="keyword">this</span>.watcher = <span class="keyword">new</span> Watcher(<span class="keyword">this</span>.data, <span class="keyword">this</span>.dep)</span><br><span class="line">    render(<span class="keyword">this</span>.data);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ./scripts/render.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">render</span>(<span class="params">data</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> app = <span class="built_in">document</span>.getElementById(<span class="string">'app'</span>);</span><br><span class="line">  <span class="keyword">if</span>(app.hasChildNodes()) &#123;</span><br><span class="line">    <span class="comment">// 如果 app 有子元素</span></span><br><span class="line">    app.childNodes.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">node</span>) </span>&#123;</span><br><span class="line">      <span class="comment">// console.log(node);</span></span><br><span class="line">      <span class="keyword">var</span> key = node.getAttribute(<span class="string">'v-bind'</span>);</span><br><span class="line">      <span class="keyword">if</span>(key &amp;&amp; <span class="keyword">typeof</span> data[key] === <span class="string">'object'</span>) &#123;</span><br><span class="line">        <span class="comment">// 这里只考虑数组和字符串两种，如果是数组</span></span><br><span class="line">        <span class="keyword">var</span> content = <span class="string">''</span>;</span><br><span class="line">        data[key].forEach(<span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</span><br><span class="line">          content += <span class="string">'&lt;li&gt;'</span> + value + <span class="string">'&lt;/li&gt;'</span>;</span><br><span class="line">        &#125;)</span><br><span class="line">        node.innerHTML = content;</span><br><span class="line">      &#125;<span class="keyword">else</span> <span class="keyword">if</span>(key &amp;&amp; <span class="keyword">typeof</span> data[key] === <span class="string">'string'</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果是字符串</span></span><br><span class="line">        <span class="comment">// console.log(vue.$data[key]);</span></span><br><span class="line">        node.innerHTML = data[key];</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>查看一下页面，OK，能够显示数据。</p>
+<h2 id="不同的处理函数"><a href="#不同的处理函数" class="headerlink" title="不同的处理函数"></a>不同的处理函数</h2><p>OK，现在再把<code>render</code>加入到订阅列表中：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">watcher.dep.addToListeners(key, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 这里是回调函数，即 key 改变的时候会执行这里</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'set '</span>, key)</span><br><span class="line">    render()</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p><code>render()</code>是要接收一个参数，函数根据这个参数才能够渲染出页面，不过我们其实也不想任何数据改变都重新渲染整个页面，而是什么属性改变就渲染对应的地方，比如：<br><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">h2</span> <span class="attr">v-bind</span>=<span class="string">"web"</span>&gt;</span><span class="tag">&lt;/<span class="name">h2</span>&gt;</span></span><br></pre></td></tr></table></figure></p>
+<p>当<code>web</code>字段改变时，就重新渲染这一部分，其他的不会改变。所以我们需要一个新的函数，暂时命名为<code>renderSingle()</code>：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ./scripts/render.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="function"><span class="keyword">function</span> <span class="title">renderSingle</span>(<span class="params">key, value</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">var</span> app = <span class="built_in">document</span>.getElementById(<span class="string">'app'</span>);</span><br><span class="line">  <span class="keyword">if</span>(app.hasChildNodes()) &#123;</span><br><span class="line">    <span class="comment">// 如果 app 有子元素</span></span><br><span class="line">    app.childNodes.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">node</span>) </span>&#123;</span><br><span class="line">      <span class="comment">// console.log(node);</span></span><br><span class="line">      <span class="keyword">var</span> name = node.getAttribute(<span class="string">'v-bind'</span>);</span><br><span class="line">      <span class="comment">// 这里的 value 是我们的属性名比如 web、books 这种</span></span><br><span class="line">      <span class="comment">// console.log(value, key)</span></span><br><span class="line">      <span class="keyword">if</span>(name === key) &#123;</span><br><span class="line">        <span class="comment">// 如果是，OK，节点找到，然后更新值</span></span><br><span class="line">        node.innerHTML = value[key];</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这个函数放在了数据变化的回调函数中。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">watcher.dep.addToListeners(key, <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="comment">// 这里是回调函数，即 key 改变的时候会执行这里</span></span><br><span class="line">    <span class="built_in">console</span>.log(<span class="string">'set '</span>, key)</span><br><span class="line">    renderSingle(key, value)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>OK，终于实现了之前就实现的效果，不过增加了很多东西，方便之后的拓展。</p>
+<h2 id="render-js-的拓展"><a href="#render-js-的拓展" class="headerlink" title="render.js 的拓展"></a>render.js 的拓展</h2><p>这里就要提到“指令”了，我们只能处理有指令的节点。现在只有<code>v-bind</code>，表示会往这个节点里面添加数据。我们还需要<code>v-model</code>、<code>v-for</code>等，实现方式是，获取节点，读取节点上的属性，如果有<code>v</code>，就是我们的指令了，就执行这个指令对应的函数。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 我们有指令对应的函数</span></span><br><span class="line">operation = &#123;</span><br><span class="line">  <span class="string">'v-bind'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">node, data, value</span>) </span>&#123;</span><br><span class="line">    <span class="built_in">console</span>.log(node)</span><br><span class="line">    node.innerHTML = data[value]</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">'v-model'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">node, data, val</span>) </span>&#123;</span><br><span class="line">    node.value = data[val]</span><br><span class="line">    node.oninput = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="comment">// console.log('input')</span></span><br><span class="line">      data[val] = node.value</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="string">'v-for'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">node, data, value</span>) </span>&#123;</span><br><span class="line">    <span class="comment">// console.log('v-for')</span></span><br><span class="line">    <span class="keyword">var</span> content = <span class="string">''</span>;</span><br><span class="line">    data[value].forEach(<span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</span><br><span class="line">      content += <span class="string">'&lt;li&gt;'</span> + value + <span class="string">'&lt;/li&gt;'</span>;</span><br><span class="line">    &#125;)</span><br><span class="line">    node.innerHTML = content</span><br><span class="line">  &#125;</span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">render(data) &#123;</span><br><span class="line">    <span class="keyword">var</span> app = <span class="built_in">document</span>.getElementById(<span class="string">'app'</span>);</span><br><span class="line">    <span class="keyword">if</span>(app.hasChildNodes()) &#123;</span><br><span class="line">      <span class="keyword">var</span> render = <span class="keyword">this</span></span><br><span class="line">      <span class="comment">// 如果 app 有子元素</span></span><br><span class="line">      app.childNodes.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">node</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(node.nodeType === <span class="number">1</span> &amp;&amp; node.hasAttributes()) &#123;</span><br><span class="line">          <span class="comment">// 获取属性</span></span><br><span class="line">          <span class="keyword">var</span> atr = node.attributes</span><br><span class="line">          <span class="built_in">Object</span>.keys(atr).forEach(<span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> key = atr[name].name</span><br><span class="line">            <span class="keyword">var</span> value = atr[name].value</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(key.indexOf(<span class="string">'v'</span>) &gt; <span class="number">-1</span>) &#123;</span><br><span class="line">              <span class="comment">//根据指令来执行不同的代码</span></span><br><span class="line">              <span class="comment">// console.log(key, value)</span></span><br><span class="line">              render.operation[key].call(<span class="literal">null</span>, node, render.vm.data, value)</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+<p>这样就能够实现页面初始化了。我们将代码进行整理：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ./scripts/render.js</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Render</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span>(vm) &#123;</span><br><span class="line">    <span class="keyword">this</span>.vm = vm</span><br><span class="line">    <span class="keyword">this</span>.operation = &#123;</span><br><span class="line">      <span class="string">'v-bind'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">node, data, value</span>) </span>&#123;</span><br><span class="line">        <span class="built_in">console</span>.log(node)</span><br><span class="line">        node.innerHTML = data[value]</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="string">'v-model'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">node, data, val</span>) </span>&#123;</span><br><span class="line">        node.value = data[val]</span><br><span class="line">        <span class="comment">// 监听 oninput 事件</span></span><br><span class="line">        node.oninput = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">          <span class="comment">// console.log('input')</span></span><br><span class="line">          data[val] = node.value</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      <span class="string">'v-for'</span>: <span class="function"><span class="keyword">function</span> (<span class="params">node, data, value</span>) </span>&#123;</span><br><span class="line">        <span class="comment">// console.log('v-for')</span></span><br><span class="line">        <span class="keyword">var</span> content = <span class="string">''</span>;</span><br><span class="line">        data[value].forEach(<span class="function"><span class="keyword">function</span> (<span class="params">value</span>) </span>&#123;</span><br><span class="line">          content += <span class="string">'&lt;li&gt;'</span> + value + <span class="string">'&lt;/li&gt;'</span>;</span><br><span class="line">        &#125;)</span><br><span class="line">        node.innerHTML = content</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;  </span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  render(data) &#123;</span><br><span class="line">    <span class="keyword">var</span> app = <span class="built_in">document</span>.getElementById(<span class="string">'app'</span>);</span><br><span class="line">    <span class="keyword">if</span>(app.hasChildNodes()) &#123;</span><br><span class="line">      <span class="keyword">var</span> render = <span class="keyword">this</span></span><br><span class="line">      <span class="comment">// 如果 app 有子元素</span></span><br><span class="line">      app.childNodes.forEach(<span class="function"><span class="keyword">function</span> (<span class="params">node</span>) </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(node.nodeType === <span class="number">1</span> &amp;&amp; node.hasAttributes()) &#123;</span><br><span class="line">          <span class="comment">// 获取属性</span></span><br><span class="line">          <span class="keyword">var</span> atr = node.attributes</span><br><span class="line"></span><br><span class="line">          <span class="built_in">Object</span>.keys(atr).forEach(<span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</span><br><span class="line">            <span class="keyword">var</span> key = atr[name].name</span><br><span class="line">            <span class="keyword">var</span> value = atr[name].value</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(key.indexOf(<span class="string">'v'</span>) &gt; <span class="number">-1</span>) &#123;</span><br><span class="line">              <span class="comment">//根据指令来执行不同的代码</span></span><br><span class="line">              <span class="comment">// console.log(key, value)</span></span><br><span class="line">              render.operation[key].call(<span class="literal">null</span>, node, render.vm.data, value)</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  renderSingle(key, value) &#123;</span><br><span class="line">    <span class="keyword">var</span> app = <span class="built_in">document</span>.getElementById(<span class="string">'app'</span>);</span><br><span class="line">    <span class="keyword">var</span> render = <span class="keyword">this</span></span><br><span class="line">    <span class="keyword">if</span>(app.hasChildNodes()) &#123;</span><br><span class="line">      <span class="comment">// 如果 app 有子元素</span></span><br><span class="line">      app.childNodes.forEach(<span class="function">(<span class="params">node</span>)=&gt;</span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(node.nodeType === <span class="number">1</span> &amp;&amp; node.hasAttributes()) &#123;</span><br><span class="line">          <span class="comment">// 获取属性</span></span><br><span class="line">          <span class="keyword">var</span> atr = node.attributes</span><br><span class="line"></span><br><span class="line">          <span class="built_in">Object</span>.keys(atr).forEach(<span class="function">(<span class="params">name</span>)=&gt;</span>&#123;</span><br><span class="line">            <span class="comment">//</span></span><br><span class="line">            <span class="keyword">var</span> attrName = atr[name].name</span><br><span class="line">            <span class="keyword">var</span> value = atr[name].value</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span>(key === value) &#123;</span><br><span class="line">              render.operation[attrName].call(<span class="literal">null</span>, node, render.vm.data, value)</span><br><span class="line">            &#125;</span><br><span class="line">          &#125;)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>重点是在于<code>v-model</code>的处理函数，可以看到这里对节点的<code>oninput</code>进行监听，将每一次的输入都赋值给 Vue 的 data，这样就实现了双向绑定，即使用<code>v-model</code>指令替代了我们之前一直使用的在<code>index.js</code>中手动监听。</p>
+<p>这里涉及到一个 “值的传递”，在 render.js 这个文件中我们要获取到 <code>data</code>，而<code>data</code>又是挂载在<code>Vue</code>这个类上面，所以我们将这个类传递给<code>Render()</code>。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ./scripts/viewModel.js</span></span><br><span class="line"><span class="keyword">import</span> Watcher <span class="keyword">from</span> <span class="string">'./watch.js'</span></span><br><span class="line"><span class="keyword">import</span> Dep <span class="keyword">from</span> <span class="string">'./dep.js'</span></span><br><span class="line"><span class="keyword">import</span> Render <span class="keyword">from</span> <span class="string">'./render.js'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="class"><span class="keyword">class</span> <span class="title">Vue</span> </span>&#123;</span><br><span class="line">  <span class="keyword">constructor</span> (options) &#123;</span><br><span class="line">    <span class="keyword">this</span>.data = options.data;</span><br><span class="line">    <span class="comment">// 订阅列表</span></span><br><span class="line">    <span class="keyword">this</span>.dep = <span class="keyword">new</span> Dep()</span><br><span class="line">    <span class="comment">// 渲染页面，将vm实例传进去</span></span><br><span class="line">    <span class="keyword">this</span>.render = <span class="keyword">new</span> Render(<span class="keyword">this</span>)</span><br><span class="line">    <span class="comment">//</span></span><br><span class="line">    <span class="keyword">this</span>.watcher = <span class="keyword">new</span> Watcher(<span class="keyword">this</span>.data, <span class="keyword">this</span>.dep, <span class="keyword">this</span>.render)</span><br><span class="line">    <span class="keyword">this</span>.render.render(<span class="keyword">this</span>.data, <span class="keyword">this</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>现在我们有了<code>viewModel.js</code>、<code>render.js</code>、<code>watch.js</code>、<code>dep.js</code>，四个类，实现了我们的简单的 Vue 实现。</p>
+<ul>
+<li>dep 是售楼处</li>
+<li>watch 是什么？在 watch 中数据设置了 set 就表示有购房意愿，dep 才可以把数据加入到记录表</li>
+<li>render 是购房者</li>
+</ul>
+<p>不知道这种比喻是否恰当，等对 Vue 的源码进行阅读后应该会有更深的认识。</p>
+<h3 id="对象的传递"><a href="#对象的传递" class="headerlink" title="对象的传递"></a>对象的传递</h3><p>由于每个类只能实例化一次，所以在模块间“通信”是使用了将类作为参数传递的方式。尝试画流程图来将整个流程理清楚，数据是从哪到哪。</p>
+<p><img src="/blog/2016/09/04/my-vue-2/2272c6cd-d709-4b89-8d02-6e1ad5fbb377.png" alt=""></p>
+<p>在画图的过程中，意识到如果按照顺序来实例化，将实例化后的对象挂载在起点（viewModel）上，只需要传递 viewModel 一个参数即可。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">this</span>.data = options.data</span><br><span class="line"><span class="keyword">this</span>.render = <span class="keyword">new</span> Render(<span class="keyword">this</span>)<span class="comment">// this 上就有了 render</span></span><br><span class="line"><span class="keyword">this</span>.dep = <span class="keyword">new</span> Dep() <span class="comment">// this 上就有了 dep</span></span><br><span class="line"><span class="keyword">this</span>.watcher = <span class="keyword">new</span> Watcher(<span class="keyword">this</span>) <span class="comment">// this 上有 render 和 dep</span></span><br></pre></td></tr></table></figure>
+<p><img src="/blog/2016/09/04/my-vue-2/8f552cd7-e849-4142-9ce8-4a90a48c7f2f.png" alt=""></p>
+<p>这一次学习中，对“观察者模式”有了更深的理解，也对 Node 的相关 API 进行了更多的了解，很多之前没有用过的方法、属性都在这次学习中出现。</p>
+<p>一个前端框架，不仅仅要熟悉 JavaScript 语言，还要对浏览器环境下的 JavaScript 有很深的了解。最重要的还是代码的组织，即设计模式（架构？）非常重要。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://segmentfault.com/a/1190000004384515" target="_blank" rel="noopener">vue 源码分析之如何实现 observer 和 watcher</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/vue/" rel="tag"># vue</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2016/09/04/my-vue-1/" rel="next" title="数据监听 - 1">
+                <i class="fa fa-chevron-left"></i> 数据监听 - 1
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2016/09/04/webpack-react-config/" rel="prev" title="react + webpack 配置">
+                react + webpack 配置 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#实现-watcher-observer-？"><span class="nav-number">1.</span> <span class="nav-text">实现 watcher/observer ？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#广播"><span class="nav-number">2.</span> <span class="nav-text">广播</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#测试"><span class="nav-number">2.1.</span> <span class="nav-text">测试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#render-模块"><span class="nav-number">3.</span> <span class="nav-text">render 模块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#不同的处理函数"><span class="nav-number">4.</span> <span class="nav-text">不同的处理函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#render-js-的拓展"><span class="nav-number">5.</span> <span class="nav-text">render.js 的拓展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的传递"><span class="nav-number">6.1.</span> <span class="nav-text">对象的传递</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">7.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

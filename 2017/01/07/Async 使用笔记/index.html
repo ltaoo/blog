@@ -1,0 +1,712 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/blog/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/blog/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="async," />
+
+
+
+
+
+  <link rel="alternate" href="/blog/feed.xml" title="ltaoo's web" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/blog/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="之前虽然有过关于async使用的笔记，但是真正在项目中使用时，发现还是存在一些问题，所以重新对async进行更深入的学习。">
+<meta name="keywords" content="async">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Async 使用笔记">
+<meta property="og:url" content="http://yoursite.com/2017/01/07/Async 使用笔记/index.html">
+<meta property="og:site_name" content="ltaoo&#39;s web">
+<meta property="og:description" content="之前虽然有过关于async使用的笔记，但是真正在项目中使用时，发现还是存在一些问题，所以重新对async进行更深入的学习。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2020-02-08T13:00:30.173Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Async 使用笔记">
+<meta name="twitter:description" content="之前虽然有过关于async使用的笔记，但是真正在项目中使用时，发现还是存在一些问题，所以重新对async进行更深入的学习。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2017/01/07/Async 使用笔记/"/>
+
+
+
+
+
+  <title> Async 使用笔记 | ltaoo's web </title>
+</head>
+
+<body lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/blog/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">ltaoo's web</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+  <p class="site-subtitle"></p>
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/blog/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/blog/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/blog/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/blog/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="http://yoursite.com/blog/2017/01/07/Async 使用笔记/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="ltaoo">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="/blog/images/avatar.gif">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="ltaoo's web">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="ltaoo's web" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Async 使用笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-o"></i>
+            </span>
+            <span class="post-meta-item-text">发表于</span>
+            <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-07T08:00:00+08:00">
+              2017-01-07
+            </time>
+
+            &nbsp;|&nbsp;
+
+            <span class="post-meta-item-icon">
+              <i class="fa fa-calendar-check-o"></i>
+            </span>
+            <time title="Post modified" itemprop="dateModified" datetime="2020-02-08T21:00:30+08:00">
+              2020-02-08
+            </time>
+            
+          </span>
+
+          
+            <span class="post-category" >
+              &nbsp; | &nbsp;
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/blog/categories/JavaScript/" itemprop="url" rel="index">
+                    <span itemprop="name">JavaScript</span>
+                  </a>
+                </span>
+
+                
+                
+
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+          
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>之前虽然有过关于<code>async</code>使用的笔记，但是真正在项目中使用时，发现还是存在一些问题，所以重新对<code>async</code>进行更深入的学习。</p>
+<a id="more"></a>
+<h2 id="顺序执行"><a href="#顺序执行" class="headerlink" title="顺序执行"></a>顺序执行</h2><p>顺序执行是基本功能，因为<code>async</code>引入就是因为异步代码要顺序执行会非常麻烦，无论是<code>callback</code>还是<code>promise</code>都不是很直观，而使用<code>async</code>能够<strong>写异步代码看起来像同步一样。</strong></p>
+<p>不过我比较迷惑的是，在循环中，如何控制代码按顺序执行。假设有这么一个需求：</p>
+<blockquote>
+<p>存在一个数组，保存了很多笔记对象，遍历该数组发送异步请求创建云端笔记，在发送请求前，需要先判断该笔记所属的笔记本是否存在，如果不存在则先创建笔记本。</p>
+</blockquote>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> noteAry = [&#123;</span><br><span class="line">	title: <span class="string">'note1'</span>,</span><br><span class="line">	notebook: <span class="number">1</span></span><br><span class="line">&#125;, &#123;</span><br><span class="line">	title: <span class="string">'note2'</span>,</span><br><span class="line">	notebook: <span class="number">1</span></span><br><span class="line">&#125;, &#123;</span><br><span class="line">	title: <span class="string">'note3'</span>,</span><br><span class="line">	notebook: <span class="number">2</span></span><br><span class="line">&#125;]</span><br><span class="line"><span class="comment">// 逻辑</span></span><br><span class="line">noteAry.forEach(<span class="function"><span class="params">note</span> =&gt;</span> &#123;</span><br><span class="line">	<span class="keyword">if</span>(<span class="comment">/*如果该笔记所属的笔记本没有创建*/</span>) &#123;</span><br><span class="line">		<span class="comment">// 就创建笔记本</span></span><br><span class="line">		<span class="comment">// 笔记本创建完成后，创建笔记</span></span><br><span class="line">	&#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>笔记的创建是依赖于笔记本存在的，所以如果笔记本不存在，就一定要先创建笔记本，并在笔记本创建成功的回调中创建笔记。那问题来了，创建笔记的函数是不是需要调用两次？类似这样：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 请求库</span></span><br><span class="line"><span class="keyword">const</span> fetch = <span class="built_in">require</span>(<span class="string">'isomorphic-fetch'</span>)</span><br><span class="line"><span class="comment">// 将对象作为数据库处理的一个库</span></span><br><span class="line"><span class="keyword">const</span> lowdb = <span class="built_in">require</span>(<span class="string">'lowdb'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 同步判断笔记本是否存在</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">existsSync</span>(<span class="params">id</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">const</span> db = lowdb(<span class="string">'./db.json'</span>)</span><br><span class="line">	<span class="keyword">return</span> db.get(<span class="string">'notebooks'</span>).find(&#123;id&#125;).value()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建笔记本函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createNotebook</span>(<span class="params">notebook</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">		fetch(<span class="string">'http://127.0.0.1:3000/notebooks'</span>, &#123;</span><br><span class="line">			method: <span class="string">'POST'</span>,</span><br><span class="line">			body: <span class="built_in">JSON</span>.stringify(notebook)</span><br><span class="line">		&#125;)</span><br><span class="line">			.then(<span class="function"><span class="params">res</span> =&gt;</span> res.json())</span><br><span class="line">			.then(<span class="function"><span class="params">json</span> =&gt;</span> &#123;</span><br><span class="line">				resolve(json)</span><br><span class="line">			&#125;)</span><br><span class="line">			.catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">				reject(err)</span><br><span class="line">			&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 创建笔记函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createNote</span>(<span class="params">note</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">		fetch(<span class="string">'http://127.0.0.1:3000/notes'</span>, &#123;</span><br><span class="line">			method: <span class="string">'POST'</span>,</span><br><span class="line">			body: <span class="built_in">JSON</span>.stringify(note)</span><br><span class="line">		&#125;)</span><br><span class="line">			.then(<span class="function"><span class="params">res</span> =&gt;</span> res.json())</span><br><span class="line">			.then(<span class="function"><span class="params">json</span> =&gt;</span> &#123;</span><br><span class="line">				resolve(json)</span><br><span class="line">			&#125;)</span><br><span class="line">			.catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">				reject(err)</span><br><span class="line">			&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> noteAry = [&#123;</span><br><span class="line">	title: <span class="string">'note1'</span>,</span><br><span class="line">	notebook: <span class="number">1</span></span><br><span class="line">&#125;, &#123;</span><br><span class="line">	title: <span class="string">'note2'</span>,</span><br><span class="line">	notebook: <span class="number">1</span></span><br><span class="line">&#125;, &#123;</span><br><span class="line">	title: <span class="string">'note3'</span>,</span><br><span class="line">	notebook: <span class="number">2</span></span><br><span class="line">&#125;]</span><br><span class="line"></span><br><span class="line"><span class="comment">// 先使用 promise </span></span><br><span class="line">noteAry.forEach(<span class="function"><span class="params">note</span> =&gt;</span> &#123;</span><br><span class="line">	<span class="keyword">if</span>(!existsSync(note.notebook)) &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>不存在，先创建笔记本`</span>)</span><br><span class="line">		<span class="comment">// 如果笔记本不存在</span></span><br><span class="line">		createNotebook(note.notebook)</span><br><span class="line">			.then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">				<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>创建成功`</span>)</span><br><span class="line">				<span class="keyword">return</span> createNote(note)</span><br><span class="line">			&#125;)</span><br><span class="line">			.then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">				<span class="built_in">console</span>.log(<span class="string">`笔记<span class="subst">$&#123;note.title&#125;</span>创建成功`</span>)</span><br><span class="line">			&#125;)</span><br><span class="line">			.catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">				<span class="built_in">console</span>.log(err)</span><br><span class="line">			&#125;)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>已经存在，直接创建笔记`</span>)</span><br><span class="line">		createNote(note)</span><br><span class="line">			.then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">				<span class="built_in">console</span>.log(<span class="string">`笔记<span class="subst">$&#123;note.title&#125;</span>创建成功`</span>)</span><br><span class="line">			&#125;)</span><br><span class="line">			.catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">				<span class="built_in">console</span>.log(err)</span><br><span class="line">			&#125;)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>打印的结果是：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">笔记本1不存在，先创建笔记本</span><br><span class="line">笔记本1不存在，先创建笔记本</span><br><span class="line">笔记本2不存在，先创建笔记本</span><br><span class="line">笔记本1创建成功</span><br><span class="line">笔记本1创建成功</span><br><span class="line">笔记本2创建成功</span><br><span class="line">笔记note1创建成功</span><br><span class="line">笔记note2创建成功</span><br><span class="line">笔记note3创建成功</span><br></pre></td></tr></table></figure></p>
+<p>但是希望能够打印:<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">笔记本1不存在，先创建笔记本</span><br><span class="line">笔记本1创建成功</span><br><span class="line">笔记note1创建成功</span><br><span class="line">笔记本1已经存在，直接创建笔记</span><br><span class="line">笔记note2创建成功</span><br><span class="line">笔记本2不存在，先创建笔记本</span><br><span class="line">笔记本note3创建成功</span><br><span class="line">笔记创建成功</span><br></pre></td></tr></table></figure></p>
+<p>而且数据库文件也存在三个笔记本数据。没有成功的原因很简单，<strong>请求还未结束，就已经开始了下一次的循环，这时候数据库中还未写入新的笔记本，所以判断笔记本1还不存在</strong></p>
+<p>先解决如何实现我们的预期需求。<br>引入一个临时变量<code>promise</code>：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 先使用 promise </span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">realCreateNote</span>(<span class="params">note</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">		<span class="keyword">if</span>(!existsSync(note.notebook)) &#123;</span><br><span class="line">			<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>不存在，先创建笔记本`</span>)</span><br><span class="line">			<span class="comment">// 如果笔记本不存在</span></span><br><span class="line">			createNotebook(note.notebook)</span><br><span class="line">				.then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">					<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>创建成功`</span>)</span><br><span class="line">					<span class="keyword">return</span> createNote(note)</span><br><span class="line">				&#125;)</span><br><span class="line">				.then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">					<span class="built_in">console</span>.log(<span class="string">`笔记<span class="subst">$&#123;note.title&#125;</span>创建成功`</span>)</span><br><span class="line">					resolve(note.title)</span><br><span class="line">				&#125;)</span><br><span class="line">				.catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">					<span class="built_in">console</span>.log(err)</span><br><span class="line">					reject(err)</span><br><span class="line">				&#125;)</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>已经存在，直接创建笔记`</span>)</span><br><span class="line">			createNote(note)</span><br><span class="line">				.then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">					<span class="built_in">console</span>.log(<span class="string">`笔记<span class="subst">$&#123;note.title&#125;</span>创建成功`</span>)</span><br><span class="line">					resolve(note.title)</span><br><span class="line">				&#125;)</span><br><span class="line">				.catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">					<span class="built_in">console</span>.log(err)</span><br><span class="line">					reject(err)</span><br><span class="line">				&#125;)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">main</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="comment">// 临时变量</span></span><br><span class="line">	<span class="keyword">let</span> promise = <span class="built_in">Promise</span>.resolve()</span><br><span class="line">	noteAry.forEach(<span class="function"><span class="params">note</span> =&gt;</span> &#123;</span><br><span class="line">		promise = promise.then(<span class="function"><span class="params">()</span> =&gt;</span> realCreateNote(note))</span><br><span class="line">	&#125;)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> promise</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">main().then(<span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">'笔记均创建完成'</span>)</span><br><span class="line">&#125;).catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">	<span class="built_in">console</span>.error(err)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>能够实现预期的需求。</p>
+<p>看起来还好，但是存在一个“复制代码”的问题，如果要修改笔记创建成功的<code>log</code>，却需要同时修改两处，如果还需要在笔记创建成功后进行处理，就要复制两份代码，肯定不好，但是却不能写成这样：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">realCreateNote</span>(<span class="params">note</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="keyword">new</span> <span class="built_in">Promise</span>(<span class="function">(<span class="params">resolve, reject</span>) =&gt;</span> &#123;</span><br><span class="line">		<span class="keyword">if</span>(!existsSync(note.notebook)) &#123;</span><br><span class="line">			<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>不存在，先创建笔记本`</span>)</span><br><span class="line">			<span class="comment">// 如果笔记本不存在</span></span><br><span class="line">			createNotebook(note.notebook)</span><br><span class="line">				.then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">					<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>创建成功`</span>)</span><br><span class="line">				&#125;)</span><br><span class="line">				.catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">					<span class="built_in">console</span>.log(err)</span><br><span class="line">					reject(err)</span><br><span class="line">				&#125;)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>已经存在，直接创建笔记`</span>)</span><br><span class="line">		createNote(note)</span><br><span class="line">			.then(<span class="function"><span class="params">res</span> =&gt;</span> &#123;</span><br><span class="line">				<span class="built_in">console</span>.log(<span class="string">`笔记<span class="subst">$&#123;note.title&#125;</span>创建成功`</span>)</span><br><span class="line">				resolve(note.title)</span><br><span class="line">			&#125;)</span><br><span class="line">			.catch(<span class="function"><span class="params">err</span> =&gt;</span> &#123;</span><br><span class="line">				<span class="built_in">console</span>.log(err)</span><br><span class="line">				reject(err)</span><br><span class="line">			&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>因为如果笔记不存在，<code>createNote</code>函数是必须在<code>createNotebook</code>函数的成功回调中，这样写很可能在笔记本还未创建成功时，就发送请求创建笔记，从打印的信息也能够看出问题所在：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">笔记本1不存在，先创建笔记本</span><br><span class="line">笔记本1已经存在，直接创建笔记</span><br><span class="line">笔记本1创建成功</span><br><span class="line">笔记note1创建成功</span><br><span class="line">笔记本1已经存在，直接创建笔记</span><br><span class="line">笔记note2创建成功</span><br><span class="line">笔记本2不存在，先创建笔记本</span><br><span class="line">笔记本2已经存在，直接创建笔记</span><br><span class="line">笔记本2创建成功</span><br><span class="line">笔记note3创建成功</span><br><span class="line">笔记均创建完成</span><br></pre></td></tr></table></figure></p>
+<p>没有想到使用<code>promise</code>解决的方案。async`是否能够很好的处理这种情况？</p>
+<h2 id="async"><a href="#async" class="headerlink" title="async"></a>async</h2><p>由于<code>async</code>能够暂停函数的执行，所以使用<code>await</code>返回的异步函数，肯定是已经请求结束的，所以如果使用<code>async</code>，上面的代码可以改成这样：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 async</span></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">realCreateNote</span>(<span class="params">note</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(!existsSync(note.notebook)) &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>不存在，先创建笔记本`</span>)</span><br><span class="line">		<span class="comment">// 如果笔记本不存在</span></span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">await</span> createNotebook(note.notebook)</span><br><span class="line">			<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>创建成功`</span>)</span><br><span class="line">		&#125;<span class="keyword">catch</span>(err) &#123;</span><br><span class="line">			<span class="built_in">console</span>.log(err)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>已经存在，直接创建笔记`</span>)</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="keyword">await</span> createNote(note)</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">`笔记<span class="subst">$&#123;note.title&#125;</span>创建成功`</span>)</span><br><span class="line">	&#125;<span class="keyword">catch</span>(err) &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">realCreateNote(noteAry[<span class="number">0</span>])</span><br></pre></td></tr></table></figure></p>
+<p>直接调用该函数，能够正确打印出预期的信息：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">笔记本1不存在，先创建笔记本</span><br><span class="line">笔记本1创建成功</span><br><span class="line">笔记本1已经存在，直接创建笔记</span><br><span class="line">笔记note1创建成功</span><br></pre></td></tr></table></figure></p>
+<p>表示的确是按照顺序执行，再次调用也是没问题<code>realCreateNote(noteAry[1])</code>：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">笔记本1已经存在，直接创建笔记</span><br><span class="line">笔记note2创建成功</span><br></pre></td></tr></table></figure></p>
+<p>而在<code>forEach</code>循环中却并没有按照预期执行：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">noteAry.forEach(<span class="function"><span class="params">note</span> =&gt;</span> &#123;</span><br><span class="line">	realCreateNote(note)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">笔记本1不存在，先创建笔记本</span><br><span class="line">笔记本1不存在，先创建笔记本</span><br><span class="line">笔记本2不存在，先创建笔记本</span><br><span class="line">笔记本1创建成功</span><br><span class="line">笔记本1已经存在，直接创建笔记</span><br><span class="line">笔记本1创建成功</span><br><span class="line">笔记本1已经存在，直接创建笔记</span><br><span class="line">笔记本2创建成功</span><br><span class="line">笔记本2已经存在，直接创建笔记</span><br><span class="line">笔记note1创建成功</span><br><span class="line">笔记note2创建成功</span><br><span class="line">笔记note3创建成功</span><br></pre></td></tr></table></figure>
+<p>即使将<code>realCreateNote</code>函数返回<code>promise</code>实例，在循环内使用<code>await</code>关键字也不行：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">realCreateNote</span>(<span class="params">note</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(!existsSync(note.notebook)) &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>不存在，先创建笔记本`</span>)</span><br><span class="line">		<span class="comment">// 如果笔记本不存在</span></span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">await</span> createNotebook(note.notebook)</span><br><span class="line">			<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>创建成功`</span>)</span><br><span class="line">		&#125;<span class="keyword">catch</span>(err) &#123;</span><br><span class="line">			<span class="built_in">console</span>.log(err)</span><br><span class="line">			<span class="keyword">return</span> <span class="built_in">Promise</span>.reject(err)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>已经存在，直接创建笔记`</span>)</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="keyword">await</span> createNote(note)</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">`笔记<span class="subst">$&#123;note.title&#125;</span>创建成功`</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">Promise</span>.resolve(<span class="string">`笔记<span class="subst">$&#123;note.title&#125;</span>创建成功`</span>)</span><br><span class="line">	&#125;<span class="keyword">catch</span>(err) &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(err)</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">Promise</span>.reject(err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// realCreateNote(noteAry[1])</span></span><br><span class="line"></span><br><span class="line">noteAry.forEach(<span class="keyword">async</span> <span class="function"><span class="keyword">function</span> (<span class="params">note</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="keyword">await</span> realCreateNote(note)</span><br><span class="line">	&#125;<span class="keyword">catch</span>(err) &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></p>
+<p>但是改成<code>for</code>循环后就可以了：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用 async</span></span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">realCreateNote</span>(<span class="params">note</span>) </span>&#123;</span><br><span class="line">	<span class="keyword">if</span>(!existsSync(note.notebook)) &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>不存在，先创建笔记本`</span>)</span><br><span class="line">		<span class="comment">// 如果笔记本不存在</span></span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">await</span> createNotebook(note.notebook)</span><br><span class="line">			<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>创建成功`</span>)</span><br><span class="line">		&#125;<span class="keyword">catch</span>(err) &#123;</span><br><span class="line">			<span class="built_in">console</span>.log(err)</span><br><span class="line">			<span class="keyword">return</span> <span class="built_in">Promise</span>.reject(err)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>已经存在，直接创建笔记`</span>)</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		<span class="keyword">await</span> createNote(note)</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">`笔记<span class="subst">$&#123;note.title&#125;</span>创建成功`</span>)</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">Promise</span>.resolve(<span class="string">`笔记<span class="subst">$&#123;note.title&#125;</span>创建成功`</span>)</span><br><span class="line">	&#125;<span class="keyword">catch</span>(err) &#123;</span><br><span class="line">		<span class="built_in">console</span>.log(err)</span><br><span class="line">		<span class="keyword">return</span> <span class="built_in">Promise</span>.reject(err)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">main</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>, len = noteAry.length; i &lt; len; i++) &#123;</span><br><span class="line">		<span class="keyword">const</span> note = noteAry[i]</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">await</span> realCreateNote(note)</span><br><span class="line">		&#125;<span class="keyword">catch</span>(err) &#123;</span><br><span class="line">			<span class="built_in">console</span>.log(err)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">main()</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>这里之所以要添加<code>main</code>函数，是因为<code>await</code>关键字只能在<code>async</code>函数内使用。</p>
+</blockquote>
+<p>打印的信息为：<br><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">笔记本1不存在，先创建笔记本</span><br><span class="line">笔记本1创建成功</span><br><span class="line">笔记本1已经存在，直接创建笔记</span><br><span class="line">笔记note1创建成功</span><br><span class="line">笔记本1已经存在，直接创建笔记</span><br><span class="line">笔记note2创建成功</span><br><span class="line">笔记本2不存在，先创建笔记本</span><br><span class="line">笔记本2创建成功</span><br><span class="line">笔记本2已经存在，直接创建笔记</span><br><span class="line">笔记note3创建成功</span><br></pre></td></tr></table></figure></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>虽然使用<code>Promise</code>和<code>async</code>实现了相同的功能，但<code>async</code>在代码逻辑上和思维是一致：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">async</span> <span class="function"><span class="keyword">function</span> <span class="title">main</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="keyword">for</span>(<span class="keyword">let</span> i = <span class="number">0</span>, len = noteAry.length; i &lt; len; i++) &#123;</span><br><span class="line">		<span class="keyword">const</span> note = noteAry[i]</span><br><span class="line">		<span class="keyword">if</span>(!existsSync(note.notebook)) &#123;</span><br><span class="line">			<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>不存在，先创建笔记本`</span>)</span><br><span class="line">			<span class="comment">// 如果笔记本不存在</span></span><br><span class="line">			<span class="keyword">try</span> &#123;</span><br><span class="line">				<span class="keyword">await</span> createNotebook(note.notebook)</span><br><span class="line">				<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>创建成功`</span>)</span><br><span class="line">			&#125;<span class="keyword">catch</span>(err) &#123;</span><br><span class="line">				<span class="built_in">console</span>.log(err)</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="built_in">console</span>.log(<span class="string">`笔记本<span class="subst">$&#123;note.notebook&#125;</span>已经存在，直接创建笔记`</span>)</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="keyword">await</span> createNote(note)</span><br><span class="line">			<span class="built_in">console</span>.log(<span class="string">`笔记<span class="subst">$&#123;note.title&#125;</span>创建成功`</span>)</span><br><span class="line">		&#125;<span class="keyword">catch</span>(err) &#123;</span><br><span class="line">			<span class="built_in">console</span>.log(err)</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">main()</span><br></pre></td></tr></table></figure></p>
+<p>所以相比<code>Promise</code>而言要更好，而且解决了一个使用<code>Promise</code>无法解决的“复制代码”的问题。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://www.kancloud.cn/kancloud/promises-book/44249" target="_blank" rel="noopener">JavaScript Promise迷你书（中文版）</a></li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/blog/tags/async/" rel="tag"># async</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2016/12/25/2016年终总结/" rel="next" title="2016 年终总结">
+                <i class="fa fa-chevron-left"></i> 2016 年终总结
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2017/01/13/完整记录在 windows7 下使用 docker 的过程/" rel="prev" title="完整记录在 windows7 下使用 docker 的过程">
+                完整记录在 windows7 下使用 docker 的过程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/blog/images/avatar.gif"
+               alt="ltaoo" />
+          <p class="site-author-name" itemprop="name">ltaoo</p>
+          <p class="site-description motion-element" itemprop="description">website of litao</p>
+        </div>
+        <nav class="site-state motion-element">
+          <div class="site-state-item site-state-posts">
+            <a href="/blog/archives">
+              <span class="site-state-item-count">55</span>
+              <span class="site-state-item-name">日志</span>
+            </a>
+          </div>
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/blog/categories">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/blog/tags">
+                <span class="site-state-item-count">53</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/blog/feed.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-globe"></i>
+              Links
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://qiujun.me/" title="邱俊的博客（Jun Qiu's Blog）" target="_blank">邱俊的博客（Jun Qiu's Blog）</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#顺序执行"><span class="nav-number">1.</span> <span class="nav-text">顺序执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#async"><span class="nav-number">2.</span> <span class="nav-text">async</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ltaoo</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/blog/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/blog/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/blog/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/blog/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/blog/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
